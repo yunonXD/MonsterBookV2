@@ -3,7 +3,13 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - BossBuff
+  - Gretel
+  - Boss
+  - WireObject
+  - UIController
+  - Wall
   layers:
   - Default
   - TransparentFX
@@ -14,20 +20,20 @@ TagManager:
   - 
   - 
   - 
+  - Player
+  - Monster
+  - Boss
+  - 
+  - PlayerAttack
   - 
   - 
+  - Ground
+  - Wall
   - 
+  - Wire
+  - Black
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Fragment
   - 
   - 
   - 
