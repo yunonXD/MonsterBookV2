@@ -14,6 +14,9 @@ public class HitState : IState
         player.invinBool = true;
         player.state = PlayerState.HitState;
         player.ani.Play("Hit");
+
+        CameraController.CameraShaking(0.5f, 0.2f);
+
         player.rigid.AddForce(player.lookVector * -8, ForceMode.Impulse);
         StartCoroutine(Routine(player));
     }
@@ -22,8 +25,7 @@ public class HitState : IState
     {
         if (player.ani.GetCurrentAnimatorStateInfo(0).IsName("Hit") && player.ani.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
         {
-            if (player.isGround) player.ChangeState(PlayerState.IdleState);
-            else player.ChangeState(PlayerState.FallState);
+            player.ChangeState(PlayerState.IdleState);
         }
     }
 
@@ -34,7 +36,7 @@ public class HitState : IState
 
     private IEnumerator Routine(PlayerController player)
     {
-        yield return YieldInstructionCache.waitForSeconds(2);
+        yield return YieldInstructionCache.waitForSeconds(1.2f);
         player.invinBool = false;
     }
 }

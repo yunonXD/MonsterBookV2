@@ -116,7 +116,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &694658810
 Transform:
   m_ObjectHideFlags: 0
@@ -140,11 +140,11 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 694658809}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1, y: 1.1565838, z: 2.0873823}
+  m_Center: {x: 0, y: -0.40885538, z: -0.0130488565}
 --- !u!1 &60241736873514473
 GameObject:
   m_ObjectHideFlags: 0
@@ -645,7 +645,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   g_Player_To_Damgage: 10
+  g_BellyForce: 0
+  g_BellyForceUp: 0
   g_Transform: {fileID: 6819423131324621394}
+  g_PlayerTransform: {fileID: 0}
 --- !u!1 &2591908401732484470
 GameObject:
   m_ObjectHideFlags: 0
@@ -1042,8 +1045,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.051077, y: 0.9026039, z: 0.41979328}
-  m_Center: {x: -0.06576362, y: -0.030495664, z: -0.000000015778424}
+  m_Size: {x: 2.1567652, y: 1.6929175, z: 0.94920903}
+  m_Center: {x: -0.0062154853, y: 0.38310596, z: -0.08711407}
 --- !u!114 &4443548039128706523
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1253,7 +1256,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6190379766938335464}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 2.0292583, y: 1.7900825, z: 1.92}
@@ -1272,7 +1275,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 100
+  m_Constraints: 116
   m_CollisionDetection: 0
 --- !u!114 &6190379766938335465
 MonoBehaviour:
@@ -1291,9 +1294,12 @@ MonoBehaviour:
   myTarget: {fileID: 0}
   Gretel: {fileID: 0}
   Hansel_SmashDamage: 10
-  SmashAttackRange: 4
-  SmashAttackSpeed: 1
+  SmashAttackRange: 3
   SmashCollider: {fileID: 4443548039128706520}
+  isSmash: 0
+  isSmashBool: 1
+  ForSmashP: 0
+  Attack_Time: 0
   Hansel_RushDamage: 10
   Rush_Speed: 10
   Rush_EndWait: 4
@@ -1303,6 +1309,8 @@ MonoBehaviour:
   Hansel_BellyDamage: 10
   BellyAttackSpeed: 1
   BellyPower: 30
+  BellyForce: 5
+  BellyForceUp: 5
   m_BellyColTime: 0
   SetBellyTime: 4
   BellyDelay: 5
@@ -1323,9 +1331,16 @@ MonoBehaviour:
   ThrowUpTime: 3
   m_ThrowUpActivePercent: 30
   ThrowUpCollider: {fileID: 425959873}
+  Hansel_ThrowPlayer: 10
+  RayPlayer: 0
+  TP_TimerSet: 3
+  TP_Timer: 0
+  isTP: 0
+  TPCollider: {fileID: 0}
   ChaseCancleTime: 999
   ChaseTime: 0
-  StunRemainingTime: 3
+  Hansel_Speed: 5
+  SmooooothTIme: 0.1
   _isStuned: 0
   Parti_Rush: {fileID: 1137298723147404832}
   Parti_Strike: {fileID: 6017226890527621912}
@@ -1339,12 +1354,13 @@ MonoBehaviour:
   Isinvincibility: 0
   isAttacked: 1
   PhaseChecker: 1
+  BoxCol: {fileID: 0}
   TimerCount: 5
   m_ForRushP: 30
-  m_ForRushInsSmash: 4
-  m_isDebug: 1
+  m_ForRushInsSmash: 30
+  m_isDebug: 0
   RayDistance: 4
-  RayPlayerDistance: 2
+  RayPlayerDistance: 3
   m_LayMask:
     serializedVersion: 2
     m_Bits: 131072

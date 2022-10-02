@@ -16,7 +16,7 @@ public class Soup : MonoBehaviour
     }
     private void Awake()
     {
-        
+        gameObject.tag = "Untagged";
     }
 
     // Update is called once per frame
@@ -24,21 +24,24 @@ public class Soup : MonoBehaviour
     {
         if(Solid == false)
         {
-            Invoke("DestroySoup", 2f);
+            StartCoroutine(DestroySoup());
+
         }
         else
         {
-            Invoke("DestroySolidSoup", 2f);
+            StartCoroutine(DestroySolidSoup());
         }
 
     }
 
-    public void DestroySoup()
+    public IEnumerator DestroySoup()
     {
+        yield return new WaitForSecondsRealtime(2.0f);
         Soup_Object_Pool.ReturnObject(this);
     }
-    public void DestroySolidSoup()
+    private IEnumerator DestroySolidSoup()
     {
+        yield return new WaitForSecondsRealtime(2.0f);
         SolidFood.transform.position = this.transform.position;
         SolidFood.SetActive(true);
         Soup_Object_Pool.ReturnObject(this);
@@ -48,4 +51,23 @@ public class Soup : MonoBehaviour
     {
 
     }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Ground")
+        {
+            gameObject.GetComponent<BoxCollider>().isTrigger = false;
+
+        }
+
+        if(other.tag == "Boss")
+        {
+            if(SolidFood == true)
+            {
+                gameObject.tag = "BossBuff";
+                Soup_Object_Pool.ReturnObject(this);
+            }
+        }
+    }
+
+
 }

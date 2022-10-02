@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IKnockBack
 {
-    void KnockBack(Vector2 center, Vector3 power);
+    void KnockBack(Vector3 direction);
 }

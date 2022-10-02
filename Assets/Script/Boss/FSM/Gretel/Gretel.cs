@@ -11,19 +11,18 @@ public class Gretel : MonoBehaviour, IEntity
     private bool isDead = false;
 
     public GameObject KnifeObject;
+    public GameObject ProtectiveArea;
 
     #region  KnifeAttack var
-    public float KnifeFollowTime = 5.0f;
-    public float KnifeDownTime = 7.0f;
-    public float KnifefollowSpeed = 20.0f;
-    public float KnifeDownSpeed = 20.0f;
+    public float KnifeDownTime;
+    public float KnifeFollowTime;
+    public float KnifefollowSpeed;
+    public float KnifeDownSpeed;
     public float KnifeAttackCount; //나이프 공격횟수
 
     #endregion
 
     #region  SoupAttack var
-    public float SoupDownSpeed = 10.0f; // 현재 Rigidbody Gravity를 사용중으로 미사용
-    public float SoupSpawnRange = 5.0f;
     public Transform SoupRangePoint1;
     public Transform SoupRangePoint2;
     public int SoupMin = 3;
@@ -34,6 +33,9 @@ public class Gretel : MonoBehaviour, IEntity
     public float SolidProbability;
     #endregion
 
+    #region  SoupAttack var
+    public float HitTime;
+    #endregion
 
     [HideInInspector] public GameObject myTarget;
     [HideInInspector] public GameObject Hansel;
@@ -54,10 +56,8 @@ public class Gretel : MonoBehaviour, IEntity
     // Update is called once per frame
     void Update()
     {
-        if(Hansel.GetComponent<Hansel>().CurrentHP < 30)
-        {
-            Debug.Log("protect");
-        }
+
+
         state.Update();
     }
 

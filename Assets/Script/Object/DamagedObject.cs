@@ -8,15 +8,8 @@ public class DamagedObject : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.tag == "Boss")
-        {
-            return;
-        }
-        else
-        {
-            IEntity entity = other.GetComponent<IEntity>();
-
-            if (entity != null) entity.OnDamage(damage, this.transform.position);
-        }
+        IEntity entity = other.GetComponent<IEntity>();
+        if (entity != null) entity.OnDamage(damage, transform.position);        
     }
- }
+
+}

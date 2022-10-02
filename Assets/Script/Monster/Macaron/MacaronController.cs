@@ -6,7 +6,7 @@ using UnityEngine.AI;
 
 public class MacaronController : MonoBehaviour, IEntity, ICutOff
 {
-    public enum CurrentState { idle, trace, attack}
+    public enum CurrentState { idle, trace, attack,Hit}
 
     [Header("[Stat]")]
     private string Name = "Macaron";    
@@ -33,6 +33,7 @@ public class MacaronController : MonoBehaviour, IEntity, ICutOff
     public bool BounddaryAttack = false;
     private bool PlayerDir = false;  //false => 왼쪽, true => 오른쪽
     public GameObject BodyParts;
+    private bool Possible_Move = true;
 
     void Start()
     {
@@ -63,21 +64,23 @@ public class MacaronController : MonoBehaviour, IEntity, ICutOff
             float dist = Vector3.Distance(playerTransform.position, _transform.position);
             if (Motioning == false)     //현재 모션진행중여부 체크 -> 공격도중 거리에서 멀어져 다른 State가 되더라도 공격모션이 끊기는걸 방지
             {
-
-                if (BounddaryAttack == true) //트리거가 켜지면
+                if (Possible_Move == true)
                 {
-                    if (dist <= attackDist)
+                    if (BounddaryAttack == true) //트리거가 켜지면
                     {
-                        State = CurrentState.attack;
+                        if (dist <= attackDist)
+                        {
+                            State = CurrentState.attack;
+                        }
+                        else if (dist > attackDist)
+                        {
+                            State = CurrentState.trace;
+                        }
                     }
-                    else if (dist > attackDist)
+                    else
                     {
-                        State = CurrentState.trace;
+                        State = CurrentState.idle;
                     }
-                }
-                else
-                {
-                    State = CurrentState.idle;
                 }
             }
             
@@ -87,7 +90,9 @@ public class MacaronController : MonoBehaviour, IEntity, ICutOff
 
     IEnumerator CheckStateForAction()
     {
-        while(!isDead) 
+        yield return new WaitForSeconds(0.2f);
+        float dist = Vector3.Distance(playerTransform.position, _transform.position);
+        while (!isDead) 
         {
             AttackArea.SetActive(false);
             switch (State)
@@ -100,6 +105,9 @@ public class MacaronController : MonoBehaviour, IEntity, ICutOff
                     LookTarget(playerTransform);
                     animator.Play("walk");
                     transform.position = new Vector3(Vector3.MoveTowards(transform.position, playerTransform.position, RunSpeed * Time.deltaTime).x, 0, playerTransform.position.z);
+                    break;
+                case CurrentState.Hit:
+                    Hit();
                     break;
                 case CurrentState.attack:
                     LookTarget(playerTransform);
@@ -137,6 +145,8 @@ public class MacaronController : MonoBehaviour, IEntity, ICutOff
             CutOff();
         }
         CurHP -= damage;
+        State = CurrentState.Hit;
+        Motioning = true;
     }
        public void OnRecovery(int heal)
     {
@@ -158,7 +168,7 @@ public class MacaronController : MonoBehaviour, IEntity, ICutOff
         }
         else if (animator.GetCurrentAnimatorStateInfo(0).IsName("attack") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime <= 0.99f) //50%이하
         {
-            AttackArea.SetActive(false); //첫모션
+            AttackArea.SetActive(false);
         }
         else if (animator.GetCurrentAnimatorStateInfo(0).IsName("attack") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)  //100퍼이상
         {
@@ -166,6 +176,28 @@ public class MacaronController : MonoBehaviour, IEntity, ICutOff
             AttackArea.SetActive(false);
             State = CurrentState.idle;
 
+        }
+
+    }
+    void Hit()
+    {
+        if (DeadMotioning == false)
+        {
+            animator.Play("Hit");
+            Motioning = true;
+            if (animator.GetCurrentAnimatorStateInfo(0).IsName("Hit") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
+            {
+                Motioning = false;
+                Possible_Move = true;
+                if (CurHP <= 0)
+                {
+                    //State = CurrentState.dead;
+                }
+                else
+                {
+                    State = CurrentState.idle;
+                }
+            }
         }
 
     }

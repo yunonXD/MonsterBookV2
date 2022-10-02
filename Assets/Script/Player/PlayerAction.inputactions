@@ -207,6 +207,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "CMD",
+            "id": "425ecbf9-6689-4a8e-a05c-0dcb5301f57c",
+            "actions": [
+                {
+                    "name": "Console",
+                    "type": "Button",
+                    "id": "6d01f257-4319-40c1-812a-ee68b97b6916",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "7b7c915d-33a5-42ba-9f49-fbca163f93a0",
+                    "path": "<Keyboard>/backquote",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Console",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [

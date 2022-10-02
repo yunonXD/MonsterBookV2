@@ -13,11 +13,7 @@ public class SmashCol : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             IEntity entity = other.GetComponent<IEntity>();
-
             if (entity != null) entity.OnDamage(g_Player_To_Damgage, g_Transform.position);
-
         }
-
     }
-
 }

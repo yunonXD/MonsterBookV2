@@ -12,6 +12,8 @@ public class UIController : MonoBehaviour
     [SerializeField] private Transform wireGaegeParent;
     private Image wireGaegeImage;
 
+    [SerializeField] private RectTransform wireAim;
+
 
     private void Awake()
     {
@@ -45,5 +47,10 @@ public class UIController : MonoBehaviour
         if (harf != 0) hpImage[count].fillAmount = 0.5f;
     }
 
+    public void SetWireAim(Vector2 pos =default(Vector2), bool active = false)
+    {
+        wireAim.gameObject.SetActive(active);
+        wireAim.position = Camera.main.WorldToScreenPoint(pos);
+    }   
 
 }

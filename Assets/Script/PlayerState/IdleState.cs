@@ -18,14 +18,16 @@ public class IdleState : IState
         canState.Add(PlayerState.HitState);
         canState.Add(PlayerState.FallState);
         canState.Add(PlayerState.CuttingState);
+        canState.Add(PlayerState.KnockBackState);
     }
 
     public override void OnStateEnter(PlayerController player)
     {
+        
         restTime = 0;
         restBool = false;
         player.state = PlayerState.IdleState;
-        player.ani.Play("Idle");
+        player.ani.Play("Idle");        
     }
 
     public override void OnStateExcute(PlayerController player)

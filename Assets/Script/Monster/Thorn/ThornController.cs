@@ -36,7 +36,8 @@ public class ThornController: MonoBehaviour, IEntity, ICutOff
     private bool Chasing = false;
     private bool DeadMotioning = false;
     public GameObject BodyParts;
-
+    private bool Invinbool = false;
+    private bool CanLook = true;
 
     void Start()
     {
@@ -134,7 +135,6 @@ public class ThornController: MonoBehaviour, IEntity, ICutOff
                     Motioning = true;
                     if (animator.GetCurrentAnimatorStateInfo(0).IsName("Death") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.9f)
                     {
-                        Debug.Log("사망애니종료");
                         Motioning = false;
                         DeadMotioning = false;
                         isDead = true;
@@ -167,13 +167,16 @@ public class ThornController: MonoBehaviour, IEntity, ICutOff
 
     public void OnDamage(int damage, Vector3 pos)
     {
-        if(CheckCutOff())
+        if (Invinbool == true)
         {
-            CutOff();
+            if (CheckCutOff())
+            {
+                CutOff();
+            }
+            CurHP -= damage;
+            State = CurrentState.Hit;
+            Motioning = true;
         }
-        CurHP -= damage;
-        State = CurrentState.Hit;
-        Motioning = true;
 
     }
     public void OnRecovery(int heal)
@@ -182,6 +185,7 @@ public class ThornController: MonoBehaviour, IEntity, ICutOff
     }
     void Attack()
     {
+        CanLook = false;
         Possible_Move = false;
         animator.Play("Attack");
         if (animator.GetCurrentAnimatorStateInfo(0).IsName("Attack") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f)
@@ -190,11 +194,14 @@ public class ThornController: MonoBehaviour, IEntity, ICutOff
             Motioning = false;
             AttackArea.SetActive(false);
             Possible_Move = true; //trace walk상태로 갈수있냐
+            Invinbool = false;
+            CanLook = true;
         }
         if (animator.GetCurrentAnimatorStateInfo(0).IsName("Attack") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.35f)
         {
             Motioning = true;
             AttackArea.SetActive(true);
+            Invinbool = false;
         }
 
         if (animator.GetCurrentAnimatorStateInfo(0).IsName("Attack") && (animator.GetCurrentAnimatorStateInfo(0).normalizedTime <= 0.35f ||
@@ -202,7 +209,8 @@ public class ThornController: MonoBehaviour, IEntity, ICutOff
         {
             Motioning = false;
             AttackArea.SetActive(false);
-            
+            Invinbool = true;
+
         }
     }
     void Hit()
@@ -226,21 +234,20 @@ public class ThornController: MonoBehaviour, IEntity, ICutOff
                 }
             }
         
-        else
-        {
-            State = CurrentState.dead;
-        }
 
     }
     void LookTarget(Transform Target)
     {
-        Vector3 dir = Target.position - this.transform.position;
-        Vector3 dirXZ = new Vector3(dir.x, 0f, dir.z);
+        if (CanLook == true)
+        {
+            Vector3 dir = Target.position - this.transform.position;
+            Vector3 dirXZ = new Vector3(dir.x, 0f, dir.z);
 
-        if (dirXZ == Vector3.zero)
-            return;
+            if (dirXZ == Vector3.zero)
+                return;
 
-        this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, Quaternion.LookRotation(dirXZ), 300 * Time.deltaTime);
+            this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, Quaternion.LookRotation(dirXZ), 300 * Time.deltaTime);
+        }
     }
     void Patrol()
     {

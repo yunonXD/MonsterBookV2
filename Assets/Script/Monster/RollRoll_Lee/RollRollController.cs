@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class RollRollController : MonoBehaviour, IEntity, ICutOff
 {
-    public enum CurrentState { idle, run, walk }
+    public enum CurrentState { idle, run, walk , Hit}
 
     [Header("[Stat]")]
     private string Name = "RollRoll";
@@ -30,6 +30,7 @@ public class RollRollController : MonoBehaviour, IEntity, ICutOff
     public bool BounddaryAttack = false;
     private bool PlayerDir = false;  //false => 왼쪽, true => 오른쪽
     public GameObject BodyParts;
+    private bool Possible_Move = true;
 
     void Start()
     {
@@ -59,12 +60,16 @@ public class RollRollController : MonoBehaviour, IEntity, ICutOff
         {
             yield return new WaitForSeconds(0.2f);
             float dist = Vector3.Distance(playerTransform.position, _transform.position);
-
-           if (BounddaryAttack == true)
-           {
-               State = CurrentState.run;
-           }
-
+            if (Motioning == false)     //현재 모션진행중여부 체크 -> 공격도중 거리에서 멀어져 다른 State가 되더라도 공격모션이 끊기는걸 방지
+            {
+                if (Possible_Move == true)
+                {
+                    if (BounddaryAttack == true)
+                    {
+                        State = CurrentState.run;
+                    }
+                }
+            }
         }
 
     }
@@ -82,6 +87,9 @@ public class RollRollController : MonoBehaviour, IEntity, ICutOff
                 case CurrentState.run:
                     animator.Play("run");
                     RunAway();
+                    break;
+                case CurrentState.Hit:
+                    Hit();
                     break;
                 case CurrentState.idle:
                     animator.Play("idle");
@@ -105,12 +113,37 @@ public class RollRollController : MonoBehaviour, IEntity, ICutOff
         {
             CutOff();
         }
+
         CurHP -= damage;
         BounddaryAttack = true;
+        State = CurrentState.Hit;
+        Motioning = true;
     }
     public void OnRecovery(int heal)
     {
         
+    }
+    void Hit()
+    {
+        if (DeadMotioning == false)
+        {
+            animator.Play("Hit");
+            Motioning = true;
+            if (animator.GetCurrentAnimatorStateInfo(0).IsName("Hit") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
+            {
+                Motioning = false;
+                Possible_Move = true;
+                if (CurHP <= 0)
+                {
+                    //State = CurrentState.dead;
+                }
+                else
+                {
+                    State = CurrentState.idle;
+                }
+            }
+        }
+
     }
 
     public bool CheckCutOff()
@@ -137,7 +170,8 @@ public class RollRollController : MonoBehaviour, IEntity, ICutOff
         if (Patrollook == false) //PatrolPoint1 -> PatrolPoint2로 이동
         {
             transform.position = Vector3.MoveTowards(transform.position, PatrolPoint2.transform.position, WalkSpeed * Time.deltaTime);
-            LookTarget(PatrolPoint2.transform);
+            //LookTarget(PatrolPoint2.transform);
+            LookTarget(true);
             if (transform.position.x == PatrolPoint2.transform.position.x)
             {
                 State = CurrentState.idle;
@@ -148,7 +182,8 @@ public class RollRollController : MonoBehaviour, IEntity, ICutOff
         else                    //PatrolPoint1 -> PatrolPoint2로 이동
         {
             transform.position = Vector3.MoveTowards(transform.position, PatrolPoint1.transform.position, WalkSpeed * Time.deltaTime);
-            LookTarget(PatrolPoint1.transform);
+            //LookTarget(PatrolPoint1.transform);
+            LookTarget(false);
             if (transform.position.x == PatrolPoint1.transform.position.x)
             {
                 State = CurrentState.idle;
@@ -192,12 +227,10 @@ public class RollRollController : MonoBehaviour, IEntity, ICutOff
 
             if (dir == true)
             {
-                Debug.Log("왼쪽");
                 this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, Quaternion.LookRotation(DirR), 600 * Time.deltaTime);
             }
             else if(dir == false)
             {
-                Debug.Log("오른쪽");
                 this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, Quaternion.LookRotation(DirL), 600 * Time.deltaTime);
             }
 

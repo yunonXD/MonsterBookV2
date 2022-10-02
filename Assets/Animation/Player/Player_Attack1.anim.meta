@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:MonsterBook/Assets/Animation/Player/Player_Attack1.anim.meta
+guid: 62bf4ef59c063b149b8d63a104fde0b0
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+========
+guid: 52688400c1a76594ba573958c89125ab
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+>>>>>>>> origin/Monster&Boss:MonsterBook/Assets/Script/Monster/Macaron/MacaronFSM.controller.meta
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

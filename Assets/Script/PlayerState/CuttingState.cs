@@ -5,10 +5,11 @@ using UnityEngine;
 public class CuttingState : IState
 {
     private void Awake()
-    {
-        canState.Add(PlayerState.IdleState);        
+    {         
         canState.Add(PlayerState.HitState);
         canState.Add(PlayerState.DeadState);
+        canState.Add(PlayerState.CuttingReturnState);
+        canState.Add(PlayerState.KnockBackState);
     }
 
     public override void OnStateEnter(PlayerController player)
@@ -21,7 +22,7 @@ public class CuttingState : IState
     {
         if (player.ani.GetCurrentAnimatorStateInfo(0).IsName("CutAttack") && player.ani.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
         {
-            player.ChangeState(PlayerState.IdleState);
+            player.ChangeState(PlayerState.CuttingReturnState);
         }
     }
 

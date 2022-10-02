@@ -10,11 +10,12 @@ TagManager:
   - WireObject
   - UIController
   - Wall
+  - Ground
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - DarkArea
   - Water
   - UI
   - 
@@ -25,7 +26,7 @@ TagManager:
   - Boss
   - 
   - PlayerAttack
-  - 
+  - PlayerDash
   - 
   - Ground
   - Wall

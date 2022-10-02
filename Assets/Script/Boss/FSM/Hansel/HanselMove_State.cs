@@ -11,7 +11,11 @@ public class HanselMove_State : FSM_State<Hansel>
     {
         get { return instance; }
     }
-    
+    private Vector3 m_OldPosition;
+    private Vector3 m_CurrentPosition;
+
+    private float m_SpeedBoi = 0;
+
     static HanselMove_State() { }
     private HanselMove_State() { }
 
@@ -23,6 +27,8 @@ public class HanselMove_State : FSM_State<Hansel>
         {
             return;
         }
+        _Hansel.rb.velocity = Vector3.zero;
+        m_OldPosition = _Hansel.transform.position;
     }
 
 
@@ -35,43 +41,55 @@ public class HanselMove_State : FSM_State<Hansel>
             _Hansel.ChangeState(HanselDie_State.Instance);
         }
 
-        if (!_Hansel.CheckRange() && _Hansel.isRushing == false && _Hansel._isStuned == false && _Hansel.isBelly == false)
+        if (!_Hansel.CheckRange() && !_Hansel.isRushing && !_Hansel._isStuned && !_Hansel.isBelly &&
+            !_Hansel.isSmash) 
         {
             //추적시간 넘으면 Tartget Lost
             _Hansel.ChaseTime += Time.deltaTime;
             if (_Hansel.ChaseTime >= _Hansel.ChaseCancleTime)
             {
-                //_Hansel.ChangeState(Attack_State.Instance);
-                //_Hansel.myTarget = null;
                 _Hansel.ChaseTime = 0.0f;
                 return;
             }
 
-            #region Nouse
+            #region TrackingPlayer
 
-            //Rotation Angle culcurate
-            //Vector3 Dir = _Hansel.myTarget.transform.position - _Hansel.transform.position;
-            //Vector3 NorDir = Dir.normalized;
-            //Quaternion angle = Quaternion.LookRotation(NorDir);
+            #region Lookat
+            Vector3 lookatVec = (new Vector3(_Hansel.myTarget.transform.position.x, 0, _Hansel.myTarget.transform.position.z) - new Vector3(_Hansel.transform.position.x,
+                0, _Hansel.transform.position.z)).normalized;
+            //_Hansel.transform.rotation = Quaternion.Lerp(_Hansel.transform.rotation, Quaternion.LookRotation(lookatVec), Time.deltaTime * 10);
 
-            //_Hansel.transform.rotation = angle;
+            Vector3 DirLook = (new Vector3(_Hansel.myTarget.transform.position.x, 0, _Hansel.myTarget.transform.position.z));
 
-            //Movement
-            //Vector3 Pos = _Hansel.transform.position;
-
-            //Pos += _Hansel.transform.forward * Time.deltaTime * _Hansel.MoveSpeed;
-            //_Hansel.transform.position = Pos;
+            _Hansel.transform.LookAt(DirLook);
 
             #endregion
 
-            #region TrackingPlayer
+            #region Movement
+            Vector3 m_Dir = new Vector3(_Hansel.myTarget.transform.position.x -
+                _Hansel.transform.position.x, 0,
+                _Hansel.myTarget.transform.position.z - _Hansel.transform.position.z).normalized;
+            
+            var m_fMaxSpeed = _Hansel.Hansel_Speed;
+            var m_currentSpeed = m_fMaxSpeed;
+            var Multiple = m_Dir * (m_currentSpeed) * Time.fixedDeltaTime;
 
-            Vector3 Dir = new Vector3(_Hansel.myTarget.transform.position.x, _Hansel.transform.position.y, _Hansel.myTarget.transform.position.z);
-            _Hansel.transform.LookAt(Dir);
+            _Hansel.rb.MovePosition(_Hansel.transform.position + Multiple);
+            #endregion
 
-            _Hansel.transform.position = Vector3.Lerp(_Hansel.transform.position, Dir, Time.deltaTime);
+            #region velocity cul
+            m_CurrentPosition = _Hansel.transform.position;
+            var dis = m_CurrentPosition - m_OldPosition;
+            var distance = Mathf.Sqrt(Mathf.Pow(dis.x , 2 ) + 0 + Mathf.Pow(dis.z , 2));
+            var velocity = distance / Time.deltaTime;
+            m_OldPosition = m_CurrentPosition;
 
-            _Hansel.Ani.SetFloat("H_Walk", 1);
+
+            m_SpeedBoi = Mathf.SmoothDamp(0, 1.0f, ref velocity, _Hansel.SmooooothTIme * Time.fixedDeltaTime);
+            //Debug.Log(m_SpeedBoi);
+            _Hansel.Ani.SetFloat("H_Walk", m_SpeedBoi);
+            #endregion
+
 
             #endregion
 
@@ -86,7 +104,7 @@ public class HanselMove_State : FSM_State<Hansel>
 
     public override void ExitState(Hansel _Hansel)
     {
-
+        _Hansel.rb.velocity = Vector3.zero;
         _Hansel.Ani.SetFloat("H_Walk", 0);
 #if DEBUG
         //Debug.Log("Move_State 종료.");

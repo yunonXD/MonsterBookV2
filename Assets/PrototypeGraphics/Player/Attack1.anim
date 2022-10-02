@@ -3710,8 +3710,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: {x: 0.0000000062864265, y: 0.000000001862645, z: 0.000000014901159,
-          w: 1}
+        value: {x: 0.0000000062864265, y: 0.000000001862645, z: 0.000000014901159, w: 1}
         inSlope: {x: 0, y: 0, z: 0, w: 0}
         outSlope: {x: 0, y: 0, z: 0, w: 0}
         tangentMode: 0
@@ -3720,8 +3719,7 @@ AnimationClip:
         outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334, w: 0.33333334}
       - serializedVersion: 3
         time: 0.6666667
-        value: {x: 0.0000000062864265, y: 0.000000001862645, z: 0.000000014901159,
-          w: 1}
+        value: {x: 0.0000000062864265, y: 0.000000001862645, z: 0.000000014901159, w: 1}
         inSlope: {x: 0, y: 0, z: 0, w: 0}
         outSlope: {x: 0, y: 0, z: 0, w: 0}
         tangentMode: 0
@@ -58092,17 +58090,17 @@ AnimationClip:
     functionName: AttackMove
     data: 
     objectReferenceParameter: {fileID: 0}
-    floatParameter: 7
+    floatParameter: 6
     intParameter: 0
     messageOptions: 0
-  - time: 0.26666668
+  - time: 0.3
     functionName: AttackBoxOn
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 0.53333336
+  - time: 0.46666667
     functionName: AttackBoxOff
     data: 
     objectReferenceParameter: {fileID: 0}

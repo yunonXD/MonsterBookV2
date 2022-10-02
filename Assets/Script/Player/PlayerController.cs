@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEngine.SceneManagement;
-using UnityEngine.Playables;
 
 public enum PlayerState
 {
@@ -21,6 +20,9 @@ public enum PlayerState
     FallState,
     HitState,
     CuttingState,
+    CuttingReturnState,
+    LandState,
+    KnockBackState,
 }
 
 [Serializable]
@@ -32,13 +34,13 @@ public class SomeComparer : IEqualityComparer<PlayerState>
     int IEqualityComparer<PlayerState>.GetHashCode(PlayerState obj) { return ((int)obj).GetHashCode(); }
 }
 
-public class PlayerController : MonoBehaviour, IEntity
+public class PlayerController : MonoBehaviour, IEntity, IKnockBack
 {
     #region Component
     [HideInInspector] public Rigidbody rigid;
     [HideInInspector] public Animator ani;
     public CapsuleCollider collid { get; private set; }
-    public InputManager input { get; private set; }
+    public InputManager input { get;  set; }
     [HideInInspector] public UIController ui;
     #endregion
 
@@ -66,6 +68,7 @@ public class PlayerController : MonoBehaviour, IEntity
     public float jumpForce = 12;   
     public float dashForce = 20;
     public float wireForce;
+    public int attackCount;
 
     public float walkVector { get; set; }
 
@@ -77,6 +80,7 @@ public class PlayerController : MonoBehaviour, IEntity
     public LayerMask wallLayer;
     public LayerMask groundLayer;
     public LayerMask wireLayer;
+    [SerializeField] private LayerMask monsterLayer;
     public Vector2 lookVector { get; set; }
 
     public WireObject wireObject { get; set; }
@@ -103,6 +107,7 @@ public class PlayerController : MonoBehaviour, IEntity
     #region Initialize
     private void Awake()
     {
+        input = GetComponent<InputManager>();
         rigid = GetComponent<Rigidbody>();
         ani = GetComponent<Animator>();
         collid = GetComponent<CapsuleCollider>();
@@ -137,7 +142,7 @@ public class PlayerController : MonoBehaviour, IEntity
         attackWeapon[i].Collider(true); 
     }
 
-    private void AttackBoxOff(int i)
+    public void AttackBoxOff(int i)
     {
         attackWeapon[i].Collider(false);
     }
@@ -162,17 +167,28 @@ public class PlayerController : MonoBehaviour, IEntity
         particle[name].Play();
     }
 
+    private void SetIdle()
+    {
+        if (state != PlayerState.IdleState) ChangeState(PlayerState.IdleState);
+    }
+
+    private void ShotWire()
+    {
+        wireObject.Shot(wireStart.position, new Vector3(wireTarget.x, wireTarget.y, wireTarget.z));
+        line.enabled = true;
+    }
+
     #endregion
 
     public void ChangeState(PlayerState next)
     {
-        if (!stateDic.ContainsKey(next) || !curState.CheckState(next)) return;        
+        if (!stateDic.ContainsKey(next) || !curState.CheckState(next)) return;
         prevState = curState;
         prevState.OnStateExit(this);
         stateDic[next].OnStateEnter(this);
         curState = stateDic[next];
         //Debug.Log("ChangeState " + state.ToString() + " -> " + next.ToString());
-    }    
+    }
 
     private void FixedUpdate()
     {
@@ -182,10 +198,23 @@ public class PlayerController : MonoBehaviour, IEntity
         curState.OnStateExcute(this);
     }
 
+    #region Setter
     public void SetWalkVector(float value)
     {
         walkVector = value > 0 && value != 0 ? 1 : -1;
     }
+
+    public void SetTimeScale(float speed)
+    {
+        gameSpeed = speed;
+    }
+
+    public void SetChange()
+    {
+        CameraController.RotateCameraView(new Vector3(0, -90));
+    }
+
+    #endregion
 
     #region Getter
     public PlayerState GetCurState() { return state; }
@@ -196,12 +225,13 @@ public class PlayerController : MonoBehaviour, IEntity
 
     #endregion
 
-    #region Entity
+    #region Interface
     public void OnDamage(int damage, Vector3 pos)
     {
         if (invinBool) return;
-        transform.LookAt(new Vector3(pos.x, transform.position.y));
-        lookVector = transform.eulerAngles.y == 90 ? Vector3.right : Vector3.left;
+        var look = pos.x > transform.position.x ? 1 : -1;
+        transform.localScale = new Vector3(2, 2, 2 * look);
+        lookVector = new Vector2(look, 0);
         ChangeState(PlayerState.HitState);
         curHP -= damage;
         if (curHP <= 0) curHP = 0;
@@ -211,6 +241,17 @@ public class PlayerController : MonoBehaviour, IEntity
     public void OnRecovery(int heal)
     {
 
+    }
+
+    public void KnockBack(Vector3 direction)
+    {
+        if (state == PlayerState.KnockBackState) return;
+        ChangeState(PlayerState.KnockBackState);
+        rigid.velocity = Vector3.zero;
+        var look = direction.x < 0 ? 1 : -1;
+        lookVector = new Vector2(look, 0);
+        transform.localScale = new Vector3(2, 2, 2 * look);
+        rigid.AddForce(direction, ForceMode.Impulse);        
     }
 
     private void PlayerInitialize()
@@ -226,18 +267,20 @@ public class PlayerController : MonoBehaviour, IEntity
     #region Check Func
     public void CheckGround()
     {
-        isGround = Physics.BoxCast(collid.bounds.center, new Vector3(0.3f, 0.04f, 0.5f), -transform.up, Quaternion.identity, collid.height, groundLayer);             
+        isGround = Physics.BoxCast(collid.bounds.center, new Vector3(0.35f, 0.5f, 0.5f), -transform.up, Quaternion.identity, collid.height, groundLayer);             
     }
 
     public bool CheckAttack()
     {
-        Collider[] target = Physics.OverlapBox(transform.position + new Vector3(lookVector.x * 1.5f, 0), new Vector3(3, 1.5f, 1), Quaternion.identity);
+        RaycastHit[] target = Physics.BoxCastAll(transform.position, new Vector3(3, 1.5f, 1), lookVector, Quaternion.identity, 1.5f, wireLayer);
+
+        //Collider[] target = Physics.OverlapBox(transform.position + new Vector3(lookVector.x * 1.5f, 0), new Vector3(3, 1.5f, 1), Quaternion.identity);
 
         if (target.Length == 0) return false;
 
         for (int i = 0; i < target.Length; i++)
         {
-            ICutOff cut = target[i].GetComponent<ICutOff>();
+            ICutOff cut = target[i].collider.GetComponent<ICutOff>();
 
             if (cut != null)
             {
@@ -247,17 +290,26 @@ public class PlayerController : MonoBehaviour, IEntity
         return false;
     }
 
-    #endregion
+    public bool CheckWall()
+    {
+        return !Physics.BoxCast(collid.bounds.center, new Vector3(0.2f, 1.1f, 0.5f), new Vector3(lookVector.x, 0), Quaternion.identity, collid.radius * 2, wallLayer);
+    }
 
+    public bool CheckMonster()
+    {
+        return Physics.BoxCast(collid.bounds.center, new Vector3(0.4f, 1.1f, 0.5f), new Vector3(lookVector.x, 0), Quaternion.identity, collid.radius * 2, monsterLayer);
+    }
+
+    #endregion    
 
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
         if (Application.isPlaying)
         {
-            Gizmos.DrawWireCube(collid.bounds.center + new Vector3(0, -collid.height), new Vector3(0.6f,0.08f,1f));
+            Gizmos.DrawWireCube(collid.bounds.center + new Vector3(0, -collid.height), new Vector3(0.7f,0.1f,1f));
             Gizmos.color = Color.yellow;
-            Gizmos.DrawWireCube(collid.bounds.center + new Vector3(lookVector.x * collid.radius * 2, 0), new Vector3(0.1f,2.4f,1f));
+            Gizmos.DrawWireCube(collid.bounds.center + new Vector3(lookVector.x * collid.radius * 2, 0), new Vector3(0.8f,2.2f,1f));
             Gizmos.color = Color.blue;
             Gizmos.DrawWireCube(collid.bounds.center + drawPos, drawSize);
         }

@@ -32,6 +32,8 @@ public class InputManager : MonoBehaviour
         action.InGame.SpecialAttack.started += val => player.ChangeState(PlayerState.WireSearchState);
         action.InGame.SpecialAttack.canceled += val => Wire();
 
+        action.CMD.Console.started += val => Console();
+
     }
 
     private void OnEnable()
@@ -44,10 +46,18 @@ public class InputManager : MonoBehaviour
         action.Disable();
     }
 
-    private void StartWalk(float value)
+    private void Console()
     {
-        player.ChangeState(PlayerState.WalkState);
-        player.walkVector = value;
+        var value = !GameManager.GetConsoleEnable();
+        GameManager.CallCommandWindow(value);
+        if (value) action.InGame.Disable();
+        else action.InGame.Enable();        
+    }
+
+    public void SetInputAction(bool value)
+    {
+        if (value) action.Enable();
+        else action.Disable();
     }
 
     private void EndWalk()
@@ -57,16 +67,15 @@ public class InputManager : MonoBehaviour
     }
 
     private void Attack()
-    {
-        if (player.CheckAttack()) player.ChangeState(PlayerState.CuttingState);
-        else if (!prevInputAttack) StartCoroutine(InputAttackRoutine());
+    {        
+        if (!prevInputAttack) StartCoroutine(InputAttackRoutine());
         else prevCurTime = 0;
     }
 
     private void Wire()
     {
         if (player.wireTarget != Vector3.zero) player.ChangeState(PlayerState.WireThrowState);
-        else player.ChangeState(PlayerState.IdleState);
+        else player.ChangeState(PlayerState.IdleState);        
     }
 
     private IEnumerator InputAttackRoutine()

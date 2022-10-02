@@ -10,19 +10,17 @@ public class WireThrowState : IState
     {
         canState.Add(PlayerState.WireState);
         canState.Add(PlayerState.DeadState);
-        canState.Add(PlayerState.HitState);        
+        canState.Add(PlayerState.HitState);
+        canState.Add(PlayerState.KnockBackState);
     }
 
     public override void OnStateEnter(PlayerController player)
     {
         time = 0;
         player.state = PlayerState.WireThrowState;
-        player.ani.Play("Idle");
+        player.ani.Play("WireThrow");
 
-        player.ParticlePlay("ThrowWire");
-        
-        player.wireObject.Shot(player.wireStart.position, new Vector3(player.wireTarget.x, player.wireTarget.y + 0.5f, player.wireTarget.z));
-        player.line.enabled = true;                
+        player.ParticlePlay("ThrowWire");                                      
     }
 
     public override void OnStateExcute(PlayerController player)

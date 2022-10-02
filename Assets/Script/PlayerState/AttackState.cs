@@ -7,40 +7,41 @@ public class AttackState : IState
 {    
     private float attackTime;
     private bool attackIng;
-    private float attackResetTime = 3;
-    private int attackCount;    
+    private float attackResetTime = 1.5f;    
 
 
     private void Awake()
     {
         canState.Add(PlayerState.IdleState);
-        canState.Add(PlayerState.HitState);        
+        canState.Add(PlayerState.HitState);
+        canState.Add(PlayerState.KnockBackState);
+        canState.Add(PlayerState.DeadState);
         canState.Add(PlayerState.AttackReturnState);
     }
 
     public override void OnStateEnter(PlayerController player)
-    {        
+    {
+        attackTime = 0;
         player.state = PlayerState.AttackState;
         player.rigid.velocity = Vector3.zero;
-        player.ani.Play("Attack" + attackCount);      
+        player.ani.Play("Attack" + player.attackCount);
     }
 
     public override void OnStateExcute(PlayerController player)
     {
-        if (player.ani.GetCurrentAnimatorStateInfo(0).IsName("Attack"+ attackCount) && player.ani.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
-        {
-            if (attackCount == 2) player.ChangeState(PlayerState.IdleState);
-            else player.ChangeState(PlayerState.AttackReturnState);
+        if (player.ani.GetCurrentAnimatorStateInfo(0).IsName("Attack"+ player.attackCount) && player.ani.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
+        {            
+            player.ChangeState(PlayerState.AttackReturnState);
         }        
     }
 
     public override void OnStateExit(PlayerController player)
     {
-        if (attackCount == 0 && !attackIng) StartCoroutine(ResetRoutine(player));
+        if (player.attackCount == 0 && !attackIng) StartCoroutine(ResetRoutine(player));
         else if (attackIng) attackTime = 0;
-        attackCount++;
-        if (attackCount > 2) attackCount = 0;
-        player.ani.SetInteger("AttackType", attackCount);
+        player.attackCount++;
+        if (player.attackCount > 2) player.attackCount = 0;
+        player.AttackBoxOff(0);
     }
 
     private IEnumerator ResetRoutine(PlayerController player)
@@ -54,7 +55,6 @@ public class AttackState : IState
             yield return new WaitForFixedUpdate();
         }
         attackIng = false;
-        attackCount = 0;
-        player.ani.SetInteger("AttackType", attackCount);
+        player.attackCount = 0;        
     }
 }

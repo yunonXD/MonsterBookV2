@@ -45,32 +45,27 @@ public class Knife_Attack_State : FSM_State<Gretel>
 
         if (_Gretel.myTarget)  //타겟확인
         {
-            Debug.Log("AttackState");
             if (true) //공격쿨타임 확인용 현제 1회만 공격하기떄문에 미사용
             {
                 if (m_AttackTimer <= _Gretel.KnifeFollowTime && KnifeAttack == false) //5초동안 쫓아다님
                 {
                     if (cutCount == _Gretel.KnifeAttackCount)
                     {
-                        
                         _Gretel.ChangeState(Soup_Attack_State.Instance);
                     }
                     else
                     {
-                        Debug.Log("나이프트래킹");
                         KnifeMove(_Gretel);
                     }
                 }
 
-                else if (m_AttackTimer <= _Gretel.KnifeDownTime && KnifeAttack == false)  //2초 이후에는 나이프가 떨어짐
+                else if (m_AttackTimer >= _Gretel.KnifeFollowTime && KnifeAttack == false)  
                 {
-                    Debug.Log("나이프다운");
                     KnifeDown(_Gretel);
                 }   
 
                 if(KnifeAttack == true)
                 {
-                    Debug.Log("나이프업");
                     KnifeUp(_Gretel);
                 }
 
@@ -78,10 +73,8 @@ public class Knife_Attack_State : FSM_State<Gretel>
                 {
                     //나이프공격 종료 조건필요
                     KnifeAttack = true;
-                    Debug.Log(cutCount);
 
                        cutCount++;
-                        Debug.Log(cutCount);
                         m_AttackTimer = 0;
                        AttackTimer = false;
 
@@ -90,6 +83,7 @@ public class Knife_Attack_State : FSM_State<Gretel>
 
                 if (_Gretel.KnifeObject.transform.position.y >= 12.4f && AttackTimer == false)
                 {
+
                     KnifeAttack = false;
                     AttackTimer = true;
                 }
@@ -101,6 +95,7 @@ public class Knife_Attack_State : FSM_State<Gretel>
 
     public override void ExitState(Gretel _Gretel)
     {
+        KnifeAttack = false;
         _Gretel.KnifeObject.SetActive(false);
     }
 
@@ -109,7 +104,6 @@ public class Knife_Attack_State : FSM_State<Gretel>
         _Gretel.KnifeObject.transform.position = new Vector3(_Gretel.myTarget.transform.position.x,
                                                    _Gretel.myTarget.transform.position.y + 10,
                                                    _Gretel.myTarget.transform.position.z);
-        _Gretel.KnifeObject.transform.position = new Vector3(0, 13, -9);
         _Gretel.KnifeObject.SetActive(true);
         cutCount = 0;
         m_AttackTimer = 0f;
@@ -128,7 +122,6 @@ public class Knife_Attack_State : FSM_State<Gretel>
 
     void KnifeUp(Gretel _Gretel)
     {
-        Debug.Log("나이프 업");
         _Gretel.KnifeObject.transform.position = new Vector3(_Gretel.KnifeObject.transform.position.x,
                         Vector3.MoveTowards(_Gretel.KnifeObject.transform.position, new Vector3(0, 13, 0), _Gretel.KnifeDownSpeed * Time.deltaTime).y,
                         _Gretel.KnifeObject.transform.position.z);

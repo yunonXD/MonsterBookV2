@@ -18,8 +18,6 @@ public class Soup_Attack_State : FSM_State<Gretel>
     public bool SolidFoodCounder = false;
 
 
-
-
     public override void EnterState(Gretel _Gretel)
     {
         m_AttackTimer = 0f;
@@ -33,8 +31,6 @@ public class Soup_Attack_State : FSM_State<Gretel>
 
         Soupcount = Random.Range(_Gretel.SoupMin, _Gretel.SoupMax);
         SoupInterval = (_Gretel.SoupRangePoint2.position.x - _Gretel.SoupRangePoint1.position.x) / Soupcount;
-        Debug.LogError("생성 갯수 : " + Soupcount);
-        Debug.LogError("생성 간격 : " + SoupInterval);
 
         return;
     }
@@ -50,14 +46,12 @@ public class Soup_Attack_State : FSM_State<Gretel>
             if (SolidFoodCounder == false)
             {
                 int x = Random.Range(1, 101);
-                Debug.LogError(x);
                 if (Soupcount == (SpownCounter + 1))
                 {
                     _Gretel.SoupObjectPool.GetComponent<Soup_Object_Pool>().MakeSolidSoup(new Vector3(xpos,
                     _Gretel.SoupRangePoint1.position.y,
                     _Gretel.SoupRangePoint1.position.z));
                     SolidFoodCounder = true;
-                    Debug.LogError("확정당첨");
                 }
 
                 else if (x <= _Gretel.SolidProbability)
@@ -66,7 +60,6 @@ public class Soup_Attack_State : FSM_State<Gretel>
                     _Gretel.SoupRangePoint1.position.y,
                     _Gretel.SoupRangePoint1.position.z));
                     SolidFoodCounder = true;
-                    Debug.LogError("확률당첨");
 
                 }
                 else
@@ -74,7 +67,6 @@ public class Soup_Attack_State : FSM_State<Gretel>
                     _Gretel.SoupObjectPool.GetComponent<Soup_Object_Pool>().MakeSoup(new Vector3(xpos,
                     _Gretel.SoupRangePoint1.position.y,
                     _Gretel.SoupRangePoint1.position.z));
-                    Debug.LogError("아직 안나옴");
                 }
  
             }
@@ -83,15 +75,25 @@ public class Soup_Attack_State : FSM_State<Gretel>
                 _Gretel.SoupObjectPool.GetComponent<Soup_Object_Pool>().MakeSoup(new Vector3(xpos,
             _Gretel.SoupRangePoint1.position.y,
             _Gretel.SoupRangePoint1.position.z));
-                Debug.LogError("이미 나옴");
             }
+
             
             SpownCounter++;
             m_AttackTimer = 0;
 
             if (SpownCounter == Soupcount)   //생성한 스프와 랜덤 스프갯수가 같아지면 스테이트 종료
             {
-                _Gretel.ChangeState(Knife_Attack_State.Instance);
+                if (_Gretel.Hansel.GetComponent<Hansel>().CurrentHP <= 0 && _Gretel.Hansel.GetComponent<Hansel>().PhaseChecker == 2)
+                {
+                    _Gretel.Hansel.GetComponent<Hansel>().Isinvincibility = true;
+                    _Gretel.ProtectiveArea.SetActive(true);
+                    _Gretel.ChangeState(Protect_State.Instance);
+                }
+                else
+                {
+                    _Gretel.ChangeState(Knife_Attack_State.Instance);
+                }
+
             }
         }
 

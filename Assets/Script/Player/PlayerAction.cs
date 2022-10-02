@@ -229,6 +229,34 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""CMD"",
+            ""id"": ""425ecbf9-6689-4a8e-a05c-0dcb5301f57c"",
+            ""actions"": [
+                {
+                    ""name"": ""Console"",
+                    ""type"": ""Button"",
+                    ""id"": ""6d01f257-4319-40c1-812a-ee68b97b6916"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""7b7c915d-33a5-42ba-9f49-fbca163f93a0"",
+                    ""path"": ""<Keyboard>/backquote"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Console"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -257,6 +285,9 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
         m_InGame_Jump = m_InGame.FindAction("Jump", throwIfNotFound: true);
         m_InGame_Dash = m_InGame.FindAction("Dash", throwIfNotFound: true);
         m_InGame_SpecialAttack = m_InGame.FindAction("Special Attack", throwIfNotFound: true);
+        // CMD
+        m_CMD = asset.FindActionMap("CMD", throwIfNotFound: true);
+        m_CMD_Console = m_CMD.FindAction("Console", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -377,6 +408,39 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
         }
     }
     public InGameActions @InGame => new InGameActions(this);
+
+    // CMD
+    private readonly InputActionMap m_CMD;
+    private ICMDActions m_CMDActionsCallbackInterface;
+    private readonly InputAction m_CMD_Console;
+    public struct CMDActions
+    {
+        private @PlayerAction m_Wrapper;
+        public CMDActions(@PlayerAction wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Console => m_Wrapper.m_CMD_Console;
+        public InputActionMap Get() { return m_Wrapper.m_CMD; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(CMDActions set) { return set.Get(); }
+        public void SetCallbacks(ICMDActions instance)
+        {
+            if (m_Wrapper.m_CMDActionsCallbackInterface != null)
+            {
+                @Console.started -= m_Wrapper.m_CMDActionsCallbackInterface.OnConsole;
+                @Console.performed -= m_Wrapper.m_CMDActionsCallbackInterface.OnConsole;
+                @Console.canceled -= m_Wrapper.m_CMDActionsCallbackInterface.OnConsole;
+            }
+            m_Wrapper.m_CMDActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Console.started += instance.OnConsole;
+                @Console.performed += instance.OnConsole;
+                @Console.canceled += instance.OnConsole;
+            }
+        }
+    }
+    public CMDActions @CMD => new CMDActions(this);
     private int m_GamePadSchemeIndex = -1;
     public InputControlScheme GamePadScheme
     {
@@ -393,5 +457,9 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
         void OnJump(InputAction.CallbackContext context);
         void OnDash(InputAction.CallbackContext context);
         void OnSpecialAttack(InputAction.CallbackContext context);
+    }
+    public interface ICMDActions
+    {
+        void OnConsole(InputAction.CallbackContext context);
     }
 }

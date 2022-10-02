@@ -9,11 +9,13 @@ public class WireState : IState
         canState.Add(PlayerState.IdleState);
         canState.Add(PlayerState.WireAttackState);
         canState.Add(PlayerState.HitState);
+        canState.Add(PlayerState.KnockBackState);
     }
 
     public override void OnStateEnter(PlayerController player)
     {
         player.state = PlayerState.WireState;
+        player.ani.Play("WireMove");
         player.rigid.velocity = Vector3.zero;
         player.rigid.useGravity = false;
     }

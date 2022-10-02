@@ -47,15 +47,8 @@ public class WireObject : MonoBehaviour
         rigid.velocity = Vector3.zero;
         niddleObj.SetActive(false);
         hitEffect.Play();
-    }
-
-    //private void OnTriggerEnter(Collider other)
-    //{
-    //    if (((1 << other.gameObject.layer) & targetLayer) != 0)
-    //    {
-    //        hit = true;
-    //        hitEffect.Play();            
-    //    }
-    //}
+    }   
+    
+    public bool GetHit() { return hit; }
 
 }

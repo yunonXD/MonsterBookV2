@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR;
 
 public class Stun_State : FSM_State<Hansel>
 {
@@ -25,28 +26,43 @@ public class Stun_State : FSM_State<Hansel>
         {
             return;
         }
+        _Hansel.Isinvincibility = true;
+        _Hansel._isStuned = true;
         _Hansel.Parti_Stun.Play();
         m_StunTimer = 0;
+        Debug.Log("Hansel stuned... ");
 
     }
 
     public override void UpdateState(Hansel _Hansel)
     {
-        Debug.Log("Hansel stuned... ");
-        _Hansel._isStuned = true;
 
-        m_StunTimer += Time.deltaTime;
-        if( m_StunTimer > _Hansel.StunRemainingTime)
+        _Hansel._isStuned = true;
+        _Hansel.rb.velocity = Vector3.zero;
+
+        //m_StunTimer += Time.deltaTime;
+        //if( m_StunTimer > _Hansel.StunRemainingTime)
+        //{
+        //    _Hansel.Parti_Stun.Pause();
+        //    _Hansel.ChangeState(HanselMove_State.Instance);
+        //    _Hansel._isStuned = false;
+        //}
+
+        if (_Hansel.CurrentHP >= 80)
         {
+
             _Hansel.Parti_Stun.Pause();
             _Hansel.ChangeState(HanselMove_State.Instance);
-            _Hansel._isStuned = false;
+            return;
         }
+
 
     }
 
     public override void ExitState(Hansel _Hansel)
     {
+        _Hansel.Isinvincibility = false;
+        _Hansel._isStuned = false;
         return;
     }
 }

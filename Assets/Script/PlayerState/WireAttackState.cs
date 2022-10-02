@@ -9,8 +9,7 @@ public class WireAttackState : IState
 
     private void Awake()
     {
-        canState.Add(PlayerState.IdleState);
-        canState.Add(PlayerState.HitState);
+        canState.Add(PlayerState.IdleState);        
     }
 
     public override void OnStateEnter(PlayerController player)

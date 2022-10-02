@@ -5,25 +5,43 @@ using UnityEngine;
 public class SliceFadeOut : MonoBehaviour
 {
     private bool FadeOutTime = false;
-    public Material m_Material;
+    private Material m_Material;
     private Color m_color;
-    // Start is called before the first frame update
+    private bool Randompush = false;
+    Rigidbody rigid;
+    public float forcepower;
+    private Transform _player;
+    private bool forcedir;
+    public bool type;
+    //
+
     void Start()
     {
         m_Material = gameObject.GetComponent<MeshRenderer>().material;
-        Invoke("FadeOut", 2.0f);
         this.gameObject.GetComponent<MeshRenderer>().material = Instantiate(m_Material);
         m_color = this.gameObject.GetComponent<MeshRenderer>().material.color;
+        StartCoroutine("FadeOut");
+        rigid = GetComponent<Rigidbody>();
+        _player = GameObject.FindWithTag("Player").transform;
 
+        if (_player.rotation.y < 0)
+        {
+            forcedir = true;
+        }
+        else if(_player.rotation.y > 0)
+        {
+            forcedir = false;
+        }
 
+        pushSliceParts();
     }
 
     // Update is called once per frame
     void Update()
     {
+
         if (FadeOutTime == true)
         {
-            Debug.Log(m_Material.color.a);
             m_color.a -= 0.01f;
             this.gameObject.GetComponent<MeshRenderer>().material.color = m_color;
             if (m_color.a < 0)
@@ -33,8 +51,30 @@ public class SliceFadeOut : MonoBehaviour
         }
        
     }
-    private void FadeOut()
+    void pushSliceParts()
     {
+        if (type == true)
+        {
+            if (forcedir == false)
+            {
+                //rigid.AddForce(new Vector3(0, 10, 0), ForceMode.Impulse);
+                //rigid.AddForce(rigid.transform.position * forcepower, ForceMode.Impulse);
+                rigid.AddForce(new Vector3(1, 0, 0) * forcepower, ForceMode.Impulse);
+            }
+            else
+            {
+                rigid.AddForce(new Vector3(1, 0, 0) * forcepower * (-1), ForceMode.Impulse);
+                //rigid.AddForce(rigid.transform.position * forcepower* (-1), ForceMode.Impulse);
+            }
+        }
+        else
+        {
+            rigid.AddForce(new Vector3(0, 10, 0), ForceMode.Impulse);
+        }
+    }
+    IEnumerator FadeOut()
+    {
+        yield return new WaitForSeconds(2f);
         FadeOutTime = true;
     }
 }
