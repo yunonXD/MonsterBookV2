@@ -21,8 +21,9 @@ public class CuttingReturnState : IState
 
     public override void OnStateEnter(PlayerController player)
     {
-        player.state = PlayerState.CuttingReturnState;
-        player.ani.Play("CutAttackReturn");        
+        //player.state = PlayerState.CuttingReturnState;
+        if (player.mode) player.ani.Play("N_CutAttackReturn");
+        else player.ani.Play("CutAttackReturn");
     }
 
     public override void OnStateExcute(PlayerController player)

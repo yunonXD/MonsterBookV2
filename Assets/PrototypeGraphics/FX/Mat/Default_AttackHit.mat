@@ -28,7 +28,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: ebbecc632a03c8a4aba17f2ae50dd3ea, type: 3}
+        m_Texture: {fileID: 2800000, guid: d24c8863f71254a4490815a089aa8a75, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MaskTex:
@@ -72,7 +72,7 @@ Material:
     - _UVDistortion: 0
     - _depth: 0
     - _dissolve: 1
-    - _inten: 0.2
+    - _inten: 50
     m_Colors:
     - _DissolveTexTilingOffset: {r: 1, g: 1, b: 0, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}

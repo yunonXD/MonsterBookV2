@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEngine.SceneManagement;
+using Newtonsoft.Json.Schema;
+using Unity.VisualScripting;
+using UnityEngine.Rendering;
 
 public enum PlayerState
 {
@@ -25,8 +28,16 @@ public enum PlayerState
     KnockBackState,
 }
 
+public enum Axis
+{ 
+    XAxis,
+    ZAxis,
+}
+
 [Serializable]
 public class StringParticle : SerializableDictionary<String, ParticleSystem> { }
+[Serializable]
+public class StringGameObject : SerializedDictionary<String, GameObject> { }
 
 public class SomeComparer : IEqualityComparer<PlayerState>
 {
@@ -34,7 +45,7 @@ public class SomeComparer : IEqualityComparer<PlayerState>
     int IEqualityComparer<PlayerState>.GetHashCode(PlayerState obj) { return ((int)obj).GetHashCode(); }
 }
 
-public class PlayerController : MonoBehaviour, IEntity, IKnockBack
+public class PlayerController : MonoBehaviour, IEntity, IKnockBack, IRotate
 {
     #region Component
     [HideInInspector] public Rigidbody rigid;
@@ -54,6 +65,7 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack
     #region PlayerValue
     [Header("[Plyaer State]")]
     [ReadOnly] public PlayerState state;
+    public bool mode;
     [SerializeField] private int maxHP;
     [ReadOnly][SerializeField] private int curHP;
     [SerializeField] private float invinTime;
@@ -64,11 +76,13 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack
 
     #region PlayerMove
     [Header("[Player Move]")]
+    public Axis curAxis;
     public float walkSpeed = 4;
     public float jumpForce = 12;   
     public float dashForce = 20;
     public float wireForce;
-    public int attackCount;
+    [ReadOnly] public int attackCount;
+    [ReadOnly] public bool prevInput;
 
     public float walkVector { get; set; }
 
@@ -81,10 +95,12 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack
     public LayerMask groundLayer;
     public LayerMask wireLayer;
     [SerializeField] private LayerMask monsterLayer;
-    public Vector2 lookVector { get; set; }
+    public Vector3 lookVector { get; set; }
 
     public WireObject wireObject { get; set; }
-    public Vector3 wireTarget { get; set; }    
+    public Vector3 wirePos { get; set; }
+
+    public bool canAxisRoate;
 
     #endregion
 
@@ -94,9 +110,11 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack
     public Transform wireStart;    
     [SerializeField] private float gameSpeed = 1;
     public LineRenderer line;
+    public Transform effectEuler;
 
     [Header("[Effect Prefab]")]
     [SerializeField] private StringParticle particle;
+    [SerializeField] private StringGameObject particleObj;
 
     [Header("[Editor]")]
     [SerializeField] private Vector3 drawPos;
@@ -167,6 +185,11 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack
         particle[name].Play();
     }
 
+    public void ParticlShot(string name)
+    {
+        Instantiate(particleObj[name], transform.position, particleObj[name].transform.rotation);
+    }
+
     private void SetIdle()
     {
         if (state != PlayerState.IdleState) ChangeState(PlayerState.IdleState);
@@ -174,28 +197,49 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack
 
     private void ShotWire()
     {
-        wireObject.Shot(wireStart.position, new Vector3(wireTarget.x, wireTarget.y, wireTarget.z));
+        wireObject.Shot(wireStart.position, new Vector3(wirePos.x, wirePos.y, wirePos.z));
         line.enabled = true;
     }
 
     #endregion
-
+    int statcount;
     public void ChangeState(PlayerState next)
     {
-        if (!stateDic.ContainsKey(next) || !curState.CheckState(next)) return;
+        if (!stateDic.ContainsKey(next) || !curState.CheckState(next) || state == next) return;
+        //Debug.Log(vaff++ + " =Count");
         prevState = curState;
         prevState.OnStateExit(this);
         stateDic[next].OnStateEnter(this);
         curState = stateDic[next];
-        //Debug.Log("ChangeState " + state.ToString() + " -> " + next.ToString());
+        //Debug.Log("ChangeState " + vaff++ + "  " + state.ToString() + " -> " + next.ToString());        
+        Debug.Log("ChangeState : " + ++statcount + " / " + state.ToString()+attackCount + "=>" + next.ToString());
+        state = next;
+    }
+
+    public void AgainState()
+    {
+        curState.OnStateExit(this);
+        curState.OnStateEnter(this);
+        Debug.Log("AgainState : " + state.ToString());
     }
 
     private void FixedUpdate()
     {
+        ani.SetBool("Trans", mode);
         Time.timeScale = gameSpeed;
         CheckGround();
         if (walkVector != 0) ChangeState(PlayerState.WalkState);
         curState.OnStateExcute(this);
+    }
+
+    public void Move()
+    {
+        if (CheckMonster()) rigid.velocity = Vector3.zero;
+        else if (CheckWall())
+        {
+            var move = curAxis == Axis.XAxis ? new Vector3(walkVector * walkSpeed, rigid.velocity.y, 0) : new Vector3(0, rigid.velocity.y, walkVector * walkSpeed);
+            rigid.velocity = move;
+        }
     }
 
     #region Setter
@@ -212,6 +256,47 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack
     public void SetChange()
     {
         CameraController.RotateCameraView(new Vector3(0, -90));
+    }
+
+    public void SetSTR(int value) { str = value; }    
+
+    public void SetInvincible(bool value) { invinBool = value; }
+
+    public void SetCurHP(int hp) { curHP = hp; }
+
+    public void SetMaxHP(int hp) { maxHP = hp; }
+
+    public void SetThrowState(bool value)
+    {
+        input.SetInputAction(!value);
+        rigid.isKinematic = value;
+    }
+
+    #endregion
+
+    #region Command
+    public void SetSTR(string value)
+    {
+        var str = int.Parse(value);
+        this.str = str;
+    }
+
+    public void SetInv(string value)
+    {
+        var val = bool.Parse(value);
+        invinBool = val;
+    }
+
+    public void SetHP(string value)
+    {
+        var val = int.Parse(value);
+        curHP = val;
+    }
+
+    public void SetMaxHP(string value)
+    {
+        var val = int.Parse(value);
+        maxHP = val;
     }
 
     #endregion
@@ -234,13 +319,46 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack
         lookVector = new Vector2(look, 0);
         ChangeState(PlayerState.HitState);
         curHP -= damage;
-        if (curHP <= 0) curHP = 0;
+        if (curHP <= 0)
+        {
+            curHP = 0;
+            Dead();
+        }
         ui.UpdateHP(curHP);
     }
 
     public void OnRecovery(int heal)
     {
 
+    }
+
+    public void Dead()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void CheckRotate(bool value)
+    {
+        canAxisRoate = value;
+    }
+
+    public void Rotate(bool value)
+    {
+        if (!canAxisRoate) return;
+        var val = value ? new Vector3(0, -90, 0) : Vector3.zero;
+        CameraController.RotateCameraView(val);
+        CheckRotation();
+    }
+
+    public void Rotate()
+    {
+        if (canAxisRoate)
+        {
+            curAxis = Axis.ZAxis;
+            CameraController.RotateCameraView(new Vector3(0, -90, 0));
+            transform.rotation = Quaternion.Euler(Vector3.zero);
+            CheckRotation();
+        }
     }
 
     public void KnockBack(Vector3 direction)
@@ -272,7 +390,8 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack
 
     public bool CheckAttack()
     {
-        RaycastHit[] target = Physics.BoxCastAll(transform.position, new Vector3(3, 1.5f, 1), lookVector, Quaternion.identity, 1.5f, wireLayer);
+        if (mode) return false;
+        RaycastHit[] target = Physics.BoxCastAll(transform.position, new Vector3(3.5f, 1.5f, 1), lookVector, Quaternion.identity, 2.8f, wireLayer);
 
         //Collider[] target = Physics.OverlapBox(transform.position + new Vector3(lookVector.x * 1.5f, 0), new Vector3(3, 1.5f, 1), Quaternion.identity);
 
@@ -298,6 +417,17 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack
     public bool CheckMonster()
     {
         return Physics.BoxCast(collid.bounds.center, new Vector3(0.4f, 1.1f, 0.5f), new Vector3(lookVector.x, 0), Quaternion.identity, collid.radius * 2, monsterLayer);
+    }
+
+    public void CheckRotation()
+    {
+        if (walkVector == 0) return;
+        var look = walkVector > 0 ? 1 : -1;
+        //player.transform.rotation = Quaternion.Euler(0, 90 * look, 0);
+        transform.localScale = new Vector3(2, 2, 2 * look);
+        effectEuler.rotation = look == 1 ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
+        if (curAxis == Axis.XAxis) lookVector = new Vector3(look, 0);
+        else lookVector = new Vector3(0, 0, look);
     }
 
     #endregion    

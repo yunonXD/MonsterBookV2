@@ -23,6 +23,7 @@ public class Gretel : MonoBehaviour, IEntity
     #endregion
 
     #region  SoupAttack var
+    public GameObject Ladle;
     public Transform SoupRangePoint1;
     public Transform SoupRangePoint2;
     public int SoupMin = 3;
@@ -56,7 +57,6 @@ public class Gretel : MonoBehaviour, IEntity
     // Update is called once per frame
     void Update()
     {
-
 
         state.Update();
     }

@@ -6,6 +6,7 @@ using System.Reflection;
 using System;
 
 [CustomPropertyDrawer(typeof(StringParticle))]
+//[CustomPropertyDrawer(typeof(StringGameObject))]
 public class SerializableDictionaryPropertyDrawer : PropertyDrawer
 {
 	const string KeysFieldName = "m_keys";

@@ -7,7 +7,8 @@ public class AttackState : IState
 {    
     private float attackTime;
     private bool attackIng;
-    private float attackResetTime = 1.5f;    
+    private float attackResetTime = 1.5f;
+    private int attackCount = 0;
 
 
     private void Awake()
@@ -22,25 +23,45 @@ public class AttackState : IState
     public override void OnStateEnter(PlayerController player)
     {
         attackTime = 0;
-        player.state = PlayerState.AttackState;
+        //player.state = PlayerState.AttackState;
         player.rigid.velocity = Vector3.zero;
-        player.ani.Play("Attack" + player.attackCount);
+        if (player.mode) player.ani.Play("N_Attack" + player.attackCount);
+        else player.ani.Play("Attack" + player.attackCount);
     }
 
     public override void OnStateExcute(PlayerController player)
     {
-        if (player.ani.GetCurrentAnimatorStateInfo(0).IsName("Attack"+ player.attackCount) && player.ani.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
-        {            
-            player.ChangeState(PlayerState.AttackReturnState);
-        }        
+        if (player.mode)
+        {
+            if (player.ani.GetCurrentAnimatorStateInfo(0).IsName("N_Attack" + player.attackCount) && player.ani.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
+            {
+                if (player.prevInput)
+                {
+                    player.AgainState();
+                }
+                else player.ChangeState(PlayerState.AttackReturnState);
+            }
+        }
+        else
+        {
+            if (player.ani.GetCurrentAnimatorStateInfo(0).IsName("Attack" + player.attackCount) && player.ani.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
+            {
+                if (player.prevInput)
+                {
+                    player.AgainState();
+                }
+                else player.ChangeState(PlayerState.AttackReturnState);
+            }
+        }
     }
 
     public override void OnStateExit(PlayerController player)
     {
-        if (player.attackCount == 0 && !attackIng) StartCoroutine(ResetRoutine(player));
-        else if (attackIng) attackTime = 0;
-        player.attackCount++;
+        //if (!attackIng) StartCoroutine(ResetRoutine(player));
+        //else if (attackIng) attackTime = 0;
+        player.attackCount++;        
         if (player.attackCount > 2) player.attackCount = 0;
+        //player.ani.SetInteger("AttackCount", player.attackCount);
         player.AttackBoxOff(0);
     }
 
@@ -55,6 +76,7 @@ public class AttackState : IState
             yield return new WaitForFixedUpdate();
         }
         attackIng = false;
-        player.attackCount = 0;        
+        player.attackCount = 0;
+        player.ani.SetInteger("AttackCount", player.attackCount);        
     }
 }

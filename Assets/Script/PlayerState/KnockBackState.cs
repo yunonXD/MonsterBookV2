@@ -13,8 +13,8 @@ public class KnockBackState : IState
 
     public override void OnStateEnter(PlayerController player)
     {        
-        player.state = PlayerState.KnockBackState;
-        player.ani.Play("JumpLoop");
+        //player.state = PlayerState.KnockBackState;
+        player.ani.SetTrigger("JumpLoop");
         player.invinBool = true;        
         player.input.SetInputAction(false);
         time = 0;

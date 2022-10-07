@@ -29,11 +29,17 @@ public class InputManager : MonoBehaviour
         action.InGame.Attack.started += val => Attack();
         action.InGame.Dash.started += val => player.ChangeState(PlayerState.DashState);
 
+        action.InGame.Rotate.started += val => player.Rotate();
+
         action.InGame.SpecialAttack.started += val => player.ChangeState(PlayerState.WireSearchState);
         action.InGame.SpecialAttack.canceled += val => Wire();
 
         action.CMD.Console.started += val => Console();
 
+        if (GameManager.GetConsoleEnable())
+        {
+            action.InGame.Disable();
+        }
     }
 
     private void OnEnable()
@@ -67,34 +73,30 @@ public class InputManager : MonoBehaviour
     }
 
     private void Attack()
-    {        
-        if (!prevInputAttack) StartCoroutine(InputAttackRoutine());
+    {
+        if (player.CheckAttack()) player.ChangeState(PlayerState.CuttingState);
+        else player.ChangeState(PlayerState.AttackState);
+        if (!player.prevInput) StartCoroutine(InputAttackRoutine());
         else prevCurTime = 0;
     }
 
     private void Wire()
-    {
-        if (player.wireTarget != Vector3.zero) player.ChangeState(PlayerState.WireThrowState);
+    {        
+        if (player.wirePos != null) player.ChangeState(PlayerState.WireThrowState);
         else player.ChangeState(PlayerState.IdleState);        
     }
 
     private IEnumerator InputAttackRoutine()
     {        
-        prevInputAttack = true;
+        player.prevInput = true;
         prevCurTime = 0f;
-        while (prevInputAttack)
+        while (player.prevInput)
         {
-            prevCurTime += Time.deltaTime;
-            if (player.state == PlayerState.WireState)
-            {
-                player.ChangeState(PlayerState.WireAttackState);
-            }
-            else if (player.CheckAttack()) player.ChangeState(PlayerState.CuttingState);
-            else player.ChangeState(PlayerState.AttackState);
+            prevCurTime += Time.deltaTime;            
 
             if (prevCurTime > prevInputTime)
             {
-                prevInputAttack = false;
+                player.prevInput = false;
             }
             yield return YieldInstructionCache.waitForFixedUpdate;
         }                

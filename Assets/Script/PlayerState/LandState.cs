@@ -18,8 +18,8 @@ public class LandState : IState
 
     public override void OnStateEnter(PlayerController player)
     {
-        player.state = PlayerState.FallState;        
-        player.ani.Play("Landing");
+        //player.state = PlayerState.FallState;        
+        player.ani.SetTrigger("Land");
     }
 
     public override void OnStateExcute(PlayerController player)

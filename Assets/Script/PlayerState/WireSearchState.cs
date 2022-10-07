@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class WireSearchState : IState
 {
+    private Transform target;
+
     private void Awake()
     {
         canState.Add(PlayerState.IdleState);
@@ -16,16 +18,16 @@ public class WireSearchState : IState
     public override void OnStateEnter(PlayerController player)
     {
         //if (!player.isGround) player.SetTimeScale(0.5f);
-        player.state = PlayerState.WireSearchState;
-        player.ani.Play("Search");
-        player.wireTarget = Vector3.zero;
+        //player.state = PlayerState.WireSearchState;
+        player.ani.SetTrigger("Search");
+        player.wirePos = Vector3.zero;
 
-        Find(player);        
+        Find(player); 
     }
 
     public override void OnStateExcute(PlayerController player)
     {
-        player.ui.SetWireAim(player.wireTarget, true);
+        player.ui.SetWireAim(player.wirePos, true);
     }
 
     public override void OnStateExit(PlayerController player)
@@ -36,18 +38,15 @@ public class WireSearchState : IState
 
     private void Find(PlayerController player)
     {
-        Collider[] target = Physics.OverlapBox(transform.position + new Vector3(player.lookVector.x * 6.5f, 4f), new Vector3(6f, 5, 1), Quaternion.identity, player.wireLayer);
-        //Debug.Log(target.Length);
+        RaycastHit[] target = Physics.BoxCastAll(transform.position, new Vector3(12, 10, 2), player.lookVector, Quaternion.identity, 6.5f, player.wireLayer);
+        
         if (target.Length > 0)
         {            
-            var dir = (target[0].GetComponent<Collider>().bounds.center - player.wireStart.position).normalized;            
+            var dir = (target[0].collider.GetComponent<Collider>().bounds.center - player.wireStart.position).normalized;            
             RaycastHit ray;
             if (Physics.Raycast(player.wireStart.position, dir, out ray, 100, player.wireLayer))
             {
-                //player.line.enabled = true;
-                //player.line.SetPosition(0, player.wireStart.position);
-                //player.line.SetPosition(1, ray.point);
-                player.wireTarget = ray.point;
+                player.wirePos = ray.point;
                 //Debug.Log(target[0].GetComponent<Collider>().bounds.center + "   -    " + ray.point);
             }
         }

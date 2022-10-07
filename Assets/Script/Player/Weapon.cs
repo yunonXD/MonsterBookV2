@@ -7,6 +7,8 @@ public class Weapon : MonoBehaviour
     private Collider coll;
     private int damage;
 
+    [SerializeField] private bool isCutting;
+
 
     private void Awake()
     {
@@ -34,6 +36,15 @@ public class Weapon : MonoBehaviour
     {
         IEntity entity = other.GetComponent<IEntity>();
 
-        if (entity != null) entity.OnDamage(damage, transform.parent.position);
+        if (entity != null)
+        {
+            entity.OnDamage(damage, transform.parent.position);
+            if (isCutting)
+            {
+                ICutOff cut = other.GetComponent<ICutOff>();
+
+                if (cut != null && cut.CheckCutOff()) cut.CutDamage();
+            }
+        }
     }
 }

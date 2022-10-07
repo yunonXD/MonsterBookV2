@@ -22,15 +22,26 @@ public class AttackReturnState : IState
 
     public override void OnStateEnter(PlayerController player)
     {
-        player.state = PlayerState.IdleState;
-        player.ani.Play("AttackReturn" + player.attackCount);
+        //player.state = PlayerState.AttackReturnState;
+        if (player.mode) player.ani.Play("N_AttackReturn" + player.attackCount);
+        else player.ani.Play("AttackReturn" + player.attackCount);
     }
 
     public override void OnStateExcute(PlayerController player)
     {
-        if (player.ani.GetCurrentAnimatorStateInfo(0).IsName("AttackReturn" + player.attackCount) && player.ani.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
+        if (player.mode)
         {
-            player.ChangeState(PlayerState.IdleState);
+            if (player.ani.GetCurrentAnimatorStateInfo(0).IsName("N_AttackReturn" + player.attackCount) && player.ani.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
+            {
+                player.ChangeState(PlayerState.IdleState);
+            }
+        }
+        else
+        {
+            if (player.ani.GetCurrentAnimatorStateInfo(0).IsName("AttackReturn" + player.attackCount) && player.ani.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
+            {
+                player.ChangeState(PlayerState.IdleState);
+            }
         }
     }
 

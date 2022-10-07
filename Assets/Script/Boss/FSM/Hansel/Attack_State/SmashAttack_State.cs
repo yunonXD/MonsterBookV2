@@ -12,10 +12,10 @@ public class SmashAttack_State : FSM_State<Hansel>
     {
         get { return instance; }
     }
-    private bool isAttack_1 = false;
-    private bool isAttack_2 = false;
-    private bool isAttack_3 = false;
-    private bool isAttack_4 = false;
+    private bool m_isAttack_1 = false;
+    private bool m_isAttack_2 = false;
+    private bool m_isAttack_3 = false;
+    private bool m_isAttack_4 = false;
 
     static SmashAttack_State() { }
     private SmashAttack_State() { }
@@ -29,49 +29,59 @@ public class SmashAttack_State : FSM_State<Hansel>
             return;
         }
 
-        int m_Damage = _Hansel.Hansel_SmashDamage;
-        _Hansel.SmashCollider.GetComponent<SmashCol>().g_Player_To_Damgage = m_Damage;
-        _Hansel.SmashCollider.GetComponent<SmashCol>().g_Transform = _Hansel.transform;
-        _Hansel.rb.velocity = Vector3.zero;
         _Hansel.isSmash = true;
 
+        #region Damage Collider
+        int m_Damage = _Hansel.Hansel_SmashDamage;
+        _Hansel.SmashCollider_R.GetComponent<SmashCol>().g_Player_To_Damgage = m_Damage;
+        _Hansel.SmashCollider_R.GetComponent<SmashCol>().g_Transform = _Hansel.transform;
 
-        if (_Hansel.isSmashBool)
+
+        _Hansel.SmashCollider_L.GetComponent<SmashCol>().g_Player_To_Damgage = m_Damage;
+        _Hansel.SmashCollider_L.GetComponent<SmashCol>().g_Transform = _Hansel.transform;
+
+        #endregion
+
+        #region Random Checker
+        if (_Hansel.isSmashRandomBool)
         {
             _Hansel.RandCalculateForSmash(5);
-            _Hansel.isSmashBool = false;
+            _Hansel.isSmashRandomBool = false;
         }
+        #endregion
 
+        _Hansel.OnDircalculator(1);
 
+        #region Pattern Checker
         switch (_Hansel.ForSmashP)
         {
             case 1:
-                isAttack_1 = true;
+                m_isAttack_1 = true;
                 _Hansel.Ani.SetTrigger("H_SmashAttack");
-                _Hansel.SmashCollider.SetActive(true);
                 break;
+            //Pattern 1 : 1
 
             case 2:
-                isAttack_2 = true;
+                m_isAttack_2 = true;
                 _Hansel.Ani.SetTrigger("H_SmashAttack2");
-                _Hansel.SmashCollider.SetActive(true);
                 break;
+            //Pattern 2 : 1 -> 2
 
             case 3:
-                isAttack_3 = true;
+                m_isAttack_3 = true;
                 _Hansel.Ani.SetTrigger("H_SmashAttack3");
-                _Hansel.SmashCollider.SetActive(true);
                 break;
+            //Pattern 3 : 2 -> 3
 
             case 4:
-                isAttack_4 = true;
+                m_isAttack_4 = true;
                 _Hansel.Ani.SetTrigger("H_SmashAttack4");
-                _Hansel.SmashCollider.SetActive(true);
                 break;
+            //Pattern 4 : 4
         }
+        #endregion
 
     }
-
 
     public override void UpdateState(Hansel _Hansel)
     {
@@ -88,10 +98,10 @@ public class SmashAttack_State : FSM_State<Hansel>
             {
                 case 1:
 
-                    if (_Hansel.Attack_Time >= 4)
+                    if (_Hansel.Attack_Time >= _Hansel.AttackPattern_1)
                     {
-                        _Hansel.isSmashBool = true;
-                        isAttack_1 = false;
+                        _Hansel.isSmashRandomBool = true;
+                        m_isAttack_1 = false;
                         _Hansel.isSmash = false;
                         _Hansel.Attack_Time = 0;
                         return;
@@ -101,10 +111,10 @@ public class SmashAttack_State : FSM_State<Hansel>
 
                 case 2:
  
-                    if (_Hansel.Attack_Time >= 4)
+                    if (_Hansel.Attack_Time >= _Hansel.AttackPattern_2)
                     {
-                        _Hansel.isSmashBool = true;
-                        isAttack_2 = false;
+                        _Hansel.isSmashRandomBool = true;
+                        m_isAttack_2 = false;
                         _Hansel.isSmash = false;
                         _Hansel.Attack_Time = 0;
                         return;
@@ -113,11 +123,10 @@ public class SmashAttack_State : FSM_State<Hansel>
 
 
                 case 3:
-                    if (_Hansel.Attack_Time >= 4)
+                    if (_Hansel.Attack_Time >= _Hansel.AttackPattern_3)
                     {
-
-                        _Hansel.isSmashBool = true;
-                        isAttack_3 = false;
+                        _Hansel.isSmashRandomBool = true;
+                        m_isAttack_3 = false;
                         _Hansel.isSmash = false;
                         _Hansel.Attack_Time = 0;
                         return;
@@ -125,10 +134,10 @@ public class SmashAttack_State : FSM_State<Hansel>
                     break;
 
                 case 4:
-                    if (_Hansel.Attack_Time >= 4)
+                    if (_Hansel.Attack_Time >= _Hansel.AttackPattern_4)
                     {
-                        _Hansel.isSmashBool = true;
-                        isAttack_4 = false;
+                        _Hansel.isSmashRandomBool = true;
+                        m_isAttack_4 = false;
                         _Hansel.isSmash = false;
                         _Hansel.Attack_Time = 0;
                         return;
@@ -143,9 +152,9 @@ public class SmashAttack_State : FSM_State<Hansel>
 
         }
         else if (!_Hansel.CheckRange()  || (!_Hansel.isSmash &&
-            !isAttack_1 && !isAttack_2 && !isAttack_3 && !isAttack_4))
+            !m_isAttack_1 && !m_isAttack_2 && !m_isAttack_3 && !m_isAttack_4))
         {
-            _Hansel.rb.velocity = Vector3.zero;
+            
             _Hansel.ChangeState(HanselMove_State.Instance);
         }
 
@@ -155,14 +164,12 @@ public class SmashAttack_State : FSM_State<Hansel>
     {
 
         _Hansel.isSmash = false;
-
         _Hansel.Ani.ResetTrigger("H_SmashAttack");
         _Hansel.Ani.ResetTrigger("H_SmashAttack2");
         _Hansel.Ani.ResetTrigger("H_SmashAttack3");
         _Hansel.Ani.ResetTrigger("H_SmashAttack4");
 
-        _Hansel.SmashCollider.SetActive(false);
-        _Hansel.isSmashBool = true;
+        _Hansel.isSmashRandomBool = true;
         return;
     }
 

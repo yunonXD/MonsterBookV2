@@ -17,8 +17,8 @@ public class WireThrowState : IState
     public override void OnStateEnter(PlayerController player)
     {
         time = 0;
-        player.state = PlayerState.WireThrowState;
-        player.ani.Play("WireThrow");
+        //player.state = PlayerState.WireThrowState;
+        player.ani.SetTrigger("WireThrow");
 
         player.ParticlePlay("ThrowWire");                                      
     }

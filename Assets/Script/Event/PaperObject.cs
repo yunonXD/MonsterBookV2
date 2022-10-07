@@ -7,10 +7,12 @@ public class PaperObject : MonoBehaviour
     [SerializeField] private Vector3 startVector;
     [SerializeField] private Vector3 foldVector;
 
+    [SerializeField] private bool canSee;
+
     private Quaternion startRotation;
     private Quaternion foldRotation;
 
-    private GameObject child;
+    private GameObject[] child;
 
 
     private void Start()
@@ -20,9 +22,20 @@ public class PaperObject : MonoBehaviour
 
         foldRotation.eulerAngles = foldVector;
 
-        child = transform.GetChild(0).gameObject;
+        child = new GameObject[transform.childCount];
 
-        child.SetActive(false);
+        for (int i = 0; i < child.Length; i++)
+        {
+            child[i] = transform.GetChild(i).gameObject;
+        }
+
+        if (!canSee)
+        {
+            for (int i = 0; i < child.Length; i++)
+            {
+                child[i].SetActive(false);
+            }
+        }
         transform.localRotation = startRotation;
     }
 
@@ -34,7 +47,13 @@ public class PaperObject : MonoBehaviour
     private IEnumerator Routine(float time)
     {
         yield return YieldInstructionCache.waitForSeconds(time);
-        child.SetActive(true);
+        if (!canSee)
+        {
+            for (int i = 0; i < child.Length; i++)
+            {
+                child[i].SetActive(true);
+            }
+        }
         transform.localRotation = startRotation;
         while (transform.localRotation != foldRotation)
         {            

@@ -13,6 +13,7 @@ public class RollRollController : MonoBehaviour, IEntity, ICutOff
     public float WalkSpeed = 2.0f;
     public float RunSpeed = 12.0f;
     public float AttackDelay = 3.0f;
+    public bool MoveType;
 
     [Header("[State/ScanDist]")]
     public CurrentState State = CurrentState.idle;
@@ -39,16 +40,22 @@ public class RollRollController : MonoBehaviour, IEntity, ICutOff
         animator = GetComponent<Animator>();
         CurHP = MaxHP;
 
+        if (MoveType == true)
+        {
+            _transform.position = new Vector3(playerTransform.position.x, _transform.position.y, _transform.position.z); //x축 player 보간
+        }
+        else if (MoveType == false)
+        {
+            _transform.position = new Vector3(_transform.position.x, _transform.position.y, playerTransform.position.z); //z축 player 보간
+        }
+
         StartCoroutine(this.CheckState());
         StartCoroutine(this.CheckStateForAction());
     }
 
     void Update()
     {
-        if(Input.GetKey(KeyCode.K))
-        {
-            CutOff();
-        }
+
     }
 
 
@@ -109,10 +116,10 @@ public class RollRollController : MonoBehaviour, IEntity, ICutOff
 
     public void OnDamage(int damage, Vector3 pos)
     {
-        if(CheckCutOff())
-        {
-            CutOff();
-        }
+        //if(CheckCutOff())
+        //{
+        //    CutOff();
+        //}
 
         CurHP -= damage;
         BounddaryAttack = true;
@@ -158,6 +165,12 @@ public class RollRollController : MonoBehaviour, IEntity, ICutOff
         }
     }
 
+    public void CutDamage()
+    {
+        gameObject.SetActive(false);
+        BodyParts.SetActive(true);
+    }
+
     void CutOff()
     {
         this.gameObject.SetActive(false);
@@ -167,50 +180,110 @@ public class RollRollController : MonoBehaviour, IEntity, ICutOff
 
     void Patrol()
     {
-        if (Patrollook == false) //PatrolPoint1 -> PatrolPoint2로 이동
+        if (MoveType == false)
         {
-            transform.position = Vector3.MoveTowards(transform.position, PatrolPoint2.transform.position, WalkSpeed * Time.deltaTime);
-            //LookTarget(PatrolPoint2.transform);
-            LookTarget(true);
-            if (transform.position.x == PatrolPoint2.transform.position.x)
-            {
-                State = CurrentState.idle;
-                Patrollook = true;
-            }
 
-        }
-        else                    //PatrolPoint1 -> PatrolPoint2로 이동
-        {
-            transform.position = Vector3.MoveTowards(transform.position, PatrolPoint1.transform.position, WalkSpeed * Time.deltaTime);
-            //LookTarget(PatrolPoint1.transform);
-            LookTarget(false);
-            if (transform.position.x == PatrolPoint1.transform.position.x)
+            if (Patrollook == false) //PatrolPoint1 -> PatrolPoint2로 이동
             {
-                State = CurrentState.idle;
-                Patrollook = false;
+                transform.position = Vector3.MoveTowards(transform.position, PatrolPoint2.transform.position, WalkSpeed * Time.deltaTime);
+                //LookTarget(PatrolPoint2.transform);
+                LookTarget(true);
+                if (transform.position.x == PatrolPoint2.transform.position.x)
+                {
+                    State = CurrentState.idle;
+                    Patrollook = true;
+                }
+
+            }
+            else                    //PatrolPoint1 -> PatrolPoint2로 이동
+            {
+                transform.position = Vector3.MoveTowards(transform.position, PatrolPoint1.transform.position, WalkSpeed * Time.deltaTime);
+                //LookTarget(PatrolPoint1.transform);
+                LookTarget(false);
+                if (transform.position.x == PatrolPoint1.transform.position.x)
+                {
+                    State = CurrentState.idle;
+                    Patrollook = false;
+                }
+            }
+        }
+
+        if (MoveType == true)
+        {
+
+            if (Patrollook == false) //PatrolPoint1 -> PatrolPoint2로 이동
+            {
+                transform.position = Vector3.MoveTowards(transform.position, PatrolPoint2.transform.position, WalkSpeed * Time.deltaTime);
+                //LookTarget(PatrolPoint2.transform);
+                LookTarget(true);
+                if (transform.position.z == PatrolPoint2.transform.position.z)
+                {
+                    State = CurrentState.idle;
+                    Patrollook = true;
+                }
+
+            }
+            else                    //PatrolPoint1 -> PatrolPoint2로 이동
+            {
+                transform.position = Vector3.MoveTowards(transform.position, PatrolPoint1.transform.position, WalkSpeed * Time.deltaTime);
+                //LookTarget(PatrolPoint1.transform);
+                LookTarget(false);
+                if (transform.position.z == PatrolPoint1.transform.position.z)
+                {
+                    State = CurrentState.idle;
+                    Patrollook = false;
+                }
             }
         }
     }
 
     void RunAway()
     {
-        if (Patrollook == false) //PatrolPoint1 -> PatrolPoint2로 이동
+        if (MoveType == false)
         {
-            transform.position = Vector3.MoveTowards(transform.position, PatrolPoint2.transform.position, RunSpeed * Time.deltaTime);
-            LookTarget(true);
-            if (transform.position.x == PatrolPoint2.transform.position.x)
-            {
-                Patrollook = true;
-            }
 
-        }
-        else                    //PatrolPoint1 -> PatrolPoint2로 이동
-        {
-            transform.position = Vector3.MoveTowards(transform.position, PatrolPoint1.transform.position, RunSpeed * Time.deltaTime);
-            LookTarget(false);
-            if (transform.position.x == PatrolPoint1.transform.position.x)
+            if (Patrollook == false) //PatrolPoint1 -> PatrolPoint2로 이동
             {
-                Patrollook = false;
+                transform.position = Vector3.MoveTowards(transform.position, PatrolPoint2.transform.position, RunSpeed * Time.deltaTime);
+                LookTarget(true);
+                if (transform.position.x == PatrolPoint2.transform.position.x)
+                {
+                    Patrollook = true;
+                }
+
+            }
+            else                    //PatrolPoint1 -> PatrolPoint2로 이동
+            {
+                transform.position = Vector3.MoveTowards(transform.position, PatrolPoint1.transform.position, RunSpeed * Time.deltaTime);
+                LookTarget(false);
+                if (transform.position.x == PatrolPoint1.transform.position.x)
+                {
+                    Patrollook = false;
+                }
+            }
+        }
+
+        if (MoveType == true)
+        {
+
+            if (Patrollook == false) //PatrolPoint1 -> PatrolPoint2로 이동
+            {
+                transform.position = Vector3.MoveTowards(transform.position, PatrolPoint2.transform.position, RunSpeed * Time.deltaTime);
+                LookTarget(true);
+                if (transform.position.z == PatrolPoint2.transform.position.z)
+                {
+                    Patrollook = true;
+                }
+
+            }
+            else                    //PatrolPoint1 -> PatrolPoint2로 이동
+            {
+                transform.position = Vector3.MoveTowards(transform.position, PatrolPoint1.transform.position, RunSpeed * Time.deltaTime);
+                LookTarget(false);
+                if (transform.position.z == PatrolPoint1.transform.position.z)
+                {
+                    Patrollook = false;
+                }
             }
         }
     }
@@ -219,7 +292,6 @@ public class RollRollController : MonoBehaviour, IEntity, ICutOff
     {
         if (Motioning == false)
         {
-
 
             Vector3 DirR = new Vector3(100, 0, 0);
             Vector3 DirL = new Vector3(-100, 0, -200);

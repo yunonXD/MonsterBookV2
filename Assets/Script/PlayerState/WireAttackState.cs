@@ -16,8 +16,8 @@ public class WireAttackState : IState
     {
         change = false;
         player.invinBool = true;
-        player.state = PlayerState.WireAttackState;
-        player.ani.Play("WireAttack");
+        //player.state = PlayerState.WireAttackState;
+        player.ani.SetTrigger("WireAttack");
         player.line.enabled = true;
 
         //player.rigid.AddForce(player.lookVector * 15, ForceMode.Impulse);
@@ -28,13 +28,13 @@ public class WireAttackState : IState
         player.line.SetPosition(1, player.wireObject.transform.position);
         player.line.SetPosition(0, player.wireStart.position);
 
-        var targetPos = new Vector3(player.wireTarget.x + player.lookVector.x * 3, player.wireTarget.y);
+        var targetPos = new Vector3(player.wirePos.x + player.lookVector.x * 8, player.wirePos.y);
         var movePosition = Vector3.Lerp(transform.position, targetPos, player.wireForce * Time.fixedDeltaTime);
 
         if (!change) player.rigid.MovePosition(movePosition);
         
         if (Mathf.Abs(transform.position.x - targetPos.x) < 0.3f) change = true;
-        if (Mathf.Abs(transform.position.x - player.wireTarget.x) < 0.5f && player.line.enabled) player.line.enabled = false;
+        if (Mathf.Abs(transform.position.x - player.wirePos.x) < 0.5f && player.line.enabled) player.line.enabled = false;
 
 
         if (player.ani.GetCurrentAnimatorStateInfo(0).IsName("WireAttack") && player.ani.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f && change)

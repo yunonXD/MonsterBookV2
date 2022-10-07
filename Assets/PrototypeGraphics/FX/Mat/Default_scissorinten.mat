@@ -70,8 +70,9 @@ Material:
     - _QueueControl: 0
     - _QueueOffset: 0
     - _UVDistortion: 0
+    - _depth: 0
     - _dissolve: 0
-    - _inten: 7
+    - _inten: 25
     m_Colors:
     - _DissolveTexTilingOffset: {r: 1, g: 1, b: 0, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}

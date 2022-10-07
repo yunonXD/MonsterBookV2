@@ -26,8 +26,9 @@ public class IdleState : IState
         
         restTime = 0;
         restBool = false;
-        player.state = PlayerState.IdleState;
-        player.ani.Play("Idle");        
+        //player.state = PlayerState.IdleState;
+        if (player.mode) player.ani.SetTrigger("Idle");
+        else player.ani.SetTrigger("Idle");
     }
 
     public override void OnStateExcute(PlayerController player)
@@ -39,7 +40,7 @@ public class IdleState : IState
             restTime += Time.deltaTime;
             if (restTime > 5)
             {
-                player.ani.Play("Rest");
+                player.ani.SetTrigger("Rest");
                 restBool = true;
             }
         }

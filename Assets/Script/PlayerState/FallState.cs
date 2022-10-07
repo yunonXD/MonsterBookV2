@@ -15,8 +15,9 @@ public class FallState : IState
 
     public override void OnStateEnter(PlayerController player)
     {
-        player.state = PlayerState.FallState;     
-        player.ani.Play("JumpLoop");
+        //player.state = PlayerState.FallState;     
+        if (player.mode) player.ani.SetTrigger("JumpLoop");
+        else player.ani.SetTrigger("JumpLoop");
     }
 
     public override void OnStateExcute(PlayerController player)
@@ -26,7 +27,7 @@ public class FallState : IState
             player.ChangeState(PlayerState.LandState);
         }
 
-        CheckRotation(player);
+        player.CheckRotation();
 
         if (player.CheckMonster())
         {
@@ -38,14 +39,6 @@ public class FallState : IState
     public override void OnStateExit(PlayerController player)
     {
         
-    }
-
-    private void CheckRotation(PlayerController player)
-    {
-        if (player.walkVector == 0) return;
-        var look = player.walkVector > 0 ? 1 : -1;
-        transform.localScale = new Vector3(2, 2, 2 * look);
-        player.lookVector = new Vector2(look, 0);
     }
 
     //private bool CheckFall(PlayerController player)

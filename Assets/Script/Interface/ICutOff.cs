@@ -4,5 +4,6 @@ using UnityEngine;
 
 public interface ICutOff
 {
-    bool CheckCutOff();    
+    bool CheckCutOff();
+    void CutDamage();
 }

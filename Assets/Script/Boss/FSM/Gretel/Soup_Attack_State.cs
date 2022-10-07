@@ -11,17 +11,22 @@ public class Soup_Attack_State : FSM_State<Gretel>
         get { return instance; }
     }
     private float m_AttackTimer = 0f;
+    private float m_LookTimer = 0;
     private int Soupcount;
     private float SoupInterval;
     private int SpownCounter = 0;
     private float xpos = 0;
     public bool SolidFoodCounder = false;
+    private bool dropSoup = true;
+    private bool leanLable = false;
+    private Transform TargetLadle;
 
 
     public override void EnterState(Gretel _Gretel)
     {
         m_AttackTimer = 0f;
-
+        _Gretel.Ladle.transform.position = _Gretel.SoupRangePoint1.position;
+        _Gretel.Ladle.SetActive(true);
         SolidFoodCounder = false;
 
         if (_Gretel.myTarget == null)
@@ -38,10 +43,14 @@ public class Soup_Attack_State : FSM_State<Gretel>
     {
         m_AttackTimer += Time.deltaTime;   //공격 쿨타임 
 
-        if(m_AttackTimer >= _Gretel.SoupResponseTime)
-        {
-            xpos = Random.Range(_Gretel.SoupRangePoint1.position.x + (SoupInterval * SpownCounter),
-            _Gretel.SoupRangePoint1.position.x + (SoupInterval * SpownCounter + 1));
+        
+            if (m_AttackTimer >= _Gretel.SoupResponseTime)
+            {
+                xpos = Random.Range(_Gretel.SoupRangePoint1.position.x + (SoupInterval * SpownCounter),
+                _Gretel.SoupRangePoint1.position.x + (SoupInterval * (SpownCounter + 1)));
+                dropSoup = false;
+
+                _Gretel.Ladle.transform.position = new Vector3(xpos, _Gretel.SoupRangePoint1.position.y, _Gretel.SoupRangePoint1.position.z);
 
             if (SolidFoodCounder == false)
             {
@@ -68,7 +77,7 @@ public class Soup_Attack_State : FSM_State<Gretel>
                     _Gretel.SoupRangePoint1.position.y,
                     _Gretel.SoupRangePoint1.position.z));
                 }
- 
+
             }
             else
             {
@@ -77,10 +86,11 @@ public class Soup_Attack_State : FSM_State<Gretel>
             _Gretel.SoupRangePoint1.position.z));
             }
 
-            
             SpownCounter++;
             m_AttackTimer = 0;
+            
 
+   
             if (SpownCounter == Soupcount)   //생성한 스프와 랜덤 스프갯수가 같아지면 스테이트 종료
             {
                 if (_Gretel.Hansel.GetComponent<Hansel>().CurrentHP <= 0 && _Gretel.Hansel.GetComponent<Hansel>().PhaseChecker == 2)
@@ -95,16 +105,19 @@ public class Soup_Attack_State : FSM_State<Gretel>
                 }
 
             }
+
         }
 
     }
+
     public override void ExitState(Gretel _Gretel)
     {
         SoupInterval = 0;
         SpownCounter = 0;
+        _Gretel.Ladle.SetActive(false);
 
     }
 
-
-
 }
+
+

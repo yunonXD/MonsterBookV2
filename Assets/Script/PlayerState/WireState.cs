@@ -14,8 +14,8 @@ public class WireState : IState
 
     public override void OnStateEnter(PlayerController player)
     {
-        player.state = PlayerState.WireState;
-        player.ani.Play("WireMove");
+        //player.state = PlayerState.WireState;
+        player.ani.SetTrigger("WireMove");
         player.rigid.velocity = Vector3.zero;
         player.rigid.useGravity = false;
     }
@@ -23,10 +23,10 @@ public class WireState : IState
     public override void OnStateExcute(PlayerController player)
     {
         player.line.SetPosition(0, player.wireStart.position);
-        var movePosition = Vector3.Lerp(transform.position, player.wireTarget, player.wireForce * Time.fixedDeltaTime);
+        var movePosition = Vector3.Lerp(transform.position, player.wirePos, player.wireForce * Time.fixedDeltaTime);
 
         player.rigid.MovePosition(movePosition);
-        if (Vector3.Distance(transform.position, player.wireTarget) <= 1.2f)
+        if (Vector3.Distance(transform.position, player.wirePos) <= 1.2f)
         {            
             player.ChangeState(PlayerState.IdleState);            
         }

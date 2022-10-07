@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:MonsterBook/Assets/Animation/Player_N/Player_N_Attack0.anim.meta
+guid: b29df49db6d083f4c97449e7cc243c01
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+========
+guid: e0d3df2ea3c669e41b5e973ff3f75f39
+PrefabImporter:
+  externalObjects: {}
+>>>>>>>> fd75cf023977c2c75fcb01d9557085c234430676:MonsterBook/Assets/Prefab/Monster/Z_Macaron_Container_3.prefab.meta
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

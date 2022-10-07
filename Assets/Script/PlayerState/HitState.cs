@@ -12,8 +12,9 @@ public class HitState : IState
     public override void OnStateEnter(PlayerController player)
     {
         player.invinBool = true;
-        player.state = PlayerState.HitState;
-        player.ani.Play("Hit");
+        //player.state = PlayerState.HitState;
+        if (player.mode) player.ani.SetTrigger("Hit");
+        else player.ani.SetTrigger("Hit");
 
         CameraController.CameraShaking(0.5f, 0.2f);
 

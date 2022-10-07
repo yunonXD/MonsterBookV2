@@ -28,14 +28,18 @@ public class ThrowUp_State : FSM_State<Hansel>
         {
             return;
         }
-       
+        #region Damage Collider
         int m_Damage = _Hansel.Hansel_ThrowUpDamage;
         _Hansel.ThrowUpCollider.GetComponent<ThrowUpCol>().g_Player_To_Damgage = m_Damage;
         _Hansel.ThrowUpCollider.GetComponent<ThrowUpCol>().g_Transform = _Hansel.transform;
 
+
         _Hansel.ThrowUpCollider.GetComponent<ThrowUpCol>().SphereCollider.radius = _Hansel.ThrowUpRange;
         _Hansel.ThrowUpCollider.SetActive(true);
         ThrowUpTimer = 0;
+        #endregion
+
+        _Hansel.OnDircalculator(1);
 
     }
 
@@ -57,7 +61,6 @@ public class ThrowUp_State : FSM_State<Hansel>
     public override void ExitState(Hansel _Hansel)
     {
         _Hansel.ThrowUpCollider.SetActive(false);
-        return;
     }
 
 }

@@ -12,7 +12,7 @@ public class SliceFadeOut : MonoBehaviour
     public float forcepower;
     private Transform _player;
     private bool forcedir;
-    public bool type;
+    public bool SlicePowerDir;
     //
 
     void Start()
@@ -24,11 +24,11 @@ public class SliceFadeOut : MonoBehaviour
         rigid = GetComponent<Rigidbody>();
         _player = GameObject.FindWithTag("Player").transform;
 
-        if (_player.rotation.y < 0)
+        if ((_player.position.x - transform.position.x) < 0)
         {
             forcedir = true;
         }
-        else if(_player.rotation.y > 0)
+        else if((_player.position.x - transform.position.x) > 0)
         {
             forcedir = false;
         }
@@ -53,18 +53,15 @@ public class SliceFadeOut : MonoBehaviour
     }
     void pushSliceParts()
     {
-        if (type == true)
+        if (SlicePowerDir == true)
         {
             if (forcedir == false)
             {
-                //rigid.AddForce(new Vector3(0, 10, 0), ForceMode.Impulse);
-                //rigid.AddForce(rigid.transform.position * forcepower, ForceMode.Impulse);
-                rigid.AddForce(new Vector3(1, 0, 0) * forcepower, ForceMode.Impulse);
+                rigid.AddForce(new Vector3(-1, 0, 0) * forcepower, ForceMode.Impulse);
             }
             else
             {
-                rigid.AddForce(new Vector3(1, 0, 0) * forcepower * (-1), ForceMode.Impulse);
-                //rigid.AddForce(rigid.transform.position * forcepower* (-1), ForceMode.Impulse);
+                rigid.AddForce(new Vector3(1, 0, 0) * forcepower , ForceMode.Impulse);
             }
         }
         else

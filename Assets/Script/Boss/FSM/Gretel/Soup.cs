@@ -7,6 +7,7 @@ public class Soup : MonoBehaviour
     public GameObject Gretel;
     public bool Solid = false;
     public GameObject SolidFood;
+    public bool down = true;
     // Start is called before the first frame update
     void Start()
     {
@@ -49,15 +50,17 @@ public class Soup : MonoBehaviour
 
     void Update()
     {
+        if (transform.position.y >= 0.5)
+        {
+           transform.position = new Vector3(transform.position.x, transform.position.y - 0.08f, transform.position.z);
+        }
+        else
+        {
 
+        }
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Ground")
-        {
-            gameObject.GetComponent<BoxCollider>().isTrigger = false;
-
-        }
 
         if(other.tag == "Boss")
         {
@@ -67,7 +70,12 @@ public class Soup : MonoBehaviour
                 Soup_Object_Pool.ReturnObject(this);
             }
         }
-    }
 
+        else if (other.tag == "Player")
+        {
+            IEntity entity = other.GetComponent<IEntity>();
+            if (entity != null) entity.OnDamage(other.gameObject.GetComponent<PlayerController>().str, transform.position);
+        }
+    }
 
 }

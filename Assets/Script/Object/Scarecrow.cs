@@ -11,12 +11,6 @@ public class Scarecrow : MonoBehaviour, IEntity, ICutOff
 
     public void OnDamage(int damage, Vector3 pos)
     {
-        if (cut)
-        {
-            CutOff();
-            return;
-        }
-
         curHp -= damage;
         if (curHp == 0)
         {
@@ -34,9 +28,10 @@ public class Scarecrow : MonoBehaviour, IEntity, ICutOff
         return curHp == 0 ? true : false;
     }
 
-    public void CutOff()
+    public void CutDamage()
     {
         frag.SetActive(true);
         gameObject.SetActive(false);
     }
+
 }

@@ -28,7 +28,6 @@ public class Stun_State : FSM_State<Hansel>
         }
         _Hansel.Isinvincibility = true;
         _Hansel._isStuned = true;
-        _Hansel.Parti_Stun.Play();
         m_StunTimer = 0;
         Debug.Log("Hansel stuned... ");
 
@@ -50,8 +49,6 @@ public class Stun_State : FSM_State<Hansel>
 
         if (_Hansel.CurrentHP >= 80)
         {
-
-            _Hansel.Parti_Stun.Pause();
             _Hansel.ChangeState(HanselMove_State.Instance);
             return;
         }

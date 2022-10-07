@@ -16,6 +16,7 @@ public class MacaronController : MonoBehaviour, IEntity, ICutOff
     public float RunSpeed = 12.0f;      
     public float AttackDelay = 3.0f;      
     public GameObject AttackArea;
+    public bool MoveType;
 
     [Header("[State/ScanDist]")]
     public CurrentState State = CurrentState.idle;
@@ -24,14 +25,12 @@ public class MacaronController : MonoBehaviour, IEntity, ICutOff
     private Transform _transform;
     private Transform playerTransform;
     private GameObject player;
-    private bool Patrollook = false;
     public float attackDist = 2.0f;
     private bool isDead = false;
     private bool Motioning = false;
     private bool Chasing = false;
     private bool DeadMotioning = false;
     public bool BounddaryAttack = false;
-    private bool PlayerDir = false;  //false => 왼쪽, true => 오른쪽
     public GameObject BodyParts;
     private bool Possible_Move = true;
 
@@ -41,6 +40,17 @@ public class MacaronController : MonoBehaviour, IEntity, ICutOff
         playerTransform = GameObject.FindWithTag("Player").GetComponent<Transform>();
         animator = GetComponent<Animator>();
         CurHP = MaxHP;
+
+        if (MoveType == true)
+        {
+            _transform.position = new Vector3(playerTransform.position.x, _transform.position.y, _transform.position.z); //x축 player 보간
+        }
+        else if (MoveType == false)
+        {
+ 
+            _transform.position = new Vector3(_transform.position.x, _transform.position.y, playerTransform.position.z); //z축 player 보간
+        }
+
 
         StartCoroutine(this.CheckState());
         StartCoroutine(this.CheckStateForAction());
@@ -104,7 +114,14 @@ public class MacaronController : MonoBehaviour, IEntity, ICutOff
                     Chasing = true;
                     LookTarget(playerTransform);
                     animator.Play("walk");
-                    transform.position = new Vector3(Vector3.MoveTowards(transform.position, playerTransform.position, RunSpeed * Time.deltaTime).x, 0, playerTransform.position.z);
+                    if (MoveType == false)
+                    {
+                        transform.position = new Vector3(Vector3.MoveTowards(transform.position, playerTransform.position, RunSpeed * Time.deltaTime).x, 0, transform.position.z);
+                    }
+                    else if (MoveType == true)
+                    {
+                        transform.position = new Vector3(transform.position.x, 0, Vector3.MoveTowards(transform.position, playerTransform.position, RunSpeed * Time.deltaTime).z);
+                    }
                     break;
                 case CurrentState.Hit:
                     Hit();
@@ -131,6 +148,12 @@ public class MacaronController : MonoBehaviour, IEntity, ICutOff
         }
     }
 
+    public void CutDamage()
+    {
+        gameObject.SetActive(false);
+        BodyParts.SetActive(true);
+    }
+
     void CutOff()
     {
         this.gameObject.SetActive(false);
@@ -140,10 +163,10 @@ public class MacaronController : MonoBehaviour, IEntity, ICutOff
 
     public void OnDamage(int damage, Vector3 pos)
     {
-        if (CheckCutOff())
-        {
-            CutOff();
-        }
+        //if (CheckCutOff())
+        //{
+        //    CutOff();
+        //}
         CurHP -= damage;
         State = CurrentState.Hit;
         Motioning = true;
@@ -222,8 +245,6 @@ public class MacaronController : MonoBehaviour, IEntity, ICutOff
             {
                 this.transform.rotation = Quaternion.RotateTowards(this.transform.rotation, Quaternion.LookRotation(DirL), 400 * Time.deltaTime);
             }
-
-
 
         }
 

@@ -16,6 +16,7 @@ public class ThornController: MonoBehaviour, IEntity, ICutOff
     public float RunSpeed = 12.0f;      
     public float AttackDelay = 3.0f;      
     public GameObject AttackArea;
+    public bool MoveType;  //false == z축 이동, true == x축이동
 
     [Header("[State/ScanDist]")]
     public CurrentState State = CurrentState.idle;
@@ -36,8 +37,10 @@ public class ThornController: MonoBehaviour, IEntity, ICutOff
     private bool Chasing = false;
     private bool DeadMotioning = false;
     public GameObject BodyParts;
-    private bool Invinbool = false;
+    public bool Invinbool = false;
     private bool CanLook = true;
+
+    
 
     void Start()
     {
@@ -45,6 +48,14 @@ public class ThornController: MonoBehaviour, IEntity, ICutOff
         playerTransform = GameObject.FindWithTag("Player").GetComponent<Transform>();
         animator = GetComponent<Animator>();
         CurHP = MaxHP;
+        if (MoveType == true)
+        {
+            _transform.position = new Vector3(playerTransform.position.x, _transform.position.y, _transform.position.z); //x축 player 보간
+        }
+        else if (MoveType == false)
+        {
+            _transform.position = new Vector3(_transform.position.x, _transform.position.y, playerTransform.position.z); //z축 player 보간
+        }
 
         StartCoroutine(this.CheckState());
         StartCoroutine(this.CheckStateForAction());
@@ -112,7 +123,15 @@ public class ThornController: MonoBehaviour, IEntity, ICutOff
                     Chasing = true;
                     LookTarget(playerTransform);
                     animator.Play("Run");
-                    transform.position = new Vector3(Vector3.MoveTowards(transform.position, playerTransform.position, RunSpeed * Time.deltaTime).x, 0, playerTransform.position.z);
+                    if (MoveType == false)
+                    {
+                        transform.position = new Vector3(Vector3.MoveTowards(transform.position, playerTransform.position, RunSpeed * Time.deltaTime).x, 0, transform.position.z);
+                    }
+                    else if(MoveType == true)
+                    {
+                        transform.position = new Vector3(transform.position.x, 0, Vector3.MoveTowards(transform.position, playerTransform.position, RunSpeed * Time.deltaTime).z);
+                    }
+
                     break;
                 case CurrentState.attack:
                     LookTarget(playerTransform);
@@ -158,6 +177,13 @@ public class ThornController: MonoBehaviour, IEntity, ICutOff
             return false;
         }
     }
+
+    public void CutDamage()
+    {
+        gameObject.SetActive(false);
+        BodyParts.SetActive(true);
+    }
+
     void CutOff()
     {
         this.gameObject.SetActive(false);
@@ -167,12 +193,13 @@ public class ThornController: MonoBehaviour, IEntity, ICutOff
 
     public void OnDamage(int damage, Vector3 pos)
     {
-        if (Invinbool == true)
+        Debug.LogError("가시벌레 피격");
+        if (Invinbool == false)
         {
-            if (CheckCutOff())
-            {
-                CutOff();
-            }
+            //if (CheckCutOff())
+            //{
+            //    CutOff();
+            //}
             CurHP -= damage;
             State = CurrentState.Hit;
             Motioning = true;
@@ -201,7 +228,7 @@ public class ThornController: MonoBehaviour, IEntity, ICutOff
         {
             Motioning = true;
             AttackArea.SetActive(true);
-            Invinbool = false;
+            Invinbool = true;
         }
 
         if (animator.GetCurrentAnimatorStateInfo(0).IsName("Attack") && (animator.GetCurrentAnimatorStateInfo(0).normalizedTime <= 0.35f ||
@@ -209,7 +236,7 @@ public class ThornController: MonoBehaviour, IEntity, ICutOff
         {
             Motioning = false;
             AttackArea.SetActive(false);
-            Invinbool = true;
+            Invinbool = false;
 
         }
     }
@@ -251,23 +278,51 @@ public class ThornController: MonoBehaviour, IEntity, ICutOff
     }
     void Patrol()
     {
-        if (Patrollook == false) //PatrolPoint1 -> PatrolPoint2로 이동
+        if (MoveType == false)
         {
-            transform.position = Vector3.MoveTowards(transform.position, PatrolPoint2.transform.position, WalkSpeed * Time.deltaTime);
-            LookTarget(PatrolPoint2.transform);
-            if (transform.position.x == PatrolPoint2.transform.position.x)
-            {
-                Patrollook = true;
-            }
 
-        }
-        else                    //PatrolPoint1 -> PatrolPoint2로 이동
-        {
-            transform.position = Vector3.MoveTowards(transform.position, PatrolPoint1.transform.position, WalkSpeed * Time.deltaTime);
-            LookTarget(PatrolPoint1.transform);
-            if (transform.position.x == PatrolPoint1.transform.position.x)
+            if (Patrollook == false) //PatrolPoint1 -> PatrolPoint2로 이동
             {
-                Patrollook = false;
+                transform.position = Vector3.MoveTowards(transform.position, PatrolPoint2.transform.position, WalkSpeed * Time.deltaTime);
+                LookTarget(PatrolPoint2.transform);
+                if (transform.position.x == PatrolPoint2.transform.position.x)
+                {
+                    Patrollook = true;
+                }
+
+            }
+            else                    //PatrolPoint1 -> PatrolPoint2로 이동
+            {
+                transform.position = Vector3.MoveTowards(transform.position, PatrolPoint1.transform.position, WalkSpeed * Time.deltaTime);
+                LookTarget(PatrolPoint1.transform);
+                if (transform.position.x == PatrolPoint1.transform.position.x)
+                {
+                    Patrollook = false;
+                }
+            }
+        }
+
+        if (MoveType == true)
+        {
+
+            if (Patrollook == false) //PatrolPoint1 -> PatrolPoint2로 이동
+            {
+                transform.position = Vector3.MoveTowards(transform.position, PatrolPoint2.transform.position, WalkSpeed * Time.deltaTime);
+                LookTarget(PatrolPoint2.transform);
+                if (transform.position.z == PatrolPoint2.transform.position.z)
+                {
+                    Patrollook = true;
+                }
+
+            }
+            else                    //PatrolPoint1 -> PatrolPoint2로 이동
+            {
+                transform.position = Vector3.MoveTowards(transform.position, PatrolPoint1.transform.position, WalkSpeed * Time.deltaTime);
+                LookTarget(PatrolPoint1.transform);
+                if (transform.position.z == PatrolPoint1.transform.position.z)
+                {
+                    Patrollook = false;
+                }
             }
         }
     }
