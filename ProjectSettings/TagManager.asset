@@ -11,6 +11,18 @@ TagManager:
   - UIController
   - Wall
   - Ground
+  - Monster
+  - UpperGround
+  - Anna
+  - AnnaTransform
+  - Wire_Start
+  - WireNode
+  - Grass
+  - Wood
+  - Rock
+  - Snow
+  - Ice
+  - FrozenScreen
   layers:
   - Default
   - TransparentFX
@@ -18,8 +30,8 @@ TagManager:
   - DarkArea
   - Water
   - UI
-  - 
-  - 
+  - Anna
+  - Effect
   - 
   - Player
   - Monster
@@ -30,27 +42,30 @@ TagManager:
   - 
   - Ground
   - Wall
-  - 
+  - CameraGround
   - Wire
   - Black
-  - 
+  - NullGround
   - Fragment
   - 
+  - ImmediateObjects
+  - NearObjects
+  - MiddleObjets
+  - FarObjects
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - CameraView
+  - Platform
+  - NullPlatform
   m_SortingLayers:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Effect
+    uniqueID: 2098507063
+    locked: 0
   - name: Monster
     uniqueID: 600744661
     locked: 0
-  - name: Effect
-    uniqueID: 2098507063
+  - name: Boss
+    uniqueID: 2788495881
     locked: 0

@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+<<<<<<< HEAD:MonsterBook/Assets/Animation/Player/Player_IdleLeft.anim.meta
+<<<<<<<< HEAD:MonsterBook/Assets/Lighting/Mat/Custom_MasterR&D1.mat.meta
+guid: 0259af1456bef46489fb36756b2cd5b6
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+========
+guid: 53c317d35c8a4064b9fe4b54555a4aac
+=======
+guid: 1bfeac0d967ff0143a6fec0f60fa0831
+>>>>>>> 21ab71509bfaf5b06dbe2cc54033654d40a37f52:MonsterBook/Assets/Animation/Player_N_CutDown.anim.meta
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+>>>>>>>> 0268c1bba15391f4e0a56cd6860a5d2666d244cd:MonsterBook/Assets/Animation/Player/Player_IdleLeft.anim.meta
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

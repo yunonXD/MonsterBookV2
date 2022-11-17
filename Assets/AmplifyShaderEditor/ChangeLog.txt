@@ -2445,7 +2445,8 @@ v1.5.4 dev 07:
 
 * Fixes:
     * Fixed issue on incorrectly capturing module tags
-    * Fixed issues with 'Flipbook UV Animation' node
+    * Fixed issues with 'Flipbook UV 
+    ' node
     * Fixed multiple issues with Directives usage under shader functions with templates
     * Fixed issue on 'Custom Expression' node loading on Call mode
     * Fixed issue on unpacking normals with scale on templates over multiple nodes

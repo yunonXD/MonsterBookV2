@@ -1,24 +1,18 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace MonsterFSM.RollRollFSM
 {
-    public class RollRoll_Running : NonAttackFSMBase
+    public class RollRoll_Running : MonsterFSMBase
     {
         private Vector3 StartTurn;
         private Vector3 Jumpforce;
-
         private Vector3 ArrivalPos;
         private float RandomDistance;
-
         private bool isJump;
-
         private RollRoll RollRollMon;
-
         private float CurrentObstacle;
 
-        
+
         public void init(MonsterBase MonsterController)
         {
             Monster = MonsterController;
@@ -26,7 +20,6 @@ namespace MonsterFSM.RollRollFSM
             ArrivalPos = Vector3.zero;
             StartTurn = MonsterController.transform.rotation.eulerAngles;
             isJump = false;
-            RollRollMon.gIsChase = true;
             RollRollMon.gAnimator.SetTrigger("Run");
             CurrentObstacle = 0.0f;
         }
@@ -37,106 +30,100 @@ namespace MonsterFSM.RollRollFSM
         public override void FixedExecute(Rigidbody rigid)
         {
             Move(rigid, Monster.transform.forward, Monster.gRunSpeed);
-            Jumpforce = JumpForce(Monster.gWalkSpeed);
-            if (Jumpforce != Vector3.zero)
-            {                
-                isJump = true;
-            }
-            else
-            {
-                AngleTurn();
-            }
+            AngleTurn();
         }
 
 
-        public override MonsterFSMBase Transition()
-        {
-
-            if (isJump)
-            {   
-                return RollRollFSMCreator.CreateJump(Monster, Jumpforce);
-            }
-
-            return this;
-        }
+        //public override MonsterFSMBase Transition()
+        //{
+        //
+        //    if (isJump)
+        //        return RollRollFSMCreator.CreateJump(Monster, Jumpforce);
+        //    return this;
+        //}
 
         public override void UpdateExecute()
         {
-            CreateObstacle();
+            //CreateObstacle();
         }
 
         protected override void AngleTurn()
         {
-            if (RollRollMon.gChaseType == RollRoll.EChaseType.RandomChase)
+            //if (RollRollMon.gChaseType == RollRoll.EChaseType.RandomChase)
+            //{
+            if (ArrivalPos == Vector3.zero || Monster.BoxCastCheck())
             {
-                if (ArrivalPos == Vector3.zero)
+
+                var v = Monster.gPatrolPoint;
+                Monster.CurrentPatrol = Random.Range(0, v.Length - 1);
+
+                int idx = Monster.CurrentPatrol;
+
+                RaycastHit hitinfo;
+
+
+
+                var D1 = Vector2.Distance(new Vector2(v[idx].position.x, v[idx].position.z), new Vector2(Monster.transform.position.x, Monster.transform.position.z));
+                var D2 = Vector2.Distance(new Vector2(v[idx + 1].position.x, v[idx + 1].position.z), new Vector2(Monster.transform.position.x, Monster.transform.position.z));
+
+                if (Physics.Linecast(Monster.transform.position, v[idx].position, out hitinfo))
                 {
-
-                    var v = Monster.gPatrolPoint;
-                    Monster.CurrentPatrol = Random.Range(0, v.Length - 1);
-
-                    int idx = Monster.CurrentPatrol;
-                    var D1 = Vector2.Distance(new Vector2 (v[idx].position.x, v[idx].position.z ), new Vector2(Monster.transform.position.x, Monster.transform.position.z));
-                    var D2 = Vector2.Distance(new Vector2(v[idx + 1].position.x, v[idx + 1].position.z), new Vector2(Monster.transform.position.x, Monster.transform.position.z));
-
-                    if (D1 >= D2)
-                    {
-                        RandomDistance = D1;
-                        ArrivalPos = v[idx].position;
-                    }
-
-                    else
-                    {
-                        RandomDistance = D2;
-                        ArrivalPos = v[idx + 1].position;
-                    }
-
-                    var rand = Random.Range(1, RandomDistance);
-                    var Dir = (Monster.transform.position - ArrivalPos).normalized;
-
-                    ArrivalPos = ArrivalPos + Dir * rand;
-
-
+                    if (!hitinfo.transform.CompareTag("Monster"))
+                        D1 = hitinfo.distance;
                 }
 
-                Monster.transform.LookAt(ArrivalPos);
-                var rot = Monster.transform.rotation;
-                Monster.transform.rotation = Quaternion.Euler(0.0f, rot.eulerAngles.y, 0.0f);
-
-
-
-
-
-                if (XZDistanceCheck(Monster.transform.position, ArrivalPos))
+                if (Physics.Linecast(Monster.transform.position, v[idx + 1].position, out hitinfo))
                 {
-                    Debug.Log("ÀÐÈû");
-                    ArrivalPos = Vector3.zero;
+                    if (!hitinfo.transform.CompareTag("Monster"))
+                        D2 = hitinfo.distance;
                 }
 
+
+
+
+                if (D1 >= D2)
+                {
+                    RandomDistance = D1;
+                    ArrivalPos = v[idx + 1].position;
+                }
+
+                else
+                {
+                    RandomDistance = D2;
+                    ArrivalPos = v[idx].position;
+                }
+
+                var rand = Random.Range(1, RandomDistance);
+                var Dir = (Monster.transform.position - ArrivalPos).normalized;
+
+                ArrivalPos = ArrivalPos + Dir * rand;
             }
-            else if (RollRollMon.gChaseType == RollRoll.EChaseType.OppersiteDirection)
+
+            Monster.transform.LookAt(ArrivalPos);
+            var rot = Monster.transform.rotation;
+            Monster.transform.rotation = Quaternion.Euler(0.0f, rot.eulerAngles.y, 0.0f);
+
+            if (XZDistanceCheck(Monster.transform.position, ArrivalPos))
             {
-                if (Monster.CapsuleCastCheck())
-                    StartTurn.y += 180.0f;
-                Monster.transform.rotation = Quaternion.Euler(0.0f, StartTurn.y + 180.0f, 0.0f);
-            }
-            else if (RollRollMon.gChaseType == RollRoll.EChaseType.NormalChase)
-            {
-                base.AngleTurn();
-            }
+                ArrivalPos = Vector3.zero;
+            }            
         }
 
-        private void CreateObstacle()
-        {
-            CurrentObstacle += Time.deltaTime;
-            if (CurrentObstacle >= RollRollMon.gCreateObstacleTime)
-            {
-                var rigidbody = Instantiate(RollRollMon.gObstacleObj, RollRollMon.transform.position + Vector3.up,Quaternion.identity).GetComponent<Rigidbody>();
-                var Force = Vector3.Scale(transform.forward, new Vector3(-1.0f ,0.0f ,0.0f)) + Vector3.up * 5;
-                rigidbody.AddForce(Force.normalized * 7,ForceMode.Impulse);
-                CurrentObstacle = 0.0f;
-            }
-        }
+
+
+        //private void CreateObstacle()
+        //{
+        //    CurrentObstacle += Time.deltaTime;
+        //    if (CurrentObstacle >= RollRollMon.gCreateObstacleTime)
+        //    {
+        //        var Cube = Instantiate(RollRollMon.gObstacleObj, RollRollMon.transform.position + Vector3.up, Quaternion.identity);
+        //        var Force = Vector3.Scale(transform.forward, new Vector3(-1.0f, 0.0f, 0.0f)) + Vector3.up * 5;
+        //        Cube.GetComponent<Rigidbody>().AddForce(Force.normalized * 7, ForceMode.Impulse);
+        //        Cube.GetComponent<RollRollObstacle>().Init(RollRollMon.gAttackDamage);
+        //        Destroy(Cube, RollRollMon.gDestoryObstacleTime);
+        //        CurrentObstacle = 0.0f;
+        //    }
+        //}
     }
 }
 

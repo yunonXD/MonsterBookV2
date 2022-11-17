@@ -1,7 +1,4 @@
-using System;
 using System.Collections;
-using System.Diagnostics;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 #pragma warning disable 
@@ -9,14 +6,36 @@ using UnityEngine.Events;
 public class Hansel : MonoBehaviour, IEntity
 {
     [HideInInspector] public GameObject myTarget;
-    [HideInInspector] public float HanselHP = 100;
+    public float HanselHP;
     [Header("현재 Hanse HP")] public float CurrentHP = 100;
     
-    [SerializeField] private int m_PlayerColDamage = 10;    //플레이어 닿았을 시 데미지
-    [SerializeField] private GameObject m_Gretel;           //2페이즈 활성화 시킬 그레텔
+    [SerializeField] private int m_PlayerColDamage = 10;    
+    [SerializeField] private GameObject m_Gretel;           
+    public float HanselIdleTime;
+    public float HanselIdleTime_Cur;
+    public bool LookPlayer;
+    public bool LookGretel;
+    public GameObject EventSystem;
+    public GameObject RuntoGretelPosition_X;
+    public GameObject RuntoGretelPosition_Y;
+    public GameObject ComeBackPosition;
+    public GameObject WallL;
+    public GameObject WallR;
+    [HideInInspector] public GameObject RushPunch_L;          //Effect
+    [HideInInspector] public GameObject RushPunch_R;
+    [HideInInspector] public GameObject RushPunch_end_L;
+    [HideInInspector] public GameObject RushPunch_end_R;
+    public GameObject[] RollingPoint;
+    [HideInInspector] public RigidbodyConstraints Constraints;
+
+    private ContactPoint HitPoint;
+    public GameObject Lamp;
+
+    public bool StunMove = false;
+    public GameObject WorldSound;
+
 
     [Header("=====================Smash")]
-
     #region  SmashAttack var
 
     [Header("Smash데미지")]
@@ -37,9 +56,11 @@ public class Hansel : MonoBehaviour, IEntity
     public float Attack_Time = 0;
 
     public float AttackPattern_1 = 4;
-    public float AttackPattern_2 = 4;
-    public float AttackPattern_3 = 4;
-    public float AttackPattern_4 = 4;
+    public float AttackPattern_2 = 7;
+    public float AttackPattern_3 = 10;
+    public float AttackPattern_4 = 6;
+    public GameObject Attack3_Damagecol;
+    public bool HanselFSMStart;
 
 
     #endregion
@@ -55,11 +76,12 @@ public class Hansel : MonoBehaviour, IEntity
     public int Rush_Speed = 5;
 
     [Header("Rush 끝나고 대기시간")]
-    public int Rush_EndWait = 4;
+    public float Rush_EndWait = 4;
 
     public GameObject RushCollider;                         //Rush에 사용할 Col   
     public bool isRushing = false;                          //Rush 중인지 체크
-    [HideInInspector] public bool Col_with_Wall = false;
+    public bool Col_with_Wall = false;                      //벽 감지 (거리만큼 들어왔는지)
+    public bool Colli_EndRush = false;                      //벽 감지 (러쉬 멈출 벽 체크)
 
     #endregion
 
@@ -95,6 +117,7 @@ public class Hansel : MonoBehaviour, IEntity
 
     public GameObject BellyCollider;                         //Belly에 사용할 Col 
     public bool isBelly = false;
+    public bool isThrow = false;
     private bool m_CanBelly = false;
     private int m_CountHit = 0;                              //공격 받은 횟수 카운트
     private float m_CurrentTime = 0;
@@ -168,10 +191,10 @@ public class Hansel : MonoBehaviour, IEntity
     [Header("던지기 힘")]
     public float TP_Force = 0.0f;
 
-    public bool isTP = false;           //던지기 실행중인지 확인
-    public GameObject TPCollider;       //데미지 콜 오브젝트 활성화
+    [Header("위로 던지기 힘")]
+    public float TP_ForceUp = 0.0f;
 
-    [HideInInspector] public bool TP_Throwing = false;
+    public bool isTP = false;           //던지기 실행중인지 확인
 
     #endregion
 
@@ -217,23 +240,13 @@ public class Hansel : MonoBehaviour, IEntity
     [HideInInspector] public Animator Ani = null;
     [HideInInspector] public Rigidbody rb;
     [HideInInspector] public bool IsDead = false;                                       //죽음 체크
-    [HideInInspector] public bool Isinvincibility = false;                              //무적기 체크
-    [HideInInspector] public bool isAttacked = true;                                    //공격 받았는지 체크
-     public int PhaseChecker = 1;                                      //1페이즈 2페이즈 체크
-    [HideInInspector] public CapsuleCollider CapCol_Hansel;
-    [HideInInspector] public Quaternion m_MyTartgetRot;
-    protected Vector3 PlayerYeet;
+    public bool Isinvincibility = false;                              //무적기 체크
+    [HideInInspector] public bool isAttacked = true;                                    //공격 받았는지 체크   
+    [HideInInspector] public int PhaseChecker = 0;                                      //1페이즈 2페이즈 체크
+    [HideInInspector] public CapsuleCollider CapCol_Hansel;                             //Hansel 콜라이더
+    [HideInInspector] public Quaternion m_MyTartgetRot;                                 //플레이어 회전 저장(던지기용)
     #endregion
 
-    [Header("=====================Rush % instance")]
-
-    #region Random Rush instance
-
-    [Header("플레이어 멍때리는시간")] public float TimerCount = 5;                        //얼마만큼 가만히 있으면 Rush 공격(랜덤) 할지 ..
-    [SerializeField][Header("멍때리고나서 Rush 발동 확률")] private int m_ForRushP = 30;  //TimerCount 만큼 가만히 있었을 시 Rush 가 발동할 확률
-    [SerializeField][Header("일반공격 말고 러쉬가 발동할 확률")] private int m_ForRushInsSmash = 30;
-
-    #endregion
 
     #region ==Debug==
 
@@ -243,79 +256,125 @@ public class Hansel : MonoBehaviour, IEntity
 
     #endregion
 
-    //==============================================================//
-
     void Awake()
     {
+        PhaseChecker = 1;
         ResetState();
         myTarget = GameObject.FindGameObjectWithTag("Player");
         Ani = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
         CapCol_Hansel = GetComponent<CapsuleCollider>();
+        Ani.SetTrigger("StageStart");
+        Constraints = rb.constraints;
+        Hansel_Start();
+        
     }
 
     void Start()
     {
-        StartCoroutine(CountTimer(TimerCount));
-
+        ResetState();
     }
 
     void FixedUpdate()
     {
-        state.Update();
-        RayCheckWall();
-        RayCheckPlayer();
-
-        //======================디버그=====================
-        DebugMode();
-        //Debug.Log(transform.localRotation.eulerAngles);
-        //======================디버그=====================
-
-
-        if (isSmash == true)    //Smash 연속 공격 에 사용할 목적
+        if(IsDead == true)
+        {
+            ChangeState(HanselStunMoveState_Y.Instance);
+        }
+        if (isSmash == true)    //Smash 연속 공격용 timer
         {
             Attack_Time += Time.deltaTime;
         }
+        state.Update();
+        RayCheckWall();
+        LookChaek_Player();
+        LookChaek_Gretel();
+
+        if(Input.GetKeyDown(KeyCode.T))
+        {
+            Hansel_Start();
+        }
+
     }
 
-    protected void DebugMode()
+    public void IsRushingReset()
     {
-        if (m_isDebug)
+        isRushing = false;
+    }
+    public void BellyColOff()
+    {
+        BellyCollider.SetActive(false);
+    }
+    public void BellyColOn()
+    {
+        BellyCollider.SetActive(true);
+    }
+
+    public void RushColOn()
+    {
+        RushCollider.SetActive(true);
+    }
+
+    public void Attack3_DamagecolOn()
+    {
+        Attack3_Damagecol.SetActive(true);
+    }
+    public void Attack3_DamagecolOff()
+    {
+        Attack3_Damagecol.SetActive(false);
+    }
+    public void Hansel_Start()
+    {
+        Ani.SetTrigger("Hansel_Start");
+
+        WorldSound.GetComponent<WorldSound>().WorldSoundPlay("1StageBoss_LightElectricity",0);   //램프 지지직소리 루프
+        rb.constraints = Constraints;
+        HanselFSMStart = true;
+    }
+
+    void ResetWalk()
+    {
+        Ani.SetFloat("H_Walk", 0);
+    }
+
+    void LookChaek_Player()
+    {
+        if (myTarget.transform.position.x <= gameObject.transform.position.x && (int)gameObject.transform.rotation.eulerAngles.y >= 265 &&
+            myTarget.transform.position.x <= gameObject.transform.position.x && (int)gameObject.transform.rotation.eulerAngles.y <= 275)
         {
-            if (Input.GetKeyDown(KeyCode.F1))
-            {
-                ChangeState(RollingAttack_State.Instance);
-            }
-
-            if (Input.GetKeyDown(KeyCode.F2))
-            {
-                ChangeState(RushAttack_State.Instance);
-            }
-
-            if (Input.GetKeyDown(KeyCode.F3))
-            {
-                ChangeState(BellyAttack_State.Instance);
-            }
-
-            if (Input.GetKeyDown(KeyCode.F4))
-            {
-                ChangeState(Stun_State.Instance);
-            }
-
-            if (Input.GetKeyDown(KeyCode.F5))
-            {
-                ChangeState(ThrowPlayer_State.Instance);
-            }
+            LookPlayer = true;
+        }
+        else if (myTarget.transform.position.x >= gameObject.transform.position.x && (int)gameObject.transform.rotation.eulerAngles.y >= 85 &&
+            myTarget.transform.position.x >= gameObject.transform.position.x && (int)gameObject.transform.rotation.eulerAngles.y <= 95)
+        {
+            LookPlayer = true;
         }
         else
-            return;
+        {
+            LookPlayer = false;
+        }
+    }
+    void LookChaek_Gretel()
+    {
+        if (RuntoGretelPosition_X.transform.position.x <= gameObject.transform.position.x && (int)gameObject.transform.rotation.eulerAngles.y == 270)
+        {
+            LookGretel = true;
+        }
+        else if (RuntoGretelPosition_X.transform.position.x >= gameObject.transform.position.x && (int)gameObject.transform.rotation.eulerAngles.y == 90)
+        {
+            LookGretel = true;
+        }
+        else
+        {
+            LookGretel = false;
+        }
     }
 
     public void ChangeState(FSM_State<Hansel> _State)
     {
         state.ChangeState(_State);
     }
-
+    
 
     #region OnCollisionEnter Yeet
 
@@ -323,38 +382,7 @@ public class Hansel : MonoBehaviour, IEntity
     {
         if (!isRushing && !isRolling && !_isStuned && !isBelly && !isTP)
         {
-            if (collision.collider.CompareTag("Player"))
-            {
-                myTarget = collision.collider.gameObject;      //혹시 몰라서 한번 더 넣어줌
-
-
-                if (CheckRange())   //플레이어 ~ 보스 거리측정
-                {                
-                    if (RandCalculate(m_ForRushInsSmash) && !Col_with_Wall &&
-                        (transform.rotation.eulerAngles.y == 90 || transform.rotation.eulerAngles.y == -90 || transform.rotation.eulerAngles.y == -270 || transform.rotation.eulerAngles.y == 270))
-                    {
-                        ChangeState(RushAttack_State.Instance);
-                    }
-                    else if (RandCalculate(TP_Percent) && (PhaseChecker == 2) && RayPlayer && !Col_with_Wall)
-                    {
-                        //ChangeState(ThrowPlayer_State.Instance);
-                    }
-                    else if (!isSmash)
-                    {
-                        ChangeState(SmashAttack_State.Instance);
-                    }
-                    else
-                    {
-                        return;
-                    }
-                }
-                else if (!CheckRange())
-                {
-                    ChangeState(HanselMove_State.Instance);
-                    return;
-                }
-            }           
-            else if (collision.collider.CompareTag("BossBuff"))
+            if (collision.collider.CompareTag("BossBuff"))
             {
                 ChangeState(RollingAttack_State.Instance);
             }
@@ -362,51 +390,82 @@ public class Hansel : MonoBehaviour, IEntity
         }
     }
 
-#endregion
+    #endregion
 
     public bool CheckRange()        // Smash 거리측정기
     {
-
-        if (Vector3.Distance(myTarget.transform.position, transform.position) <= SmashAttackRange)
+        if (Vector3.Distance(myTarget.transform.position, transform.position) <= SmashAttackRange && LookPlayer)
         {
-
             return true;
         }
 
         return false;
 
     }
+    public float CheckRange(int i)
+    {
+        return Vector3.Distance(myTarget.transform.position, transform.position);
+    }
 
     public void ResetState()        //Hansel 리셋
     {
         CurrentHP = HanselHP;
         state = new StateMachine<Hansel>();
-
-        state.Initial_Setting(this, HanselMove_State.Instance);
-
-        // Reset Target 은.. 필요 없을듯
-        // myTarget = null;
+        state.Initial_Setting(this, HanselIdelState.Instance);
+        _isStuned = false;
+        Isinvincibility = false; 
     }     
-
-    public void inPhaseTwo()        //페이즈2 진입
+    public void ResetState_2()      
     {
-        ResetState();
-        Ani.SetTrigger("H_Phase2");
-        m_CountHit = 0;
+        CurrentHP = HanselHP;
+        state.Initial_Setting(this, HanselIdelState.Instance);
+        Ani.Play("Cry_End");
+        _isStuned = false;
+        Isinvincibility = false; 
+    }
+    public void ResetState_Protected()      
+    {
+        CurrentHP = HanselHP;
+        //state.Initial_Setting(this, HanselIdelState.Instance);
+        Ani.Play("Cry_End");
+        _isStuned = false;
+        Isinvincibility = false;
+    }
+
+    public void inPhaseTwo()        //페이즈2 이벤트
+    {
+
+        ResetState_2();
+        MoveWall();
+        Lamp.SetActive(false);
         PhaseChecker++;
-
-        m_Gretel.SetActive(true);
+        Ani.Play("Cry_End");
+        WorldSound.GetComponent<WorldSound>().WorldSoundStop("1StageBoss_LightElectricity");
+        WorldSound.GetComponent<WorldSound>().WorldSoundPlay("1StageBoss_BurningFire", 1);
+        WorldSound.GetComponent<WorldSound>().WorldSoundPlay("1StageBoss_PotBoilling", 2);
+        WorldSound.GetComponent<WorldSound>().WorldSoundPlay("1StageBoss_Cooking", 3);
         pazeTwoEvent.Invoke();
+    }
 
-    }       
+    void MoveWall()  //Phase2 Event 맵 넓어지기때문에 투명벽 위치 이동 및 벽에서 발생하는 이펙트위치 이동
+    {
+        WallL.transform.position = new Vector3(WallL.transform.position.x - 8, WallL.transform.position.y, WallL.transform.position.z);
+        WallR.transform.position = new Vector3(WallR.transform.position.x + 8, WallR.transform.position.y, WallR.transform.position.z);
+
+        RushPunch_L.transform.position = new Vector3(RushPunch_L.transform.position.x - 8, RushPunch_L.transform.position.y, RushPunch_L.transform.position.z);
+        RushPunch_end_L.transform.position = new Vector3(RushPunch_end_L.transform.position.x - 8, RushPunch_end_L.transform.position.y, RushPunch_end_L.transform.position.z);
+
+        RushPunch_R.transform.position = new Vector3(RushPunch_R.transform.position.x + 8, RushPunch_R.transform.position.y, RushPunch_R.transform.position.z);
+        RushPunch_end_R.transform.position = new Vector3(RushPunch_end_R.transform.position.x + 8, RushPunch_end_R.transform.position.y, RushPunch_end_R.transform.position.z);
+        RollingPoint[0].transform.position = new Vector3(RollingPoint[0].transform.position.x - 8, RollingPoint[0].transform.position.y, RollingPoint[0].transform.position.z);
+        RollingPoint[2].transform.position = new Vector3(RollingPoint[2].transform.position.x - 8, RollingPoint[2].transform.position.y, RollingPoint[2].transform.position.z);
+        RollingPoint[1].transform.position = new Vector3(RollingPoint[1].transform.position.x + 8, RollingPoint[1].transform.position.y, RollingPoint[1].transform.position.z);
+        RollingPoint[3].transform.position = new Vector3(RollingPoint[3].transform.position.x + 8, RollingPoint[3].transform.position.y, RollingPoint[3].transform.position.z);
+    }
 
     public bool RandCalculate(int RandNum)     //만능 % cul. 여러곳에서 사용중
     {
         var m_rand = UnityEngine.Random.Range(1, 101);
-#if DEBUG
-        //Debug.LogError("랜덤 값 : " + m_rand);
-#endif
-
 
         if (m_rand <= RandNum)
         {
@@ -419,12 +478,7 @@ public class Hansel : MonoBehaviour, IEntity
     public void RandCalculateForSmash(int RandNum)
     {
         var m_Srand = UnityEngine.Random.Range(1, RandNum);
-#if DEBUG
-        //Debug.Log("스메쉬 랜덤 값 : " + m_Srand);
-#endif
-
        ForSmashP = m_Srand;
-       //ForSmashP = 4;
     }
 
     public void OnDircalculator(int Yeet)
@@ -441,6 +495,7 @@ public class Hansel : MonoBehaviour, IEntity
                 //Left
                 transform.eulerAngles = new Vector3(transform.localRotation.x, 270, transform.localRotation.z);
                 transform.localScale = new Vector3(2.3f * -1f, 2.3f, 2.3f);
+
             }
             else
             {
@@ -469,58 +524,25 @@ public class Hansel : MonoBehaviour, IEntity
         }
     }
 
-
-    #region CoroutineTimer/Belly/Protect
-
-    public IEnumerator CountTimer(float m_Timer)                //일정 시간 공격 받는지 체크
-    {
-        yield return new WaitForSeconds(m_Timer);
-
-        if (!isAttacked && RandCalculate(m_ForRushP) && !isRolling && !isBelly && !isRushing &&!_isStuned &&
-            (transform.rotation.eulerAngles.y == 90 || transform.rotation.eulerAngles.y == -90 || transform.rotation.eulerAngles.y == -270 || transform.rotation.eulerAngles.y == 270))
-        {
-            ChangeState(RushAttack_State.Instance);
-        }
-        isAttacked = false;
-        m_CountHit = 0;
-
-        StartCoroutine(CountTimer(TimerCount));
-    }
-
-    public IEnumerator CountBelly(int LoadTime)                 //2초 안에 4회 연속 공격 받을 시 배치기 공격으로 전환
-    {
-        m_bellyTimer = LoadTime;
-        while (m_CurrentTime <= m_bellyTimer && isAttacked && m_CountHit >= 1 && !isRushing)
-        {
-            m_CurrentTime = m_CurrentTime + Time.deltaTime;
-
-            if (m_CountHit >= 4 && !isRushing && !_isStuned)
-            {
-                m_CurrentTime = 0;
-                ChangeState(BellyAttack_State.Instance);
-                yield return null;
-            }
-            else
-                yield return null;
-
-        }
-    }
-
-    #endregion
-
     #region ==Ray==
     private RaycastHit m_hit;
+    private RaycastHit m_WallHit;
     private RaycastHit m_PlayerHit;
     [Header("=====================")]
-    [Header("벽 탐지 Ray 길이")][SerializeField] private float RayDistance = 10;
-    [Header("플레이어 탐지 Ray 길이")][SerializeField] private float RayPlayerDistance = 5;
+    [Header("벽 탐지 Ray 길이")][SerializeField] private float m_RayDistance = 10;
+    [Header("벽 충돌 Ray 길이")][SerializeField] private float m_ColDistnace = 3;
+    [Header("플레이어 탐지 Ray 길이")][SerializeField] private float m_RayPlayerDistance = 5;
     [SerializeField] private LayerMask m_LayMask;
     [SerializeField] private LayerMask m_PlayerLayMask;
 
-    void RayCheckWall()     //벽탐지
+    void RayCheckWall()     //벽탐지 // 충돌탐지 // 배치기 탐지
     {
-        UnityEngine.Debug.DrawRay(transform.position, transform.forward * RayDistance, Color.green);
-        if (Physics.Raycast(transform.position, transform.forward, out m_hit, RayDistance, m_LayMask))
+        UnityEngine.Debug.DrawRay(transform.position + Vector3.up, transform.forward * m_RayDistance, Color.green);
+        UnityEngine.Debug.DrawRay(transform.position + Vector3.up, transform.forward * m_ColDistnace, Color.red);
+        UnityEngine.Debug.DrawRay(transform.position, transform.forward * m_RayPlayerDistance, Color.blue);
+
+        #region distance from the wall
+        if (Physics.Raycast(transform.position + Vector3.up, transform.forward, out m_hit, m_RayDistance, m_LayMask))
         {
             Col_with_Wall = true;
         }
@@ -528,13 +550,22 @@ public class Hansel : MonoBehaviour, IEntity
         {
             Col_with_Wall = false;
         }
-    }
+        #endregion
 
-    void RayCheckPlayer()       //플레이어 보스 안에 있으면 (SetBellyTime 초동안) 배치기
-    {
-        UnityEngine.Debug.DrawRay(transform.position + Vector3.up, transform.forward * RayPlayerDistance, Color.blue);
-        if (Physics.Raycast(transform.position + Vector3.up, transform.forward, out m_PlayerHit, RayPlayerDistance, m_PlayerLayMask))
-        {           
+        #region distance form ColWall
+        if (Physics.Raycast(transform.position + Vector3.up, transform.forward, out m_WallHit, m_ColDistnace, m_LayMask))
+        {
+            Colli_EndRush = true;
+        }
+        else
+        {
+            Colli_EndRush = false;
+        }
+        #endregion
+
+        #region CheckBellyRay
+        if (Physics.Raycast(transform.position, transform.forward, out m_PlayerHit, m_RayPlayerDistance, m_PlayerLayMask))
+        {
             m_CanBelly = true;
             RayPlayer = true;
 
@@ -552,11 +583,12 @@ public class Hansel : MonoBehaviour, IEntity
             RayPlayer = false; ;
             m_BellyColTime = 0;
         }
-    }
+        #endregion
 
+    }
     #endregion
 
-    #region ForAnime
+
 
     #region Smash
     //----------------Smash 공격용 Animation 컨트롤러---------------//
@@ -583,48 +615,83 @@ public class Hansel : MonoBehaviour, IEntity
     {
         //Vector3 m_Dir = new Vector3(transform.position.x, 0,0);
         //rb.AddForce(m_Dir * val, ForceMode.VelocityChange);
-        rb.AddForce(transform.forward * val, ForceMode.VelocityChange);
+        rb.AddForce(transform.forward * val*1.5f, ForceMode.VelocityChange);  
     }
 
     //-----------------------------------------------------------------//
     #endregion
 
-    #region ThrowPlayer
     //--------------플레이어 던지기 공격용 Animation 컨트롤러-------------//
     protected void SetParent_R()
     {
-        myTarget.transform.SetParent(HanselHand_R );
+        GameObject Player = myTarget;
+        Player.transform.SetParent(HanselHand_R ,true);
+        Player.transform.position = HanselHand_R.transform.position;
     }
 
     protected void SetParent_L()
-    {     
-        myTarget.transform.SetParent(HanselHand_L);       
+    {
+        
+        GameObject Player = myTarget;
+        Player.transform.SetParent(HanselHand_L , true);
+        Player.transform.position = HanselHand_L.transform.position;
     }
 
     protected void SetParentnullWithForce( )
-    {    
-        myTarget.transform.SetParent(null);
+    {
+        GameObject Player = myTarget;
+        Player.transform.SetParent(null , true);
         myTarget.GetComponent<CapsuleCollider>().isTrigger = false;
-
+        myTarget.GetComponent<PlayerController>().SetThrowState(false);
+        myTarget.GetComponent<Rigidbody>().velocity = Vector3.zero;
     }
 
     protected void ThrowPlayerYeet()
     {
-        TP_Throwing = true;
-        myTarget.GetComponent<PlayerController>().SetThrowState(false);
-        myTarget.GetComponent<Rigidbody>().AddForce(transform.forward * TP_Force, ForceMode.Impulse);
+
+        var Dir = new Vector3(this.transform.rotation.eulerAngles.x, 0, 0).normalized;
+        //myTarget.GetComponent<Rigidbody>().AddForce(Dir * 200 * TP_Force, ForceMode.Impulse);
+        myTarget.GetComponent<Rigidbody>().AddForce(this.transform.forward.normalized* 50 * TP_Force, ForceMode.VelocityChange);
+
+
     }
 
-    //-----------------------------------------------------------------//
-    #endregion
 
     protected void Particle_anime(string name)
     {
-        m_Particle[name].Play();
+        if (name == "Attack01" || name == "Attack02" || name == "Attack03" || name == "RushPunch_End" || name == "RushPunch")
+        {
+           
+            if(gameObject.transform.rotation.eulerAngles.y >= 89 && gameObject.transform.rotation.eulerAngles.y <= 91) //enlerAngles 소수점 오차 보간 
+            {
+                Debug.Log(name + "_R");
+                m_Particle[name + "_R"].Play();
+            }
+            else
+            {
+                Debug.Log(name + "_L");
+                m_Particle[name + "_L"].Play();
+            }
+        }
+        else
+        {
+            m_Particle[name].Play();
+        }
+    }
+
+    protected void Particle_anime_end(string name)
+    {
+        m_Particle[name].Stop();
+    }
+    
+    public void HanselSound(string name)
+    {
+        SoundManager.PlayVFXSound(name, transform.position);
     }
 
 
-    #endregion
+
+
 
     //================================================================//
     public void OnDamage(int PlayerDamage, Vector3 pos)
@@ -634,30 +701,86 @@ public class Hansel : MonoBehaviour, IEntity
             CurrentHP -= PlayerDamage;
             isAttacked = true;
 
-            m_Particle["OnDamage"].Play();
 
-            m_CountHit += 1;                              //공격받은 횟수 카운트
-            StartCoroutine(CountBelly(BellyDelay));       //배치기 카운트
+            if (Ani.GetFloat("H_Walk") <= 0.5f)
+            {
+                if( (!isRushing && !isRolling && !_isStuned && !isBelly && !isTP && !isSmash))
+                {
+                    Ani.SetFloat("H_Walk", 2);
+                    Ani.Play("I&W");
+                }
+            }
+
+            if(myTarget.transform.position.x < gameObject.transform.position.x)
+            {
+                m_Particle["OnDamage_L"].Play();
+            }
+            else
+            {
+                m_Particle["OnDamage_R"].Play();
+            }    
+
 
             if (PhaseChecker == 1 && CurrentHP <= 10)
             {
-                inPhaseTwo();
+                ChangeState(Stun_State.Instance);   //스턴 스테이트 -> 애니메이션 재생                
+                StartCoroutine(PazeTwoRoutine());
                 m_CountHit = 0;
             }
-            if (PhaseChecker == 2 && CurrentHP <= 0)
+            if (PhaseChecker == 2 && CurrentHP <= 0 &&(!isRushing && !isRolling && !_isStuned && !isBelly && !isTP))
             {
-                ChangeState(Stun_State.Instance);
+                StunMove = true;
+                Ani.Play("I&W");
+                ChangeState(HanselStunMoveState_Y.Instance);
             }
+        }
 
-        }
-        else
+        else //그레텔 그로기타임 딜링
         {
-            UnityEngine.Debug.Log("!!무적상태. 플레이어 공격 무시!!");
+            if (m_Gretel.GetComponent<Gretel>()._Ani.GetBool("DamageTime")) 
+            {
+                m_Gretel.GetComponent<Gretel>().CurrentHP -= PlayerDamage;
+
+                if (myTarget.GetComponent<PlayerController>().lookVector.x == 1)
+                {
+                    m_Particle["OnDamage_L"].Play();
+                }
+                else
+                {
+                    m_Particle["OnDamage_R"].Play();
+                }
+            }
         }
+    }
+
+    public void GretelAble()
+    {
+        EventSystem.SetActive(true);   //벽 넘어가는 이벤트
+        m_Gretel.GetComponent<Gretel>()._Ani.SetBool("GretelEnable", true);
+    }
+
+    private IEnumerator PazeTwoRoutine()
+    {
+        yield return YieldInstructionCache.waitForSeconds(3);
+        CameraController.CameraShaking(0.8f, 1f);
+        yield return YieldInstructionCache.waitForSeconds(1.2f);
+        var targetPos = new Vector3(-5, -41.9f, 25.5f);
+        while (Vector3.Distance(m_Gretel.transform.parent.localPosition, targetPos) >= 0.08f)
+        {
+            //m_Gretel.transform.parent.localPosition = Vector3.MoveTowards(m_Gretel.transform.parent.localPosition, targetPos, Time.deltaTime * 27);            
+            m_Gretel.transform.parent.localPosition = Vector3.Lerp(m_Gretel.transform.parent.localPosition, targetPos, Time.deltaTime * 7.2f);
+            yield return YieldInstructionCache.waitForFixedUpdate;
+        }        
+        yield return YieldInstructionCache.waitForSeconds(0.5f);
+        GretelAble();
+        m_Gretel.transform.parent.localRotation = Quaternion.Euler(0, 180, 0);
     }
 
     public void OnRecovery(int heal)
     {
 
     }
+
+
+
 }

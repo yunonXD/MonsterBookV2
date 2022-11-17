@@ -1,130 +1,151 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
 public class Knife_Attack_State : FSM_State<Gretel>
 {
-
     static readonly Knife_Attack_State instance = new Knife_Attack_State();
-    private Transform KnifeTransform;
-    private int cutCount = 0;
-    private bool AttackTimer = true;
-
     public static Knife_Attack_State Instance
     {
         get { return instance; }
     }
 
-    private float m_AttackTimer = 0f;
-    private bool KnifeAttack = false;
 
+    private bool OnetimeTrigger = false;
+    private int CutCount = 0;                   // 나이프 공격 횟수 Counter
+    private bool AttackTimer = true;            // 공격 타이머 트리거
+    private Transform PlayerTransform;          // 플레이어포지션
+    private float Dist;
+    private bool CutCountOneTimeTrigger;
+    private Transform GretelTransform;
+    private float Dist_NoJump;
     public override void EnterState(Gretel _Gretel)
     {
-        KnifeAttack = false;
-        ResetKnife(_Gretel);
-        if (_Gretel.myTarget == null)
-        {
-            return;   //플레이어 체크
-        }
-
+        CutCount = 0;
+        _Gretel.m_AttackTimer = -1f;
+        _Gretel._Ani.SetBool("KnifeAttackStart",true);
+        _Gretel._Ani.SetBool("KnifeAttackEnd", false);
+        GretelTransform = GameObject.FindWithTag("Gretel").transform;
+        PlayerTransform = _Gretel.myTarget.transform;
+        AttackTimer = true;
 
     }
- 
-
     public override void UpdateState(Gretel _Gretel)
     {
-        if (_Gretel.CurrentHP <= 0) //사망확인
+
+        if(!_Gretel.GetComponent<Gretel>()._Ani.GetBool("GretelEnable"))
         {
-            //_Gretel.ChangeState(GretelDie_State.Instance);
+            return;
         }
+
 
         if (AttackTimer == true)
         {
-            m_AttackTimer += Time.deltaTime;   //어택타이머
+            _Gretel.m_AttackTimer += Time.deltaTime;   //어택타이머
         }
-
-        if (_Gretel.myTarget)  //타겟확인
+        if (_Gretel.m_AttackTimer <= _Gretel.KnifeFollowTime && _Gretel.m_AttackTimer > 0) 
         {
-            if (true) //공격쿨타임 확인용 현제 1회만 공격하기떄문에 미사용
+            if (_Gretel.ResetPosition == false)
             {
-                if (m_AttackTimer <= _Gretel.KnifeFollowTime && KnifeAttack == false) //5초동안 쫓아다님
+                if (_Gretel.GretelTransform.position.z >= 16.6)
                 {
-                    if (cutCount == _Gretel.KnifeAttackCount)
-                    {
-                        _Gretel.ChangeState(Soup_Attack_State.Instance);
-                    }
-                    else
-                    {
-                        KnifeMove(_Gretel);
-                    }
+                    _Gretel.GretelTransform.position = new Vector3(GretelTransform.position.x, GretelTransform.position.y, GretelTransform.position.z - 0.05f);
                 }
-
-                else if (m_AttackTimer >= _Gretel.KnifeFollowTime && KnifeAttack == false)  
+                if (_Gretel.GretelTransform.position.x <= -4.6)
                 {
-                    KnifeDown(_Gretel);
-                }   
-
-                if(KnifeAttack == true)
-                {
-                    KnifeUp(_Gretel);
+                    _Gretel.GretelTransform.position = new Vector3(GretelTransform.position.x + 0.05f, GretelTransform.position.y, GretelTransform.position.z);
                 }
+            }
+            if (CutCount == _Gretel.KnifeAttackCount)
+            {
 
-                if (_Gretel.KnifeObject.transform.position.y <= 1.0f && KnifeAttack == false)  //나이프가 바닥에 닿으면 나이프공격 -> 스프공격
+                CutCount = 0;
+                
+                _Gretel.KnifeCollider.GetComponent<BoxCollider>().enabled = false;
+                Debug.Log(_Gretel.Hansel.GetComponent<Hansel>().CurrentHP);
+                Debug.Log(_Gretel.Hansel.GetComponent<Hansel>()._isStuned);
+
+                if (_Gretel.Hansel.GetComponent<Hansel>().CurrentHP <= 0 && _Gretel.Hansel.GetComponent<Hansel>()._isStuned == true)
                 {
-                    //나이프공격 종료 조건필요
-                    KnifeAttack = true;
-
-                       cutCount++;
-                        m_AttackTimer = 0;
-                       AttackTimer = false;
-
-
+                    _Gretel._Ani.SetTrigger("KnifetoIdle");
+                    _Gretel.ChangeState(Protected_State.Instance);
                 }
-
-                if (_Gretel.KnifeObject.transform.position.y >= 12.4f && AttackTimer == false)
+                else
                 {
-
-                    KnifeAttack = false;
-                    AttackTimer = true;
+                    _Gretel._Ani.SetBool("KnifeAttackEnd", true);
+                    _Gretel.ChangeState(Soup_Attack_State.Instance); 
                 }
 
             }
+            else
+            {
+                Dist_NoJump = Vector3.Distance(_Gretel.GetComponent<Gretel>().PlayerNoJumpPosition.transform.position, _Gretel.transform.position);
+                Dist_NoJump = (Dist_NoJump-40)/10+0.4f; //플레이어와 그레텔의 거리 범위 40~50   계산법 (x - 40) = 0 ~ 10 -> x/10 => 0 ~ 1 (Blend)로 넣음
+                _Gretel._Ani.SetFloat("Blend", Dist_NoJump);
+                _Gretel.KnifeCollider.GetComponent<BoxCollider>().enabled = false;
+
+                //나이프 추격
+                _Gretel.Rigobject.GetComponent<Rig>().weight = 0.5f;
+                Dist = Vector3.Distance(PlayerTransform.position, _Gretel.transform.position);
+                CutCountOneTimeTrigger = false;
+                OnetimeTrigger = false;
+            }
         }
 
-    }
+        else if (_Gretel.m_AttackTimer > _Gretel.KnifeFollowTime)   //나이프 공격
+        {
 
+            if (_Gretel.FollowTrigger)
+            {
+                _Gretel.KnifeCollider.GetComponent<BoxCollider>().enabled = true;
+                LookTarget(_Gretel.playerAimPoint.transform, GretelTransform);
+                _Gretel.Rigobject.GetComponent<Rig>().weight = 0f;
+            }
+
+            if (OnetimeTrigger == false)
+            {
+                _Gretel._Ani.SetBool("KnifeAttackRoop", true);
+                //LookTarget_SP(_Gretel.playerAimPoint.transform,GretelTransform);
+                OnetimeTrigger = true;
+            }
+            if (CutCountOneTimeTrigger == false)
+            {
+                CutCount++;
+                CutCountOneTimeTrigger = true;
+            }
+            
+        }
+    }
     public override void ExitState(Gretel _Gretel)
     {
-        KnifeAttack = false;
-        _Gretel.KnifeObject.SetActive(false);
+        _Gretel.ResetPosition = true;
+        _Gretel._Ani.SetBool("KnifeAttackRoop", false);
+        //_Gretel._Ani.SetBool("KnifeAttackEnd", false);
+        _Gretel._Ani.SetBool("KnifeAttackStart", false);
+
+    }
+    void LookTarget(Transform Target, Transform _Gretel)
+    {
+
+        Vector3 dir = Target.position - _Gretel.transform.position;
+            Vector3 dirXZ = new Vector3(dir.x, 0f, dir.z);
+
+            if (dirXZ == Vector3.zero)
+                return;
+
+            _Gretel.transform.rotation = Quaternion.RotateTowards(_Gretel.transform.rotation, Quaternion.LookRotation(dirXZ), 100 * Time.deltaTime);
     }
 
-    void ResetKnife(Gretel _Gretel)
+    void LookTarget_SP(Transform Target, Transform _Gretel)
     {
-        _Gretel.KnifeObject.transform.position = new Vector3(_Gretel.myTarget.transform.position.x,
-                                                   _Gretel.myTarget.transform.position.y + 10,
-                                                   _Gretel.myTarget.transform.position.z);
-        _Gretel.KnifeObject.SetActive(true);
-        cutCount = 0;
-        m_AttackTimer = 0f;
-    }
-    void KnifeMove(Gretel _Gretel)
-    {
-        _Gretel.KnifeObject.transform.position = new Vector3(Vector3.MoveTowards(_Gretel.KnifeObject.transform.position, _Gretel.myTarget.transform.position, _Gretel.KnifefollowSpeed * Time.deltaTime).x,
-            _Gretel.KnifeObject.transform.position.y, _Gretel.KnifeObject.transform.position.z);
-    }
-    void KnifeDown(Gretel _Gretel)
-    {
-        _Gretel.KnifeObject.transform.position = new Vector3(_Gretel.KnifeObject.transform.position.x,
-                        Vector3.MoveTowards(_Gretel.KnifeObject.transform.position, new Vector3(0, -1, 0), _Gretel.KnifeDownSpeed * Time.deltaTime).y,
-                        _Gretel.KnifeObject.transform.position.z);
-    }
+        Vector3 dir = Target.position - _Gretel.transform.position;
+        Vector3 dirXZ = new Vector3(dir.x, 0f, dir.z);
 
-    void KnifeUp(Gretel _Gretel)
-    {
-        _Gretel.KnifeObject.transform.position = new Vector3(_Gretel.KnifeObject.transform.position.x,
-                        Vector3.MoveTowards(_Gretel.KnifeObject.transform.position, new Vector3(0, 13, 0), _Gretel.KnifeDownSpeed * Time.deltaTime).y,
-                        _Gretel.KnifeObject.transform.position.z);
+        if (dirXZ == Vector3.zero)
+            return;
+
+        _Gretel.transform.rotation = Quaternion.RotateTowards(_Gretel.transform.rotation, Quaternion.LookRotation(dirXZ), 500 * Time.deltaTime);
     }
 
 

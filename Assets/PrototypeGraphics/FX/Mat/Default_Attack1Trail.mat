@@ -62,6 +62,7 @@ Material:
     - _DistortionStr: 0.4
     - _IntenCustomCustomZ: 0
     - _MainTexTIlingCustom2XY: 0
+    - _MainTex_inten: 2
     - _Mask: 0
     - _MaskPanCustom2zw: 0
     - _MaskStr: 13.75
@@ -71,12 +72,12 @@ Material:
     - _UVDistortion: 0
     - _depth: 0
     - _dissolve: 1
-    - _inten: 25
+    - _inten: 10
     m_Colors:
     - _DissolveTexTilingOffset: {r: 1, g: 1, b: 0, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
     - _MainTexPanDirecCustomX: {r: 1, g: 0, b: 0, a: 0}
-    - _MainTexTilingOffset: {r: 1, g: 5.45, b: -0.09, a: -3.23}
+    - _MainTexTilingOffset: {r: 1, g: 1.2, b: -0.09, a: 0}
     - _MaskPan: {r: 1, g: 1, b: 0, a: 0}
     - _UVDistortPanZtime: {r: 0, g: 0, b: 0, a: 0}
     - _UVDistortTileOffset: {r: 1, g: 1, b: 0, a: 0}

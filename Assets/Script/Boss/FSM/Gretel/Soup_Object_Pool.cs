@@ -22,18 +22,24 @@ public class Soup_Object_Pool : MonoBehaviour
     public void MakeSoup(Vector3 position)
     {
         var soup = Soup_Object_Pool.GetObject(); 
+        soup.GetComponent<Rigidbody>().velocity = Vector3.zero;
         var direction = new Vector3( position.x, position.y, position.z);
         soup.Solid = false;
         soup.transform.position = direction;
         soup.Create();
+        soup.GetComponent<Soup>().Effect.GetComponent<ParticleSystem>().Play();
+        soup.GetComponent<Rigidbody>().useGravity = true;
     }
     public void MakeSolidSoup(Vector3 position)
     {
-        var soup = Soup_Object_Pool.GetObject(); 
+        var soup = Soup_Object_Pool.GetObject();
+        soup.GetComponent<Rigidbody>().velocity = Vector3.zero;
         var direction = new Vector3(position.x, position.y, position.z);
         soup.Solid = true;
         soup.transform.position = direction;
         soup.Create();
+        soup.GetComponent<Soup>().Effect.GetComponent<ParticleSystem>().Play();
+        soup.GetComponent<Rigidbody>().useGravity = true;
     }
     private void Initialize(int initCount)
     {
@@ -78,6 +84,7 @@ public class Soup_Object_Pool : MonoBehaviour
 
     public static void ReturnObject(Soup obj)
     {
+        
         obj.gameObject.SetActive(false);
         obj.transform.SetParent(Instance.transform);
         Instance.poolingObjectQueue.Enqueue(obj);

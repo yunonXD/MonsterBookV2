@@ -5,26 +5,68 @@ using UnityEngine;
 
 public class BossDirector : MonoBehaviour
 {
+    private bool startEvent;
+
     [SerializeField] private float speed;
     [SerializeField] private Vector3 toWard;
 
-    [SerializeField] Transform bossRoom;
+    [Header("")]
+    [SerializeField] private Vector3[] cameraPos;
+    [SerializeField] private float[] cameraSpeed;
+
+    [SerializeField] Transform crackHouse;
+
+    [Header("[Move Effector]")]
+    [SerializeField] private MoveObject[] moveEffect;
+    [SerializeField] private float[] moveTime;
+
+    [Header("[Paper Effector]")]
+    [SerializeField] private PaperObject[] paperEffect;
+    [SerializeField] private float[] paperTime;
 
 
-    public void StartEvent(float time)
+    private void Start()
     {
-        StartCoroutine(Routine(time));
+        for (int i = 0; i < cameraPos.Length; i++)
+        {
+            cameraPos[i] += transform.position;
+        }
     }
 
-    private IEnumerator Routine(float time)
+    public void StartEvent()
     {
-        yield return YieldInstructionCache.waitForSeconds(time);
-        var pos = transform.position + toWard;
-        while (transform.position != pos)
-        {
-            transform.position = Vector3.MoveTowards(transform.position, pos, Time.deltaTime * speed);
+        startEvent = true;        
+        StartCoroutine(Routine());
+    }
 
-            yield return YieldInstructionCache.waitForFixedUpdate;
+    private IEnumerator Routine()
+    {        
+        StartMoveEffect();
+        CameraController.StartDirectCamera(cameraPos[1]);
+        yield return YieldInstructionCache.waitForSeconds(1.4f);
+
+        CameraController.StartDirectCamera(cameraPos[0], 1);
+
+        yield return YieldInstructionCache.waitForSeconds(2f);
+        StartPapaerEffect();
+        yield return YieldInstructionCache.waitForSeconds(5.2f);
+
+        CameraController.StartDirectCamera(cameraPos[1]);
+    }
+
+    private void StartPapaerEffect()
+    {
+        for (int i = 0; i < paperEffect.Length; i++)
+        {
+            paperEffect[i].StartEvent(paperTime[i]);
+        }
+    }
+
+    private void StartMoveEffect()
+    {
+        for (int i = 0; i < moveEffect.Length; i++)
+        {
+            moveEffect[i].StartMove(moveTime[i]);
         }
     }
 
@@ -37,7 +79,21 @@ public class BossDirector : MonoBehaviour
     {
         yield return YieldInstructionCache.waitForSeconds(time);
 
-        GameObject.FindGameObjectWithTag("Player").transform.position = bossRoom.position;
+        GameObject.FindGameObjectWithTag("Player").transform.position = crackHouse.position;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
+        {
+            if (!startEvent) StartEvent();
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.white;
+        Gizmos.DrawWireCube(transform.position, transform.lossyScale);
     }
 
 }

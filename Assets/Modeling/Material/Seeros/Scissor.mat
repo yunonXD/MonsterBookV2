@@ -28,6 +28,14 @@ Material:
         m_Texture: {fileID: 2800000, guid: b036d620982d64e4f9a21cc801a42ffe, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _BasecolorOpacity_Main:
+        m_Texture: {fileID: 2800000, guid: b036d620982d64e4f9a21cc801a42ffe, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BasecolorOpacity_Sub:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -45,6 +53,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Emissive:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -95,6 +107,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _AlphaClip: 0
+    - _Berserk: 0
     - _Blend: 0
     - _BumpScale: 1
     - _ClearCoatMask: 0
@@ -105,6 +118,7 @@ Material:
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
+    - _EmissiveInten: 0
     - _EnvironmentReflections: 1
     - _GlossMapScale: 0
     - _Glossiness: 0

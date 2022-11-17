@@ -16,7 +16,7 @@ public class ThornController: MonoBehaviour, IEntity, ICutOff
     public float RunSpeed = 12.0f;      
     public float AttackDelay = 3.0f;      
     public GameObject AttackArea;
-    public bool MoveType;  //false == zÃà ÀÌµ¿, true == xÃàÀÌµ¿
+    public bool MoveType;  //false == zï¿½ï¿½ ï¿½Ìµï¿½, true == xï¿½ï¿½ï¿½Ìµï¿½
 
     [Header("[State/ScanDist]")]
     public CurrentState State = CurrentState.idle;
@@ -39,6 +39,7 @@ public class ThornController: MonoBehaviour, IEntity, ICutOff
     public GameObject BodyParts;
     public bool Invinbool = false;
     private bool CanLook = true;
+    public ParticleSystem AttackEffect;
 
     
 
@@ -48,14 +49,17 @@ public class ThornController: MonoBehaviour, IEntity, ICutOff
         playerTransform = GameObject.FindWithTag("Player").GetComponent<Transform>();
         animator = GetComponent<Animator>();
         CurHP = MaxHP;
+
+        /*
         if (MoveType == true)
         {
-            _transform.position = new Vector3(playerTransform.position.x, _transform.position.y, _transform.position.z); //xÃà player º¸°£
+            _transform.position = new Vector3(playerTransform.position.x, _transform.position.y, _transform.position.z); //xï¿½ï¿½ player ï¿½ï¿½ï¿½ï¿½
         }
         else if (MoveType == false)
         {
-            _transform.position = new Vector3(_transform.position.x, _transform.position.y, playerTransform.position.z); //zÃà player º¸°£
+            _transform.position = new Vector3(_transform.position.x, _transform.position.y, playerTransform.position.z); //zï¿½ï¿½ player ï¿½ï¿½ï¿½ï¿½
         }
+        */
 
         StartCoroutine(this.CheckState());
         StartCoroutine(this.CheckStateForAction());
@@ -76,7 +80,7 @@ public class ThornController: MonoBehaviour, IEntity, ICutOff
         {
             yield return new WaitForSeconds(0.2f);
             float dist = Vector3.Distance(playerTransform.position, _transform.position);
-            if (Motioning == false)     //ÇöÀç ¸ð¼ÇÁøÇàÁß¿©ºÎ Ã¼Å© -> °ø°ÝµµÁß °Å¸®¿¡¼­ ¸Ö¾îÁ® ´Ù¸¥ State°¡ µÇ´õ¶óµµ °ø°Ý¸ð¼ÇÀÌ ²÷±â´Â°É ¹æÁö
+            if (Motioning == false)     //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß¿ï¿½ï¿½ï¿½ Ã¼Å© -> ï¿½ï¿½ï¿½Ýµï¿½ï¿½ï¿½ ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¾ï¿½ï¿½ï¿½ ï¿½Ù¸ï¿½ Stateï¿½ï¿½ ï¿½Ç´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ý¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Â°ï¿½ ï¿½ï¿½ï¿½ï¿½
             {
                 if(Possible_Move == true)
 
@@ -125,17 +129,17 @@ public class ThornController: MonoBehaviour, IEntity, ICutOff
                     animator.Play("Run");
                     if (MoveType == false)
                     {
-                        transform.position = new Vector3(Vector3.MoveTowards(transform.position, playerTransform.position, RunSpeed * Time.deltaTime).x, 0, transform.position.z);
+                        transform.position = new Vector3(Vector3.MoveTowards(transform.position, playerTransform.position, RunSpeed * Time.deltaTime).x, transform.position.y, transform.position.z);
                     }
                     else if(MoveType == true)
                     {
-                        transform.position = new Vector3(transform.position.x, 0, Vector3.MoveTowards(transform.position, playerTransform.position, RunSpeed * Time.deltaTime).z);
+                        transform.position = new Vector3(transform.position.x, transform.position.y, Vector3.MoveTowards(transform.position, playerTransform.position, RunSpeed * Time.deltaTime).z);
                     }
 
                     break;
                 case CurrentState.attack:
                     LookTarget(playerTransform);
-                    Attack();                           //ÄÚµå°¡ ±æ¾î¼­ ÇÔ¼ö·Î ´ëÃ¼   //Attack, Hit
+                    Attack();                           //ï¿½Úµå°¡ ï¿½ï¿½î¼­ ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼   //Attack, Hit
                     break;
                 case CurrentState.Hit:
                     Hit();
@@ -177,6 +181,10 @@ public class ThornController: MonoBehaviour, IEntity, ICutOff
             return false;
         }
     }
+    void AttackEffectStart()
+    {
+        AttackEffect.Play();
+    }
 
     public void CutDamage()
     {
@@ -193,13 +201,13 @@ public class ThornController: MonoBehaviour, IEntity, ICutOff
 
     public void OnDamage(int damage, Vector3 pos)
     {
-        Debug.LogError("°¡½Ã¹ú·¹ ÇÇ°Ý");
+        Debug.LogError("ï¿½ï¿½ï¿½Ã¹ï¿½ï¿½ï¿½ ï¿½Ç°ï¿½");
         if (Invinbool == false)
         {
-            //if (CheckCutOff())
-            //{
-            //    CutOff();
-            //}
+            if (CheckCutOff())
+            {
+               CutOff();
+            }
             CurHP -= damage;
             State = CurrentState.Hit;
             Motioning = true;
@@ -220,7 +228,7 @@ public class ThornController: MonoBehaviour, IEntity, ICutOff
             State = CurrentState.idle;
             Motioning = false;
             AttackArea.SetActive(false);
-            Possible_Move = true; //trace walk»óÅÂ·Î °¥¼öÀÖ³Ä
+            Possible_Move = true; //trace walkï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö³ï¿½
             Invinbool = false;
             CanLook = true;
         }
@@ -281,7 +289,7 @@ public class ThornController: MonoBehaviour, IEntity, ICutOff
         if (MoveType == false)
         {
 
-            if (Patrollook == false) //PatrolPoint1 -> PatrolPoint2·Î ÀÌµ¿
+            if (Patrollook == false) //PatrolPoint1 -> PatrolPoint2ï¿½ï¿½ ï¿½Ìµï¿½
             {
                 transform.position = Vector3.MoveTowards(transform.position, PatrolPoint2.transform.position, WalkSpeed * Time.deltaTime);
                 LookTarget(PatrolPoint2.transform);
@@ -291,7 +299,7 @@ public class ThornController: MonoBehaviour, IEntity, ICutOff
                 }
 
             }
-            else                    //PatrolPoint1 -> PatrolPoint2·Î ÀÌµ¿
+            else                    //PatrolPoint1 -> PatrolPoint2ï¿½ï¿½ ï¿½Ìµï¿½
             {
                 transform.position = Vector3.MoveTowards(transform.position, PatrolPoint1.transform.position, WalkSpeed * Time.deltaTime);
                 LookTarget(PatrolPoint1.transform);
@@ -305,7 +313,7 @@ public class ThornController: MonoBehaviour, IEntity, ICutOff
         if (MoveType == true)
         {
 
-            if (Patrollook == false) //PatrolPoint1 -> PatrolPoint2·Î ÀÌµ¿
+            if (Patrollook == false) //PatrolPoint1 -> PatrolPoint2ï¿½ï¿½ ï¿½Ìµï¿½
             {
                 transform.position = Vector3.MoveTowards(transform.position, PatrolPoint2.transform.position, WalkSpeed * Time.deltaTime);
                 LookTarget(PatrolPoint2.transform);
@@ -315,7 +323,7 @@ public class ThornController: MonoBehaviour, IEntity, ICutOff
                 }
 
             }
-            else                    //PatrolPoint1 -> PatrolPoint2·Î ÀÌµ¿
+            else                    //PatrolPoint1 -> PatrolPoint2ï¿½ï¿½ ï¿½Ìµï¿½
             {
                 transform.position = Vector3.MoveTowards(transform.position, PatrolPoint1.transform.position, WalkSpeed * Time.deltaTime);
                 LookTarget(PatrolPoint1.transform);

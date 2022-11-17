@@ -5,15 +5,15 @@
 	    [HideInInspector]_MainTex ("Base (RGB)", 2D) = "white" {}
         _Delta("Line Thickness", Range(0.0005, 0.0025)) = 0.001
         [Toggle(RAW_OUTLINE)]_Raw("Outline Only", Float) = 0
-        [Toggle(POSTERIZE)]_Poseterize("Posterize", Float) = 0
-        _PosterizationCount("Count", int) = 8
         _OutlineColor("OutlineColor", Color) = (0,0,0,0)
         _SobelMultiplier("SobelMultiplier", Float) = 50
 	}
 	SubShader 
 	{
-		Tags { "RenderType"="Opaque" }
-		LOD 200
+		Tags { "Queue" = "Transparent" "RenderType"="Opaque" }
+
+        ZTest Always
+        ZWrite On
 		
 		Pass
 		{
@@ -23,7 +23,6 @@
             #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
             
             #pragma shader_feature RAW_OUTLINE
-            #pragma shader_feature POSTERIZE
             
             TEXTURE2D(_CameraDepthTexture);
             SAMPLER(sampler_CameraDepthTexture);
@@ -33,9 +32,8 @@
             SAMPLER(sampler_MainTex);
 #endif
             float _Delta;
-            int _PosterizationCount;
-            float4 _OutlineColor;
             float _SobelMultiplier;
+            float4 _OutlineColor;
             
             struct Attributes
             {
@@ -74,10 +72,10 @@
                 hr += SampleDepth(uv + float2( 1.0,  1.0) * delta) * -1.0;
                 
                 vt += SampleDepth(uv + float2(-1.0, -1.0) * delta) *  1.0;
-                vt += SampleDepth(uv + float2( 0.0, -1.0) * delta) *  2.0;
+                vt += SampleDepth(uv + float2( 0.0, -1.0) * delta * 1.5) *  2.0;
                 vt += SampleDepth(uv + float2( 1.0, -1.0) * delta) *  1.0;
                 vt += SampleDepth(uv + float2(-1.0,  1.0) * delta) * -1.0;
-                vt += SampleDepth(uv + float2( 0.0,  1.0) * delta) * -2.0;
+                vt += SampleDepth(uv + float2( 0.0,  1.0) * delta * 1.5) * -2.0;
                 vt += SampleDepth(uv + float2( 1.0,  1.0) * delta) * -1.0;
                 
                 return sqrt(hr * hr + vt * vt);
@@ -99,18 +97,12 @@
             {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
                 
-                float s = pow(1 - saturate(sobel(input.uv)), _SobelMultiplier);
+                float4 s = pow(1 - saturate(sobel(input.uv)), _SobelMultiplier);
 #ifdef RAW_OUTLINE
-                return half4(s.xxx, 1);
+                return half4(s * _OutlineColor.r, s * _OutlineColor.g, s * _OutlineColor.b, 1);
 #else
                 half4 col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
-#ifdef POSTERIZE
-                col = pow(col, 0.4545);
-                float3 c = RgbToHsv(col);
-                c.z = round(c.z * _PosterizationCount) / _PosterizationCount;
-                col = float4(HsvToRgb(c), col.a);
-                col = pow(col, 2.2);
-#endif
+                s = lerp(_OutlineColor, (1, 1, 1, 1), s);
                 return col * s;
 #endif
             }

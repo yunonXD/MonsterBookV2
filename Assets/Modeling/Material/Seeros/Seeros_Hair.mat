@@ -27,7 +27,7 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 1
-  m_CustomRenderQueue: 2450
+  m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
@@ -39,6 +39,18 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _BasecolorOpacity:
         m_Texture: {fileID: 2800000, guid: fe00b34d2403342478662ff91edfe25c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BasecolorOpacity_Berserk:
+        m_Texture: {fileID: 2800000, guid: d282bbc88c9e50d4eba8b5ce2eb5d32d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BasecolorOpacity_Main:
+        m_Texture: {fileID: 2800000, guid: fe00b34d2403342478662ff91edfe25c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BasecolorOpacity_Sub:
+        m_Texture: {fileID: 2800000, guid: d282bbc88c9e50d4eba8b5ce2eb5d32d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
@@ -58,6 +70,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Emissive:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -108,6 +124,8 @@ Material:
     m_Ints: []
     m_Floats:
     - _AlphaClip: 0
+    - _Berserk: 0
+    - _BerserkMode: 0
     - _Blend: 0
     - _BumpScale: 1
     - _CastShadows: 1
@@ -119,25 +137,26 @@ Material:
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
+    - _EmissiveInten: 0
     - _EnvironmentReflections: 1
     - _FlatShadingInten: 0.3
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _HasNormal: 0
-    - _HighlightThreshold: 0.762
-    - _HightlightSmoothness: 0.084
+    - _HighlightThreshold: 0.715
+    - _HightlightSmoothness: 0.025
     - _LightColorInten: 0
     - _Metallic: 0
-    - _MidtoneSmoothness: 0.049
-    - _MidtoneThreshold: 0.418
+    - _MidtoneSmoothness: 0.137
+    - _MidtoneThreshold: 0.339
     - _NoiseInten: 0.48
     - _OcclusionStrength: 1
     - _Parallax: 0.005
     - _QueueControl: 0
     - _QueueOffset: 0
     - _ReceiveShadows: 1
-    - _ShadowSmoothness: 0.049
+    - _ShadowSmoothness: 0.151
     - _ShadowThreshold: 0
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
@@ -157,9 +176,9 @@ Material:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _HighlightColor: {r: 2.670157, g: 2.670157, b: 2.670157, a: 0}
-    - _MidtoneColor: {r: 1, g: 1, b: 1, a: 0}
-    - _ReflectColor: {r: 0.88113207, g: 1, b: 0.987893, a: 0}
-    - _ShadowColor: {r: 0.8226066, g: 0.7863297, b: 0.8301887, a: 0}
+    - _HighlightColor: {r: 5.340315, g: 5.340315, b: 5.340315, a: 0}
+    - _MidtoneColor: {r: 2, g: 2, b: 2, a: 0}
+    - _ReflectColor: {r: 0.8537736, g: 1, b: 0.9853774, a: 0}
+    - _ShadowColor: {r: 0.78056735, g: 0.68462974, b: 0.8018868, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []

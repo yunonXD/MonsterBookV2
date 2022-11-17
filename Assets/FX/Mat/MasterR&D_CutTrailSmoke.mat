@@ -82,7 +82,7 @@ Material:
     - _QueueControl: 0
     - _QueueOffset: 0
     - _Toon: 0
-    - _inten: 1
+    - _inten: 0.01
     m_Colors:
     - _DissolveMaskCtrlZ: {r: 1, g: 1, b: 0, a: 0}
     - _DissolvePanCtrl: {r: 2, g: -1, b: 1, a: 0}

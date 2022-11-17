@@ -33,6 +33,7 @@ public class MacaronController : MonoBehaviour, IEntity, ICutOff
     public bool BounddaryAttack = false;
     public GameObject BodyParts;
     private bool Possible_Move = true;
+    public ParticleSystem AttackEffect;
 
     void Start()
     {
@@ -40,18 +41,6 @@ public class MacaronController : MonoBehaviour, IEntity, ICutOff
         playerTransform = GameObject.FindWithTag("Player").GetComponent<Transform>();
         animator = GetComponent<Animator>();
         CurHP = MaxHP;
-
-        if (MoveType == true)
-        {
-            _transform.position = new Vector3(playerTransform.position.x, _transform.position.y, _transform.position.z); //xÃà player º¸°£
-        }
-        else if (MoveType == false)
-        {
- 
-            _transform.position = new Vector3(_transform.position.x, _transform.position.y, playerTransform.position.z); //zÃà player º¸°£
-        }
-
-
         StartCoroutine(this.CheckState());
         StartCoroutine(this.CheckStateForAction());
         Time.timeScale = 0.1f;
@@ -72,11 +61,11 @@ public class MacaronController : MonoBehaviour, IEntity, ICutOff
         {
             yield return new WaitForSeconds(0.2f);
             float dist = Vector3.Distance(playerTransform.position, _transform.position);
-            if (Motioning == false)     //ÇöÀç ¸ð¼ÇÁøÇàÁß¿©ºÎ Ã¼Å© -> °ø°ÝµµÁß °Å¸®¿¡¼­ ¸Ö¾îÁ® ´Ù¸¥ State°¡ µÇ´õ¶óµµ °ø°Ý¸ð¼ÇÀÌ ²÷±â´Â°É ¹æÁö
+            if (Motioning == false)     
             {
                 if (Possible_Move == true)
                 {
-                    if (BounddaryAttack == true) //Æ®¸®°Å°¡ ÄÑÁö¸é
+                    if (BounddaryAttack == true) 
                     {
                         if (dist <= attackDist)
                         {
@@ -161,12 +150,17 @@ public class MacaronController : MonoBehaviour, IEntity, ICutOff
 
     }
 
+    void AttackEffectStart()
+    {
+        AttackEffect.Play();
+    }
+
     public void OnDamage(int damage, Vector3 pos)
     {
-        //if (CheckCutOff())
-        //{
-        //    CutOff();
-        //}
+        if (CheckCutOff())
+        {
+            CutOff();
+        }
         CurHP -= damage;
         State = CurrentState.Hit;
         Motioning = true;
@@ -180,25 +174,24 @@ public class MacaronController : MonoBehaviour, IEntity, ICutOff
     {
         Motioning = true;
         animator.Play("attack");
-        if (animator.GetCurrentAnimatorStateInfo(0).IsName("attack") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime <= 0.5f) //50%ÀÌÇÏ
+        if (animator.GetCurrentAnimatorStateInfo(0).IsName("attack") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime <= 0.5f) //50%ï¿½ï¿½ï¿½ï¿½
         {
-            AttackArea.SetActive(false); //Ã¹¸ð¼Ç
+            AttackArea.SetActive(false); //Ã¹ï¿½ï¿½ï¿½
         }
-        else if (animator.GetCurrentAnimatorStateInfo(0).IsName("attack") && (animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.5f && //50ÆÛÀÌ»ó ~ 80ÀÌÇÏ
+        else if (animator.GetCurrentAnimatorStateInfo(0).IsName("attack") && (animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.5f && //50ï¿½ï¿½ï¿½Ì»ï¿½ ~ 80ï¿½ï¿½ï¿½ï¿½
                                                                                 animator.GetCurrentAnimatorStateInfo(0).normalizedTime <= 0.7f))
         {
-            AttackArea.SetActive(true);  //°ø°Ý¹üÀ§ È°¼ºÈ­
+            AttackArea.SetActive(true);  //ï¿½ï¿½ï¿½Ý¹ï¿½ï¿½ï¿½ È°ï¿½ï¿½È­
         }
-        else if (animator.GetCurrentAnimatorStateInfo(0).IsName("attack") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime <= 0.99f) //50%ÀÌÇÏ
+        else if (animator.GetCurrentAnimatorStateInfo(0).IsName("attack") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime <= 0.99f) //50%ï¿½ï¿½ï¿½ï¿½
         {
             AttackArea.SetActive(false);
         }
-        else if (animator.GetCurrentAnimatorStateInfo(0).IsName("attack") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)  //100ÆÛÀÌ»ó
+        else if (animator.GetCurrentAnimatorStateInfo(0).IsName("attack") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)  //100ï¿½ï¿½ï¿½Ì»ï¿½
         {
-            Motioning = false;  //¸ð¼ÇÁ¾·á
+            Motioning = false;  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             AttackArea.SetActive(false);
             State = CurrentState.idle;
-
         }
 
     }

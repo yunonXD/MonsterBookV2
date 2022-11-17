@@ -17,17 +17,8 @@ public class BuffItem : MonoBehaviour
     }
 
     private void OnCollisionEnter(Collision other)
-    { 
-        if(other.collider.CompareTag("Boss"))
-        {
-            //헨젤 버프 Bool  true
-            gameObject.transform.position = new Vector3(500, 500, 500);
-        }
-
-        else if (other.collider.CompareTag("Player"))
-        {
-            gameObject.transform.position = new Vector3(500, 500, 500);
-        }
+    {
+        Debug.Log("온콜리전엔터");
     }
 
 

@@ -10,17 +10,18 @@ Shader "Custom/MasterR&D"
 		_MainStr("MainStr", Float) = 1
 		_Main_Tex("Main_Tex", 2D) = "white" {}
 		[Toggle]_Polar("Polar", Float) = 0
-		[Toggle]_Main_Panning("Main_Panning", Float) = 0
+		[Toggle]_Main_Panning("Main_Panning", Float) = 1
 		_PanCtrl("PanCtrl", Vector) = (0,0,0,0)
-		[Toggle]_PanTimeCustomX("PanTimeCustom(X)", Float) = 0
-		[Toggle]_Dissolve("Dissolve", Float) = 1
+		[Toggle]_PanTimeCustomX("PanTimeCustom(X)", Float) = 1
+		[Toggle]_Dissolve("Dissolve", Float) = 0
 		_DissolveStr("DissolveStr", Range( -2 , 1)) = -1
-		[Toggle]_DissovleStrCustomY("DissovleStrCustom(Y)", Float) = 0
+		[Toggle]_DissovleStrCustomY("DissovleStrCustom(Y)", Float) = 1
 		_Dissolve_Tex("Dissolve_Tex", 2D) = "white" {}
 		[Toggle]_DissolvePolar("DissolvePolar", Float) = 0
+		_PolarLengthh("PolarLengthh", Float) = 1
 		[Toggle]_Dissolve_Panning("Dissolve_Panning", Float) = 1
 		_DissolvePanCtrl("DissolvePanCtrl", Vector) = (0,0,0,0)
-		[Toggle]_DissolveMaskVer("DissolveMaskVer", Float) = 1
+		[Toggle]_DissolveMaskVer("DissolveMaskVer", Float) = 0
 		[Toggle]_DissolveMaskDirection("DissolveMaskDirection", Float) = 0
 		_DissolveMaskCtrlZ("DissolveMaskCtrl(Z)", Vector) = (0,0,0,0)
 		_DissolveMaskPow("DissolveMaskPow", Float) = 6.21
@@ -28,10 +29,11 @@ Shader "Custom/MasterR&D"
 		_DistortionStr("DistortionStr", Float) = 0
 		_Distortion_Tex("Distortion_Tex", 2D) = "white" {}
 		[Toggle]_DistortionPolar("DistortionPolar", Float) = 0
-		[Toggle]_Distortion_Panning("Distortion_Panning", Float) = 1
+		_PolarLength("PolarLength", Float) = 1
+		[Toggle]_Distortion_Panning("Distortion_Panning", Float) = 0
 		_DistortionPanCtrl("DistortionPanCtrl", Vector) = (0,0,0,0)
 		[Toggle]_MaskDirectionY("MaskDirectionY", Float) = 0
-		[Toggle]_MaskDirectionX("MaskDirectionX", Float) = 1
+		[Toggle]_MaskDirectionX("MaskDirectionX", Float) = 0
 		[Toggle]_MaskTexture("MaskTexture", Float) = 0
 		_MaskTex("MaskTex", 2D) = "white" {}
 		_MaskTexStr("MaskTexStr", Range( 0 , 10)) = 1
@@ -253,24 +255,26 @@ Shader "Custom/MasterR&D"
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _Dissolve_Tex_ST;
-			float4 _DistortionPanCtrl;
-			float4 _Distortion_Tex_ST;
-			float4 _Main_Tex_ST;
-			float4 _DissolvePanCtrl;
 			float4 _PanCtrl;
-			float4 _DissolveMaskCtrlZ;
 			float4 _MaskTex_ST;
-			float _DissovleStrCustomY;
-			float _DissolveMaskDirection;
-			float _MainStr;
-			float _DissolvePolar;
-			float _Dissolve_Panning;
+			float4 _DistortionPanCtrl;
+			float4 _DissolveMaskCtrlZ;
+			float4 _Distortion_Tex_ST;
+			float4 _DissolvePanCtrl;
+			float4 _Main_Tex_ST;
+			float4 _Dissolve_Tex_ST;
 			float _DissolveMaskVer;
-			float _DissolveMaskPow;
+			float _Dissolve_Panning;
+			float _DissolvePolar;
+			float _PolarLengthh;
+			float _DissovleStrCustomY;
 			float _DissolveStr;
+			float _DissolveMaskDirection;
+			float _DissolveMaskPow;
+			float _MainStr;
 			float _inten;
 			float _PanTimeCustomX;
+			float _PolarLength;
 			float _DistortionPolar;
 			float _Distortion_Panning;
 			float _DistortionStr;
@@ -454,13 +458,13 @@ Shader "Custom/MasterR&D"
 					#endif
 				#endif
 				float2 uv_Main_Tex = IN.ase_texcoord3.xy * _Main_Tex_ST.xy + _Main_Tex_ST.zw;
-				float2 CenteredUV15_g5 = ( uv_Main_Tex - float2( 0.5,0.5 ) );
-				float2 break17_g5 = CenteredUV15_g5;
-				float2 appendResult23_g5 = (float2(( length( CenteredUV15_g5 ) * 1.0 * 2.0 ) , ( atan2( break17_g5.x , break17_g5.y ) * ( 1.0 / TWO_PI ) * 1.0 )));
+				float2 CenteredUV15_g7 = ( uv_Main_Tex - float2( 0.5,0.5 ) );
+				float2 break17_g7 = CenteredUV15_g7;
+				float2 appendResult23_g7 = (float2(( length( CenteredUV15_g7 ) * 1.0 * 2.0 ) , ( atan2( break17_g7.x , break17_g7.y ) * ( 1.0 / TWO_PI ) * 1.0 )));
 				float2 uv_Distortion_Tex = IN.ase_texcoord3.xy * _Distortion_Tex_ST.xy + _Distortion_Tex_ST.zw;
 				float2 CenteredUV15_g1 = ( uv_Distortion_Tex - float2( 0.5,0.5 ) );
 				float2 break17_g1 = CenteredUV15_g1;
-				float2 appendResult23_g1 = (float2(( length( CenteredUV15_g1 ) * 1.0 * 2.0 ) , ( atan2( break17_g1.x , break17_g1.y ) * ( 1.0 / TWO_PI ) * 1.0 )));
+				float2 appendResult23_g1 = (float2(( length( CenteredUV15_g1 ) * 1.0 * 2.0 ) , ( atan2( break17_g1.x , break17_g1.y ) * ( 1.0 / TWO_PI ) * _PolarLength )));
 				float mulTime37 = _TimeParameters.x * _DistortionPanCtrl.z;
 				float2 appendResult36 = (float2(_DistortionPanCtrl.x , _DistortionPanCtrl.y));
 				float2 panner39 = ( ( mulTime37 + _DistortionPanCtrl.w ) * appendResult36 + (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )));
@@ -469,16 +473,16 @@ Shader "Custom/MasterR&D"
 				texCoord21.xy = IN.ase_texcoord4.xy * float2( 1,1 ) + float2( 0,0 );
 				float PanTimeCtrl73 = texCoord21.x;
 				float2 appendResult25 = (float2(_PanCtrl.x , _PanCtrl.y));
-				float2 panner18 = ( (( _PanTimeCustomX )?( PanTimeCtrl73 ):( ( mulTime27 + _PanCtrl.w ) )) * appendResult25 + (( _Distortion )?( ( ( _DistortionStr * tex2D( _Distortion_Tex, (( _Distortion_Panning )?( panner39 ):( (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )) )) ).r ) + (( _Polar )?( appendResult23_g5 ):( uv_Main_Tex )) ) ):( (( _Polar )?( appendResult23_g5 ):( uv_Main_Tex )) )));
-				float temp_output_66_0 = ( tex2D( _Main_Tex, (( _Main_Panning )?( panner18 ):( (( _Distortion )?( ( ( _DistortionStr * tex2D( _Distortion_Tex, (( _Distortion_Panning )?( panner39 ):( (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )) )) ).r ) + (( _Polar )?( appendResult23_g5 ):( uv_Main_Tex )) ) ):( (( _Polar )?( appendResult23_g5 ):( uv_Main_Tex )) )) )) ).r * _MainStr );
+				float2 panner18 = ( (( _PanTimeCustomX )?( PanTimeCtrl73 ):( ( mulTime27 + _PanCtrl.w ) )) * appendResult25 + (( _Distortion )?( ( ( _DistortionStr * tex2D( _Distortion_Tex, (( _Distortion_Panning )?( panner39 ):( (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )) )) ).r ) + (( _Polar )?( appendResult23_g7 ):( uv_Main_Tex )) ) ):( (( _Polar )?( appendResult23_g7 ):( uv_Main_Tex )) )));
+				float temp_output_66_0 = ( tex2D( _Main_Tex, (( _Main_Panning )?( panner18 ):( (( _Distortion )?( ( ( _DistortionStr * tex2D( _Distortion_Tex, (( _Distortion_Panning )?( panner39 ):( (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )) )) ).r ) + (( _Polar )?( appendResult23_g7 ):( uv_Main_Tex )) ) ):( (( _Polar )?( appendResult23_g7 ):( uv_Main_Tex )) )) )) ).r * _MainStr );
 				float2 uv_Dissolve_Tex = IN.ase_texcoord3.xy * _Dissolve_Tex_ST.xy + _Dissolve_Tex_ST.zw;
-				float2 CenteredUV15_g4 = ( uv_Dissolve_Tex - float2( 0.5,0.5 ) );
-				float2 break17_g4 = CenteredUV15_g4;
-				float2 appendResult23_g4 = (float2(( length( CenteredUV15_g4 ) * 1.0 * 2.0 ) , ( atan2( break17_g4.x , break17_g4.y ) * ( 1.0 / TWO_PI ) * 1.0 )));
+				float2 CenteredUV15_g8 = ( uv_Dissolve_Tex - float2( 0.5,0.5 ) );
+				float2 break17_g8 = CenteredUV15_g8;
+				float2 appendResult23_g8 = (float2(( length( CenteredUV15_g8 ) * 1.0 * 2.0 ) , ( atan2( break17_g8.x , break17_g8.y ) * ( 1.0 / TWO_PI ) * _PolarLengthh )));
 				float mulTime43 = _TimeParameters.x * _DissolvePanCtrl.z;
 				float2 appendResult42 = (float2(_DissolvePanCtrl.x , _DissolvePanCtrl.y));
-				float2 panner45 = ( ( mulTime43 + _DissolvePanCtrl.w ) * appendResult42 + (( _DissolvePolar )?( appendResult23_g4 ):( uv_Dissolve_Tex )));
-				float4 tex2DNode30 = tex2D( _Dissolve_Tex, (( _Dissolve_Panning )?( panner45 ):( (( _DissolvePolar )?( appendResult23_g4 ):( uv_Dissolve_Tex )) )) );
+				float2 panner45 = ( ( mulTime43 + _DissolvePanCtrl.w ) * appendResult42 + (( _DissolvePolar )?( appendResult23_g8 ):( uv_Dissolve_Tex )));
+				float4 tex2DNode30 = tex2D( _Dissolve_Tex, (( _Dissolve_Panning )?( panner45 ):( (( _DissolvePolar )?( appendResult23_g8 ):( uv_Dissolve_Tex )) )) );
 				float DissolveStrCustom77 = texCoord21.y;
 				float mulTime152 = _TimeParameters.x * _DissolveMaskCtrlZ.z;
 				float DissolveMaskStr78 = texCoord21.z;
@@ -588,24 +592,26 @@ Shader "Custom/MasterR&D"
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _Dissolve_Tex_ST;
-			float4 _DistortionPanCtrl;
-			float4 _Distortion_Tex_ST;
-			float4 _Main_Tex_ST;
-			float4 _DissolvePanCtrl;
 			float4 _PanCtrl;
-			float4 _DissolveMaskCtrlZ;
 			float4 _MaskTex_ST;
-			float _DissovleStrCustomY;
-			float _DissolveMaskDirection;
-			float _MainStr;
-			float _DissolvePolar;
-			float _Dissolve_Panning;
+			float4 _DistortionPanCtrl;
+			float4 _DissolveMaskCtrlZ;
+			float4 _Distortion_Tex_ST;
+			float4 _DissolvePanCtrl;
+			float4 _Main_Tex_ST;
+			float4 _Dissolve_Tex_ST;
 			float _DissolveMaskVer;
-			float _DissolveMaskPow;
+			float _Dissolve_Panning;
+			float _DissolvePolar;
+			float _PolarLengthh;
+			float _DissovleStrCustomY;
 			float _DissolveStr;
+			float _DissolveMaskDirection;
+			float _DissolveMaskPow;
+			float _MainStr;
 			float _inten;
 			float _PanTimeCustomX;
+			float _PolarLength;
 			float _DistortionPolar;
 			float _Distortion_Panning;
 			float _DistortionStr;
@@ -788,13 +794,13 @@ Shader "Custom/MasterR&D"
 				#endif
 
 				float2 uv_Main_Tex = IN.ase_texcoord2.xy * _Main_Tex_ST.xy + _Main_Tex_ST.zw;
-				float2 CenteredUV15_g5 = ( uv_Main_Tex - float2( 0.5,0.5 ) );
-				float2 break17_g5 = CenteredUV15_g5;
-				float2 appendResult23_g5 = (float2(( length( CenteredUV15_g5 ) * 1.0 * 2.0 ) , ( atan2( break17_g5.x , break17_g5.y ) * ( 1.0 / TWO_PI ) * 1.0 )));
+				float2 CenteredUV15_g7 = ( uv_Main_Tex - float2( 0.5,0.5 ) );
+				float2 break17_g7 = CenteredUV15_g7;
+				float2 appendResult23_g7 = (float2(( length( CenteredUV15_g7 ) * 1.0 * 2.0 ) , ( atan2( break17_g7.x , break17_g7.y ) * ( 1.0 / TWO_PI ) * 1.0 )));
 				float2 uv_Distortion_Tex = IN.ase_texcoord2.xy * _Distortion_Tex_ST.xy + _Distortion_Tex_ST.zw;
 				float2 CenteredUV15_g1 = ( uv_Distortion_Tex - float2( 0.5,0.5 ) );
 				float2 break17_g1 = CenteredUV15_g1;
-				float2 appendResult23_g1 = (float2(( length( CenteredUV15_g1 ) * 1.0 * 2.0 ) , ( atan2( break17_g1.x , break17_g1.y ) * ( 1.0 / TWO_PI ) * 1.0 )));
+				float2 appendResult23_g1 = (float2(( length( CenteredUV15_g1 ) * 1.0 * 2.0 ) , ( atan2( break17_g1.x , break17_g1.y ) * ( 1.0 / TWO_PI ) * _PolarLength )));
 				float mulTime37 = _TimeParameters.x * _DistortionPanCtrl.z;
 				float2 appendResult36 = (float2(_DistortionPanCtrl.x , _DistortionPanCtrl.y));
 				float2 panner39 = ( ( mulTime37 + _DistortionPanCtrl.w ) * appendResult36 + (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )));
@@ -803,16 +809,16 @@ Shader "Custom/MasterR&D"
 				texCoord21.xy = IN.ase_texcoord3.xy * float2( 1,1 ) + float2( 0,0 );
 				float PanTimeCtrl73 = texCoord21.x;
 				float2 appendResult25 = (float2(_PanCtrl.x , _PanCtrl.y));
-				float2 panner18 = ( (( _PanTimeCustomX )?( PanTimeCtrl73 ):( ( mulTime27 + _PanCtrl.w ) )) * appendResult25 + (( _Distortion )?( ( ( _DistortionStr * tex2D( _Distortion_Tex, (( _Distortion_Panning )?( panner39 ):( (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )) )) ).r ) + (( _Polar )?( appendResult23_g5 ):( uv_Main_Tex )) ) ):( (( _Polar )?( appendResult23_g5 ):( uv_Main_Tex )) )));
-				float temp_output_66_0 = ( tex2D( _Main_Tex, (( _Main_Panning )?( panner18 ):( (( _Distortion )?( ( ( _DistortionStr * tex2D( _Distortion_Tex, (( _Distortion_Panning )?( panner39 ):( (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )) )) ).r ) + (( _Polar )?( appendResult23_g5 ):( uv_Main_Tex )) ) ):( (( _Polar )?( appendResult23_g5 ):( uv_Main_Tex )) )) )) ).r * _MainStr );
+				float2 panner18 = ( (( _PanTimeCustomX )?( PanTimeCtrl73 ):( ( mulTime27 + _PanCtrl.w ) )) * appendResult25 + (( _Distortion )?( ( ( _DistortionStr * tex2D( _Distortion_Tex, (( _Distortion_Panning )?( panner39 ):( (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )) )) ).r ) + (( _Polar )?( appendResult23_g7 ):( uv_Main_Tex )) ) ):( (( _Polar )?( appendResult23_g7 ):( uv_Main_Tex )) )));
+				float temp_output_66_0 = ( tex2D( _Main_Tex, (( _Main_Panning )?( panner18 ):( (( _Distortion )?( ( ( _DistortionStr * tex2D( _Distortion_Tex, (( _Distortion_Panning )?( panner39 ):( (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )) )) ).r ) + (( _Polar )?( appendResult23_g7 ):( uv_Main_Tex )) ) ):( (( _Polar )?( appendResult23_g7 ):( uv_Main_Tex )) )) )) ).r * _MainStr );
 				float2 uv_Dissolve_Tex = IN.ase_texcoord2.xy * _Dissolve_Tex_ST.xy + _Dissolve_Tex_ST.zw;
-				float2 CenteredUV15_g4 = ( uv_Dissolve_Tex - float2( 0.5,0.5 ) );
-				float2 break17_g4 = CenteredUV15_g4;
-				float2 appendResult23_g4 = (float2(( length( CenteredUV15_g4 ) * 1.0 * 2.0 ) , ( atan2( break17_g4.x , break17_g4.y ) * ( 1.0 / TWO_PI ) * 1.0 )));
+				float2 CenteredUV15_g8 = ( uv_Dissolve_Tex - float2( 0.5,0.5 ) );
+				float2 break17_g8 = CenteredUV15_g8;
+				float2 appendResult23_g8 = (float2(( length( CenteredUV15_g8 ) * 1.0 * 2.0 ) , ( atan2( break17_g8.x , break17_g8.y ) * ( 1.0 / TWO_PI ) * _PolarLengthh )));
 				float mulTime43 = _TimeParameters.x * _DissolvePanCtrl.z;
 				float2 appendResult42 = (float2(_DissolvePanCtrl.x , _DissolvePanCtrl.y));
-				float2 panner45 = ( ( mulTime43 + _DissolvePanCtrl.w ) * appendResult42 + (( _DissolvePolar )?( appendResult23_g4 ):( uv_Dissolve_Tex )));
-				float4 tex2DNode30 = tex2D( _Dissolve_Tex, (( _Dissolve_Panning )?( panner45 ):( (( _DissolvePolar )?( appendResult23_g4 ):( uv_Dissolve_Tex )) )) );
+				float2 panner45 = ( ( mulTime43 + _DissolvePanCtrl.w ) * appendResult42 + (( _DissolvePolar )?( appendResult23_g8 ):( uv_Dissolve_Tex )));
+				float4 tex2DNode30 = tex2D( _Dissolve_Tex, (( _Dissolve_Panning )?( panner45 ):( (( _DissolvePolar )?( appendResult23_g8 ):( uv_Dissolve_Tex )) )) );
 				float DissolveStrCustom77 = texCoord21.y;
 				float mulTime152 = _TimeParameters.x * _DissolveMaskCtrlZ.z;
 				float DissolveMaskStr78 = texCoord21.z;
@@ -926,24 +932,26 @@ Shader "Custom/MasterR&D"
 			};
 
 			CBUFFER_START(UnityPerMaterial)
-			float4 _Dissolve_Tex_ST;
-			float4 _DistortionPanCtrl;
-			float4 _Distortion_Tex_ST;
-			float4 _Main_Tex_ST;
-			float4 _DissolvePanCtrl;
 			float4 _PanCtrl;
-			float4 _DissolveMaskCtrlZ;
 			float4 _MaskTex_ST;
-			float _DissovleStrCustomY;
-			float _DissolveMaskDirection;
-			float _MainStr;
-			float _DissolvePolar;
-			float _Dissolve_Panning;
+			float4 _DistortionPanCtrl;
+			float4 _DissolveMaskCtrlZ;
+			float4 _Distortion_Tex_ST;
+			float4 _DissolvePanCtrl;
+			float4 _Main_Tex_ST;
+			float4 _Dissolve_Tex_ST;
 			float _DissolveMaskVer;
-			float _DissolveMaskPow;
+			float _Dissolve_Panning;
+			float _DissolvePolar;
+			float _PolarLengthh;
+			float _DissovleStrCustomY;
 			float _DissolveStr;
+			float _DissolveMaskDirection;
+			float _DissolveMaskPow;
+			float _MainStr;
 			float _inten;
 			float _PanTimeCustomX;
+			float _PolarLength;
 			float _DistortionPolar;
 			float _Distortion_Panning;
 			float _DistortionStr;
@@ -1127,13 +1135,13 @@ Shader "Custom/MasterR&D"
 					#endif
 				#endif
 				float2 uv_Main_Tex = IN.ase_texcoord3.xy * _Main_Tex_ST.xy + _Main_Tex_ST.zw;
-				float2 CenteredUV15_g5 = ( uv_Main_Tex - float2( 0.5,0.5 ) );
-				float2 break17_g5 = CenteredUV15_g5;
-				float2 appendResult23_g5 = (float2(( length( CenteredUV15_g5 ) * 1.0 * 2.0 ) , ( atan2( break17_g5.x , break17_g5.y ) * ( 1.0 / TWO_PI ) * 1.0 )));
+				float2 CenteredUV15_g7 = ( uv_Main_Tex - float2( 0.5,0.5 ) );
+				float2 break17_g7 = CenteredUV15_g7;
+				float2 appendResult23_g7 = (float2(( length( CenteredUV15_g7 ) * 1.0 * 2.0 ) , ( atan2( break17_g7.x , break17_g7.y ) * ( 1.0 / TWO_PI ) * 1.0 )));
 				float2 uv_Distortion_Tex = IN.ase_texcoord3.xy * _Distortion_Tex_ST.xy + _Distortion_Tex_ST.zw;
 				float2 CenteredUV15_g1 = ( uv_Distortion_Tex - float2( 0.5,0.5 ) );
 				float2 break17_g1 = CenteredUV15_g1;
-				float2 appendResult23_g1 = (float2(( length( CenteredUV15_g1 ) * 1.0 * 2.0 ) , ( atan2( break17_g1.x , break17_g1.y ) * ( 1.0 / TWO_PI ) * 1.0 )));
+				float2 appendResult23_g1 = (float2(( length( CenteredUV15_g1 ) * 1.0 * 2.0 ) , ( atan2( break17_g1.x , break17_g1.y ) * ( 1.0 / TWO_PI ) * _PolarLength )));
 				float mulTime37 = _TimeParameters.x * _DistortionPanCtrl.z;
 				float2 appendResult36 = (float2(_DistortionPanCtrl.x , _DistortionPanCtrl.y));
 				float2 panner39 = ( ( mulTime37 + _DistortionPanCtrl.w ) * appendResult36 + (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )));
@@ -1142,16 +1150,16 @@ Shader "Custom/MasterR&D"
 				texCoord21.xy = IN.ase_texcoord4.xy * float2( 1,1 ) + float2( 0,0 );
 				float PanTimeCtrl73 = texCoord21.x;
 				float2 appendResult25 = (float2(_PanCtrl.x , _PanCtrl.y));
-				float2 panner18 = ( (( _PanTimeCustomX )?( PanTimeCtrl73 ):( ( mulTime27 + _PanCtrl.w ) )) * appendResult25 + (( _Distortion )?( ( ( _DistortionStr * tex2D( _Distortion_Tex, (( _Distortion_Panning )?( panner39 ):( (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )) )) ).r ) + (( _Polar )?( appendResult23_g5 ):( uv_Main_Tex )) ) ):( (( _Polar )?( appendResult23_g5 ):( uv_Main_Tex )) )));
-				float temp_output_66_0 = ( tex2D( _Main_Tex, (( _Main_Panning )?( panner18 ):( (( _Distortion )?( ( ( _DistortionStr * tex2D( _Distortion_Tex, (( _Distortion_Panning )?( panner39 ):( (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )) )) ).r ) + (( _Polar )?( appendResult23_g5 ):( uv_Main_Tex )) ) ):( (( _Polar )?( appendResult23_g5 ):( uv_Main_Tex )) )) )) ).r * _MainStr );
+				float2 panner18 = ( (( _PanTimeCustomX )?( PanTimeCtrl73 ):( ( mulTime27 + _PanCtrl.w ) )) * appendResult25 + (( _Distortion )?( ( ( _DistortionStr * tex2D( _Distortion_Tex, (( _Distortion_Panning )?( panner39 ):( (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )) )) ).r ) + (( _Polar )?( appendResult23_g7 ):( uv_Main_Tex )) ) ):( (( _Polar )?( appendResult23_g7 ):( uv_Main_Tex )) )));
+				float temp_output_66_0 = ( tex2D( _Main_Tex, (( _Main_Panning )?( panner18 ):( (( _Distortion )?( ( ( _DistortionStr * tex2D( _Distortion_Tex, (( _Distortion_Panning )?( panner39 ):( (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )) )) ).r ) + (( _Polar )?( appendResult23_g7 ):( uv_Main_Tex )) ) ):( (( _Polar )?( appendResult23_g7 ):( uv_Main_Tex )) )) )) ).r * _MainStr );
 				float2 uv_Dissolve_Tex = IN.ase_texcoord3.xy * _Dissolve_Tex_ST.xy + _Dissolve_Tex_ST.zw;
-				float2 CenteredUV15_g4 = ( uv_Dissolve_Tex - float2( 0.5,0.5 ) );
-				float2 break17_g4 = CenteredUV15_g4;
-				float2 appendResult23_g4 = (float2(( length( CenteredUV15_g4 ) * 1.0 * 2.0 ) , ( atan2( break17_g4.x , break17_g4.y ) * ( 1.0 / TWO_PI ) * 1.0 )));
+				float2 CenteredUV15_g8 = ( uv_Dissolve_Tex - float2( 0.5,0.5 ) );
+				float2 break17_g8 = CenteredUV15_g8;
+				float2 appendResult23_g8 = (float2(( length( CenteredUV15_g8 ) * 1.0 * 2.0 ) , ( atan2( break17_g8.x , break17_g8.y ) * ( 1.0 / TWO_PI ) * _PolarLengthh )));
 				float mulTime43 = _TimeParameters.x * _DissolvePanCtrl.z;
 				float2 appendResult42 = (float2(_DissolvePanCtrl.x , _DissolvePanCtrl.y));
-				float2 panner45 = ( ( mulTime43 + _DissolvePanCtrl.w ) * appendResult42 + (( _DissolvePolar )?( appendResult23_g4 ):( uv_Dissolve_Tex )));
-				float4 tex2DNode30 = tex2D( _Dissolve_Tex, (( _Dissolve_Panning )?( panner45 ):( (( _DissolvePolar )?( appendResult23_g4 ):( uv_Dissolve_Tex )) )) );
+				float2 panner45 = ( ( mulTime43 + _DissolvePanCtrl.w ) * appendResult42 + (( _DissolvePolar )?( appendResult23_g8 ):( uv_Dissolve_Tex )));
+				float4 tex2DNode30 = tex2D( _Dissolve_Tex, (( _Dissolve_Panning )?( panner45 ):( (( _DissolvePolar )?( appendResult23_g8 ):( uv_Dissolve_Tex )) )) );
 				float DissolveStrCustom77 = texCoord21.y;
 				float mulTime152 = _TimeParameters.x * _DissolveMaskCtrlZ.z;
 				float DissolveMaskStr78 = texCoord21.z;
@@ -1262,24 +1270,26 @@ Shader "Custom/MasterR&D"
 			};
         
 			CBUFFER_START(UnityPerMaterial)
-			float4 _Dissolve_Tex_ST;
-			float4 _DistortionPanCtrl;
-			float4 _Distortion_Tex_ST;
-			float4 _Main_Tex_ST;
-			float4 _DissolvePanCtrl;
 			float4 _PanCtrl;
-			float4 _DissolveMaskCtrlZ;
 			float4 _MaskTex_ST;
-			float _DissovleStrCustomY;
-			float _DissolveMaskDirection;
-			float _MainStr;
-			float _DissolvePolar;
-			float _Dissolve_Panning;
+			float4 _DistortionPanCtrl;
+			float4 _DissolveMaskCtrlZ;
+			float4 _Distortion_Tex_ST;
+			float4 _DissolvePanCtrl;
+			float4 _Main_Tex_ST;
+			float4 _Dissolve_Tex_ST;
 			float _DissolveMaskVer;
-			float _DissolveMaskPow;
+			float _Dissolve_Panning;
+			float _DissolvePolar;
+			float _PolarLengthh;
+			float _DissovleStrCustomY;
 			float _DissolveStr;
+			float _DissolveMaskDirection;
+			float _DissolveMaskPow;
+			float _MainStr;
 			float _inten;
 			float _PanTimeCustomX;
+			float _PolarLength;
 			float _DistortionPolar;
 			float _Distortion_Panning;
 			float _DistortionStr;
@@ -1448,13 +1458,13 @@ Shader "Custom/MasterR&D"
 			{
 				SurfaceDescription surfaceDescription = (SurfaceDescription)0;
 				float2 uv_Main_Tex = IN.ase_texcoord.xy * _Main_Tex_ST.xy + _Main_Tex_ST.zw;
-				float2 CenteredUV15_g5 = ( uv_Main_Tex - float2( 0.5,0.5 ) );
-				float2 break17_g5 = CenteredUV15_g5;
-				float2 appendResult23_g5 = (float2(( length( CenteredUV15_g5 ) * 1.0 * 2.0 ) , ( atan2( break17_g5.x , break17_g5.y ) * ( 1.0 / TWO_PI ) * 1.0 )));
+				float2 CenteredUV15_g7 = ( uv_Main_Tex - float2( 0.5,0.5 ) );
+				float2 break17_g7 = CenteredUV15_g7;
+				float2 appendResult23_g7 = (float2(( length( CenteredUV15_g7 ) * 1.0 * 2.0 ) , ( atan2( break17_g7.x , break17_g7.y ) * ( 1.0 / TWO_PI ) * 1.0 )));
 				float2 uv_Distortion_Tex = IN.ase_texcoord.xy * _Distortion_Tex_ST.xy + _Distortion_Tex_ST.zw;
 				float2 CenteredUV15_g1 = ( uv_Distortion_Tex - float2( 0.5,0.5 ) );
 				float2 break17_g1 = CenteredUV15_g1;
-				float2 appendResult23_g1 = (float2(( length( CenteredUV15_g1 ) * 1.0 * 2.0 ) , ( atan2( break17_g1.x , break17_g1.y ) * ( 1.0 / TWO_PI ) * 1.0 )));
+				float2 appendResult23_g1 = (float2(( length( CenteredUV15_g1 ) * 1.0 * 2.0 ) , ( atan2( break17_g1.x , break17_g1.y ) * ( 1.0 / TWO_PI ) * _PolarLength )));
 				float mulTime37 = _TimeParameters.x * _DistortionPanCtrl.z;
 				float2 appendResult36 = (float2(_DistortionPanCtrl.x , _DistortionPanCtrl.y));
 				float2 panner39 = ( ( mulTime37 + _DistortionPanCtrl.w ) * appendResult36 + (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )));
@@ -1463,16 +1473,16 @@ Shader "Custom/MasterR&D"
 				texCoord21.xy = IN.ase_texcoord1.xy * float2( 1,1 ) + float2( 0,0 );
 				float PanTimeCtrl73 = texCoord21.x;
 				float2 appendResult25 = (float2(_PanCtrl.x , _PanCtrl.y));
-				float2 panner18 = ( (( _PanTimeCustomX )?( PanTimeCtrl73 ):( ( mulTime27 + _PanCtrl.w ) )) * appendResult25 + (( _Distortion )?( ( ( _DistortionStr * tex2D( _Distortion_Tex, (( _Distortion_Panning )?( panner39 ):( (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )) )) ).r ) + (( _Polar )?( appendResult23_g5 ):( uv_Main_Tex )) ) ):( (( _Polar )?( appendResult23_g5 ):( uv_Main_Tex )) )));
-				float temp_output_66_0 = ( tex2D( _Main_Tex, (( _Main_Panning )?( panner18 ):( (( _Distortion )?( ( ( _DistortionStr * tex2D( _Distortion_Tex, (( _Distortion_Panning )?( panner39 ):( (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )) )) ).r ) + (( _Polar )?( appendResult23_g5 ):( uv_Main_Tex )) ) ):( (( _Polar )?( appendResult23_g5 ):( uv_Main_Tex )) )) )) ).r * _MainStr );
+				float2 panner18 = ( (( _PanTimeCustomX )?( PanTimeCtrl73 ):( ( mulTime27 + _PanCtrl.w ) )) * appendResult25 + (( _Distortion )?( ( ( _DistortionStr * tex2D( _Distortion_Tex, (( _Distortion_Panning )?( panner39 ):( (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )) )) ).r ) + (( _Polar )?( appendResult23_g7 ):( uv_Main_Tex )) ) ):( (( _Polar )?( appendResult23_g7 ):( uv_Main_Tex )) )));
+				float temp_output_66_0 = ( tex2D( _Main_Tex, (( _Main_Panning )?( panner18 ):( (( _Distortion )?( ( ( _DistortionStr * tex2D( _Distortion_Tex, (( _Distortion_Panning )?( panner39 ):( (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )) )) ).r ) + (( _Polar )?( appendResult23_g7 ):( uv_Main_Tex )) ) ):( (( _Polar )?( appendResult23_g7 ):( uv_Main_Tex )) )) )) ).r * _MainStr );
 				float2 uv_Dissolve_Tex = IN.ase_texcoord.xy * _Dissolve_Tex_ST.xy + _Dissolve_Tex_ST.zw;
-				float2 CenteredUV15_g4 = ( uv_Dissolve_Tex - float2( 0.5,0.5 ) );
-				float2 break17_g4 = CenteredUV15_g4;
-				float2 appendResult23_g4 = (float2(( length( CenteredUV15_g4 ) * 1.0 * 2.0 ) , ( atan2( break17_g4.x , break17_g4.y ) * ( 1.0 / TWO_PI ) * 1.0 )));
+				float2 CenteredUV15_g8 = ( uv_Dissolve_Tex - float2( 0.5,0.5 ) );
+				float2 break17_g8 = CenteredUV15_g8;
+				float2 appendResult23_g8 = (float2(( length( CenteredUV15_g8 ) * 1.0 * 2.0 ) , ( atan2( break17_g8.x , break17_g8.y ) * ( 1.0 / TWO_PI ) * _PolarLengthh )));
 				float mulTime43 = _TimeParameters.x * _DissolvePanCtrl.z;
 				float2 appendResult42 = (float2(_DissolvePanCtrl.x , _DissolvePanCtrl.y));
-				float2 panner45 = ( ( mulTime43 + _DissolvePanCtrl.w ) * appendResult42 + (( _DissolvePolar )?( appendResult23_g4 ):( uv_Dissolve_Tex )));
-				float4 tex2DNode30 = tex2D( _Dissolve_Tex, (( _Dissolve_Panning )?( panner45 ):( (( _DissolvePolar )?( appendResult23_g4 ):( uv_Dissolve_Tex )) )) );
+				float2 panner45 = ( ( mulTime43 + _DissolvePanCtrl.w ) * appendResult42 + (( _DissolvePolar )?( appendResult23_g8 ):( uv_Dissolve_Tex )));
+				float4 tex2DNode30 = tex2D( _Dissolve_Tex, (( _Dissolve_Panning )?( panner45 ):( (( _DissolvePolar )?( appendResult23_g8 ):( uv_Dissolve_Tex )) )) );
 				float DissolveStrCustom77 = texCoord21.y;
 				float mulTime152 = _TimeParameters.x * _DissolveMaskCtrlZ.z;
 				float DissolveMaskStr78 = texCoord21.z;
@@ -1566,24 +1576,26 @@ Shader "Custom/MasterR&D"
 			};
         
 			CBUFFER_START(UnityPerMaterial)
-			float4 _Dissolve_Tex_ST;
-			float4 _DistortionPanCtrl;
-			float4 _Distortion_Tex_ST;
-			float4 _Main_Tex_ST;
-			float4 _DissolvePanCtrl;
 			float4 _PanCtrl;
-			float4 _DissolveMaskCtrlZ;
 			float4 _MaskTex_ST;
-			float _DissovleStrCustomY;
-			float _DissolveMaskDirection;
-			float _MainStr;
-			float _DissolvePolar;
-			float _Dissolve_Panning;
+			float4 _DistortionPanCtrl;
+			float4 _DissolveMaskCtrlZ;
+			float4 _Distortion_Tex_ST;
+			float4 _DissolvePanCtrl;
+			float4 _Main_Tex_ST;
+			float4 _Dissolve_Tex_ST;
 			float _DissolveMaskVer;
-			float _DissolveMaskPow;
+			float _Dissolve_Panning;
+			float _DissolvePolar;
+			float _PolarLengthh;
+			float _DissovleStrCustomY;
 			float _DissolveStr;
+			float _DissolveMaskDirection;
+			float _DissolveMaskPow;
+			float _MainStr;
 			float _inten;
 			float _PanTimeCustomX;
+			float _PolarLength;
 			float _DistortionPolar;
 			float _Distortion_Panning;
 			float _DistortionStr;
@@ -1753,13 +1765,13 @@ Shader "Custom/MasterR&D"
 			{
 				SurfaceDescription surfaceDescription = (SurfaceDescription)0;
 				float2 uv_Main_Tex = IN.ase_texcoord.xy * _Main_Tex_ST.xy + _Main_Tex_ST.zw;
-				float2 CenteredUV15_g5 = ( uv_Main_Tex - float2( 0.5,0.5 ) );
-				float2 break17_g5 = CenteredUV15_g5;
-				float2 appendResult23_g5 = (float2(( length( CenteredUV15_g5 ) * 1.0 * 2.0 ) , ( atan2( break17_g5.x , break17_g5.y ) * ( 1.0 / TWO_PI ) * 1.0 )));
+				float2 CenteredUV15_g7 = ( uv_Main_Tex - float2( 0.5,0.5 ) );
+				float2 break17_g7 = CenteredUV15_g7;
+				float2 appendResult23_g7 = (float2(( length( CenteredUV15_g7 ) * 1.0 * 2.0 ) , ( atan2( break17_g7.x , break17_g7.y ) * ( 1.0 / TWO_PI ) * 1.0 )));
 				float2 uv_Distortion_Tex = IN.ase_texcoord.xy * _Distortion_Tex_ST.xy + _Distortion_Tex_ST.zw;
 				float2 CenteredUV15_g1 = ( uv_Distortion_Tex - float2( 0.5,0.5 ) );
 				float2 break17_g1 = CenteredUV15_g1;
-				float2 appendResult23_g1 = (float2(( length( CenteredUV15_g1 ) * 1.0 * 2.0 ) , ( atan2( break17_g1.x , break17_g1.y ) * ( 1.0 / TWO_PI ) * 1.0 )));
+				float2 appendResult23_g1 = (float2(( length( CenteredUV15_g1 ) * 1.0 * 2.0 ) , ( atan2( break17_g1.x , break17_g1.y ) * ( 1.0 / TWO_PI ) * _PolarLength )));
 				float mulTime37 = _TimeParameters.x * _DistortionPanCtrl.z;
 				float2 appendResult36 = (float2(_DistortionPanCtrl.x , _DistortionPanCtrl.y));
 				float2 panner39 = ( ( mulTime37 + _DistortionPanCtrl.w ) * appendResult36 + (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )));
@@ -1768,16 +1780,16 @@ Shader "Custom/MasterR&D"
 				texCoord21.xy = IN.ase_texcoord1.xy * float2( 1,1 ) + float2( 0,0 );
 				float PanTimeCtrl73 = texCoord21.x;
 				float2 appendResult25 = (float2(_PanCtrl.x , _PanCtrl.y));
-				float2 panner18 = ( (( _PanTimeCustomX )?( PanTimeCtrl73 ):( ( mulTime27 + _PanCtrl.w ) )) * appendResult25 + (( _Distortion )?( ( ( _DistortionStr * tex2D( _Distortion_Tex, (( _Distortion_Panning )?( panner39 ):( (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )) )) ).r ) + (( _Polar )?( appendResult23_g5 ):( uv_Main_Tex )) ) ):( (( _Polar )?( appendResult23_g5 ):( uv_Main_Tex )) )));
-				float temp_output_66_0 = ( tex2D( _Main_Tex, (( _Main_Panning )?( panner18 ):( (( _Distortion )?( ( ( _DistortionStr * tex2D( _Distortion_Tex, (( _Distortion_Panning )?( panner39 ):( (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )) )) ).r ) + (( _Polar )?( appendResult23_g5 ):( uv_Main_Tex )) ) ):( (( _Polar )?( appendResult23_g5 ):( uv_Main_Tex )) )) )) ).r * _MainStr );
+				float2 panner18 = ( (( _PanTimeCustomX )?( PanTimeCtrl73 ):( ( mulTime27 + _PanCtrl.w ) )) * appendResult25 + (( _Distortion )?( ( ( _DistortionStr * tex2D( _Distortion_Tex, (( _Distortion_Panning )?( panner39 ):( (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )) )) ).r ) + (( _Polar )?( appendResult23_g7 ):( uv_Main_Tex )) ) ):( (( _Polar )?( appendResult23_g7 ):( uv_Main_Tex )) )));
+				float temp_output_66_0 = ( tex2D( _Main_Tex, (( _Main_Panning )?( panner18 ):( (( _Distortion )?( ( ( _DistortionStr * tex2D( _Distortion_Tex, (( _Distortion_Panning )?( panner39 ):( (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )) )) ).r ) + (( _Polar )?( appendResult23_g7 ):( uv_Main_Tex )) ) ):( (( _Polar )?( appendResult23_g7 ):( uv_Main_Tex )) )) )) ).r * _MainStr );
 				float2 uv_Dissolve_Tex = IN.ase_texcoord.xy * _Dissolve_Tex_ST.xy + _Dissolve_Tex_ST.zw;
-				float2 CenteredUV15_g4 = ( uv_Dissolve_Tex - float2( 0.5,0.5 ) );
-				float2 break17_g4 = CenteredUV15_g4;
-				float2 appendResult23_g4 = (float2(( length( CenteredUV15_g4 ) * 1.0 * 2.0 ) , ( atan2( break17_g4.x , break17_g4.y ) * ( 1.0 / TWO_PI ) * 1.0 )));
+				float2 CenteredUV15_g8 = ( uv_Dissolve_Tex - float2( 0.5,0.5 ) );
+				float2 break17_g8 = CenteredUV15_g8;
+				float2 appendResult23_g8 = (float2(( length( CenteredUV15_g8 ) * 1.0 * 2.0 ) , ( atan2( break17_g8.x , break17_g8.y ) * ( 1.0 / TWO_PI ) * _PolarLengthh )));
 				float mulTime43 = _TimeParameters.x * _DissolvePanCtrl.z;
 				float2 appendResult42 = (float2(_DissolvePanCtrl.x , _DissolvePanCtrl.y));
-				float2 panner45 = ( ( mulTime43 + _DissolvePanCtrl.w ) * appendResult42 + (( _DissolvePolar )?( appendResult23_g4 ):( uv_Dissolve_Tex )));
-				float4 tex2DNode30 = tex2D( _Dissolve_Tex, (( _Dissolve_Panning )?( panner45 ):( (( _DissolvePolar )?( appendResult23_g4 ):( uv_Dissolve_Tex )) )) );
+				float2 panner45 = ( ( mulTime43 + _DissolvePanCtrl.w ) * appendResult42 + (( _DissolvePolar )?( appendResult23_g8 ):( uv_Dissolve_Tex )));
+				float4 tex2DNode30 = tex2D( _Dissolve_Tex, (( _Dissolve_Panning )?( panner45 ):( (( _DissolvePolar )?( appendResult23_g8 ):( uv_Dissolve_Tex )) )) );
 				float DissolveStrCustom77 = texCoord21.y;
 				float mulTime152 = _TimeParameters.x * _DissolveMaskCtrlZ.z;
 				float DissolveMaskStr78 = texCoord21.z;
@@ -1881,24 +1893,26 @@ Shader "Custom/MasterR&D"
 			};
         
 			CBUFFER_START(UnityPerMaterial)
-			float4 _Dissolve_Tex_ST;
-			float4 _DistortionPanCtrl;
-			float4 _Distortion_Tex_ST;
-			float4 _Main_Tex_ST;
-			float4 _DissolvePanCtrl;
 			float4 _PanCtrl;
-			float4 _DissolveMaskCtrlZ;
 			float4 _MaskTex_ST;
-			float _DissovleStrCustomY;
-			float _DissolveMaskDirection;
-			float _MainStr;
-			float _DissolvePolar;
-			float _Dissolve_Panning;
+			float4 _DistortionPanCtrl;
+			float4 _DissolveMaskCtrlZ;
+			float4 _Distortion_Tex_ST;
+			float4 _DissolvePanCtrl;
+			float4 _Main_Tex_ST;
+			float4 _Dissolve_Tex_ST;
 			float _DissolveMaskVer;
-			float _DissolveMaskPow;
+			float _Dissolve_Panning;
+			float _DissolvePolar;
+			float _PolarLengthh;
+			float _DissovleStrCustomY;
 			float _DissolveStr;
+			float _DissolveMaskDirection;
+			float _DissolveMaskPow;
+			float _MainStr;
 			float _inten;
 			float _PanTimeCustomX;
+			float _PolarLength;
 			float _DistortionPolar;
 			float _Distortion_Panning;
 			float _DistortionStr;
@@ -2066,13 +2080,13 @@ Shader "Custom/MasterR&D"
 			{
 				SurfaceDescription surfaceDescription = (SurfaceDescription)0;
 				float2 uv_Main_Tex = IN.ase_texcoord1.xy * _Main_Tex_ST.xy + _Main_Tex_ST.zw;
-				float2 CenteredUV15_g5 = ( uv_Main_Tex - float2( 0.5,0.5 ) );
-				float2 break17_g5 = CenteredUV15_g5;
-				float2 appendResult23_g5 = (float2(( length( CenteredUV15_g5 ) * 1.0 * 2.0 ) , ( atan2( break17_g5.x , break17_g5.y ) * ( 1.0 / TWO_PI ) * 1.0 )));
+				float2 CenteredUV15_g7 = ( uv_Main_Tex - float2( 0.5,0.5 ) );
+				float2 break17_g7 = CenteredUV15_g7;
+				float2 appendResult23_g7 = (float2(( length( CenteredUV15_g7 ) * 1.0 * 2.0 ) , ( atan2( break17_g7.x , break17_g7.y ) * ( 1.0 / TWO_PI ) * 1.0 )));
 				float2 uv_Distortion_Tex = IN.ase_texcoord1.xy * _Distortion_Tex_ST.xy + _Distortion_Tex_ST.zw;
 				float2 CenteredUV15_g1 = ( uv_Distortion_Tex - float2( 0.5,0.5 ) );
 				float2 break17_g1 = CenteredUV15_g1;
-				float2 appendResult23_g1 = (float2(( length( CenteredUV15_g1 ) * 1.0 * 2.0 ) , ( atan2( break17_g1.x , break17_g1.y ) * ( 1.0 / TWO_PI ) * 1.0 )));
+				float2 appendResult23_g1 = (float2(( length( CenteredUV15_g1 ) * 1.0 * 2.0 ) , ( atan2( break17_g1.x , break17_g1.y ) * ( 1.0 / TWO_PI ) * _PolarLength )));
 				float mulTime37 = _TimeParameters.x * _DistortionPanCtrl.z;
 				float2 appendResult36 = (float2(_DistortionPanCtrl.x , _DistortionPanCtrl.y));
 				float2 panner39 = ( ( mulTime37 + _DistortionPanCtrl.w ) * appendResult36 + (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )));
@@ -2081,16 +2095,16 @@ Shader "Custom/MasterR&D"
 				texCoord21.xy = IN.ase_texcoord2.xy * float2( 1,1 ) + float2( 0,0 );
 				float PanTimeCtrl73 = texCoord21.x;
 				float2 appendResult25 = (float2(_PanCtrl.x , _PanCtrl.y));
-				float2 panner18 = ( (( _PanTimeCustomX )?( PanTimeCtrl73 ):( ( mulTime27 + _PanCtrl.w ) )) * appendResult25 + (( _Distortion )?( ( ( _DistortionStr * tex2D( _Distortion_Tex, (( _Distortion_Panning )?( panner39 ):( (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )) )) ).r ) + (( _Polar )?( appendResult23_g5 ):( uv_Main_Tex )) ) ):( (( _Polar )?( appendResult23_g5 ):( uv_Main_Tex )) )));
-				float temp_output_66_0 = ( tex2D( _Main_Tex, (( _Main_Panning )?( panner18 ):( (( _Distortion )?( ( ( _DistortionStr * tex2D( _Distortion_Tex, (( _Distortion_Panning )?( panner39 ):( (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )) )) ).r ) + (( _Polar )?( appendResult23_g5 ):( uv_Main_Tex )) ) ):( (( _Polar )?( appendResult23_g5 ):( uv_Main_Tex )) )) )) ).r * _MainStr );
+				float2 panner18 = ( (( _PanTimeCustomX )?( PanTimeCtrl73 ):( ( mulTime27 + _PanCtrl.w ) )) * appendResult25 + (( _Distortion )?( ( ( _DistortionStr * tex2D( _Distortion_Tex, (( _Distortion_Panning )?( panner39 ):( (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )) )) ).r ) + (( _Polar )?( appendResult23_g7 ):( uv_Main_Tex )) ) ):( (( _Polar )?( appendResult23_g7 ):( uv_Main_Tex )) )));
+				float temp_output_66_0 = ( tex2D( _Main_Tex, (( _Main_Panning )?( panner18 ):( (( _Distortion )?( ( ( _DistortionStr * tex2D( _Distortion_Tex, (( _Distortion_Panning )?( panner39 ):( (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )) )) ).r ) + (( _Polar )?( appendResult23_g7 ):( uv_Main_Tex )) ) ):( (( _Polar )?( appendResult23_g7 ):( uv_Main_Tex )) )) )) ).r * _MainStr );
 				float2 uv_Dissolve_Tex = IN.ase_texcoord1.xy * _Dissolve_Tex_ST.xy + _Dissolve_Tex_ST.zw;
-				float2 CenteredUV15_g4 = ( uv_Dissolve_Tex - float2( 0.5,0.5 ) );
-				float2 break17_g4 = CenteredUV15_g4;
-				float2 appendResult23_g4 = (float2(( length( CenteredUV15_g4 ) * 1.0 * 2.0 ) , ( atan2( break17_g4.x , break17_g4.y ) * ( 1.0 / TWO_PI ) * 1.0 )));
+				float2 CenteredUV15_g8 = ( uv_Dissolve_Tex - float2( 0.5,0.5 ) );
+				float2 break17_g8 = CenteredUV15_g8;
+				float2 appendResult23_g8 = (float2(( length( CenteredUV15_g8 ) * 1.0 * 2.0 ) , ( atan2( break17_g8.x , break17_g8.y ) * ( 1.0 / TWO_PI ) * _PolarLengthh )));
 				float mulTime43 = _TimeParameters.x * _DissolvePanCtrl.z;
 				float2 appendResult42 = (float2(_DissolvePanCtrl.x , _DissolvePanCtrl.y));
-				float2 panner45 = ( ( mulTime43 + _DissolvePanCtrl.w ) * appendResult42 + (( _DissolvePolar )?( appendResult23_g4 ):( uv_Dissolve_Tex )));
-				float4 tex2DNode30 = tex2D( _Dissolve_Tex, (( _Dissolve_Panning )?( panner45 ):( (( _DissolvePolar )?( appendResult23_g4 ):( uv_Dissolve_Tex )) )) );
+				float2 panner45 = ( ( mulTime43 + _DissolvePanCtrl.w ) * appendResult42 + (( _DissolvePolar )?( appendResult23_g8 ):( uv_Dissolve_Tex )));
+				float4 tex2DNode30 = tex2D( _Dissolve_Tex, (( _Dissolve_Panning )?( panner45 ):( (( _DissolvePolar )?( appendResult23_g8 ):( uv_Dissolve_Tex )) )) );
 				float DissolveStrCustom77 = texCoord21.y;
 				float mulTime152 = _TimeParameters.x * _DissolveMaskCtrlZ.z;
 				float DissolveMaskStr78 = texCoord21.z;
@@ -2191,24 +2205,26 @@ Shader "Custom/MasterR&D"
 			};
         
 			CBUFFER_START(UnityPerMaterial)
-			float4 _Dissolve_Tex_ST;
-			float4 _DistortionPanCtrl;
-			float4 _Distortion_Tex_ST;
-			float4 _Main_Tex_ST;
-			float4 _DissolvePanCtrl;
 			float4 _PanCtrl;
-			float4 _DissolveMaskCtrlZ;
 			float4 _MaskTex_ST;
-			float _DissovleStrCustomY;
-			float _DissolveMaskDirection;
-			float _MainStr;
-			float _DissolvePolar;
-			float _Dissolve_Panning;
+			float4 _DistortionPanCtrl;
+			float4 _DissolveMaskCtrlZ;
+			float4 _Distortion_Tex_ST;
+			float4 _DissolvePanCtrl;
+			float4 _Main_Tex_ST;
+			float4 _Dissolve_Tex_ST;
 			float _DissolveMaskVer;
-			float _DissolveMaskPow;
+			float _Dissolve_Panning;
+			float _DissolvePolar;
+			float _PolarLengthh;
+			float _DissovleStrCustomY;
 			float _DissolveStr;
+			float _DissolveMaskDirection;
+			float _DissolveMaskPow;
+			float _MainStr;
 			float _inten;
 			float _PanTimeCustomX;
+			float _PolarLength;
 			float _DistortionPolar;
 			float _Distortion_Panning;
 			float _DistortionStr;
@@ -2375,13 +2391,13 @@ Shader "Custom/MasterR&D"
 			{
 				SurfaceDescription surfaceDescription = (SurfaceDescription)0;
 				float2 uv_Main_Tex = IN.ase_texcoord1.xy * _Main_Tex_ST.xy + _Main_Tex_ST.zw;
-				float2 CenteredUV15_g5 = ( uv_Main_Tex - float2( 0.5,0.5 ) );
-				float2 break17_g5 = CenteredUV15_g5;
-				float2 appendResult23_g5 = (float2(( length( CenteredUV15_g5 ) * 1.0 * 2.0 ) , ( atan2( break17_g5.x , break17_g5.y ) * ( 1.0 / TWO_PI ) * 1.0 )));
+				float2 CenteredUV15_g7 = ( uv_Main_Tex - float2( 0.5,0.5 ) );
+				float2 break17_g7 = CenteredUV15_g7;
+				float2 appendResult23_g7 = (float2(( length( CenteredUV15_g7 ) * 1.0 * 2.0 ) , ( atan2( break17_g7.x , break17_g7.y ) * ( 1.0 / TWO_PI ) * 1.0 )));
 				float2 uv_Distortion_Tex = IN.ase_texcoord1.xy * _Distortion_Tex_ST.xy + _Distortion_Tex_ST.zw;
 				float2 CenteredUV15_g1 = ( uv_Distortion_Tex - float2( 0.5,0.5 ) );
 				float2 break17_g1 = CenteredUV15_g1;
-				float2 appendResult23_g1 = (float2(( length( CenteredUV15_g1 ) * 1.0 * 2.0 ) , ( atan2( break17_g1.x , break17_g1.y ) * ( 1.0 / TWO_PI ) * 1.0 )));
+				float2 appendResult23_g1 = (float2(( length( CenteredUV15_g1 ) * 1.0 * 2.0 ) , ( atan2( break17_g1.x , break17_g1.y ) * ( 1.0 / TWO_PI ) * _PolarLength )));
 				float mulTime37 = _TimeParameters.x * _DistortionPanCtrl.z;
 				float2 appendResult36 = (float2(_DistortionPanCtrl.x , _DistortionPanCtrl.y));
 				float2 panner39 = ( ( mulTime37 + _DistortionPanCtrl.w ) * appendResult36 + (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )));
@@ -2390,16 +2406,16 @@ Shader "Custom/MasterR&D"
 				texCoord21.xy = IN.ase_texcoord2.xy * float2( 1,1 ) + float2( 0,0 );
 				float PanTimeCtrl73 = texCoord21.x;
 				float2 appendResult25 = (float2(_PanCtrl.x , _PanCtrl.y));
-				float2 panner18 = ( (( _PanTimeCustomX )?( PanTimeCtrl73 ):( ( mulTime27 + _PanCtrl.w ) )) * appendResult25 + (( _Distortion )?( ( ( _DistortionStr * tex2D( _Distortion_Tex, (( _Distortion_Panning )?( panner39 ):( (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )) )) ).r ) + (( _Polar )?( appendResult23_g5 ):( uv_Main_Tex )) ) ):( (( _Polar )?( appendResult23_g5 ):( uv_Main_Tex )) )));
-				float temp_output_66_0 = ( tex2D( _Main_Tex, (( _Main_Panning )?( panner18 ):( (( _Distortion )?( ( ( _DistortionStr * tex2D( _Distortion_Tex, (( _Distortion_Panning )?( panner39 ):( (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )) )) ).r ) + (( _Polar )?( appendResult23_g5 ):( uv_Main_Tex )) ) ):( (( _Polar )?( appendResult23_g5 ):( uv_Main_Tex )) )) )) ).r * _MainStr );
+				float2 panner18 = ( (( _PanTimeCustomX )?( PanTimeCtrl73 ):( ( mulTime27 + _PanCtrl.w ) )) * appendResult25 + (( _Distortion )?( ( ( _DistortionStr * tex2D( _Distortion_Tex, (( _Distortion_Panning )?( panner39 ):( (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )) )) ).r ) + (( _Polar )?( appendResult23_g7 ):( uv_Main_Tex )) ) ):( (( _Polar )?( appendResult23_g7 ):( uv_Main_Tex )) )));
+				float temp_output_66_0 = ( tex2D( _Main_Tex, (( _Main_Panning )?( panner18 ):( (( _Distortion )?( ( ( _DistortionStr * tex2D( _Distortion_Tex, (( _Distortion_Panning )?( panner39 ):( (( _DistortionPolar )?( appendResult23_g1 ):( uv_Distortion_Tex )) )) ).r ) + (( _Polar )?( appendResult23_g7 ):( uv_Main_Tex )) ) ):( (( _Polar )?( appendResult23_g7 ):( uv_Main_Tex )) )) )) ).r * _MainStr );
 				float2 uv_Dissolve_Tex = IN.ase_texcoord1.xy * _Dissolve_Tex_ST.xy + _Dissolve_Tex_ST.zw;
-				float2 CenteredUV15_g4 = ( uv_Dissolve_Tex - float2( 0.5,0.5 ) );
-				float2 break17_g4 = CenteredUV15_g4;
-				float2 appendResult23_g4 = (float2(( length( CenteredUV15_g4 ) * 1.0 * 2.0 ) , ( atan2( break17_g4.x , break17_g4.y ) * ( 1.0 / TWO_PI ) * 1.0 )));
+				float2 CenteredUV15_g8 = ( uv_Dissolve_Tex - float2( 0.5,0.5 ) );
+				float2 break17_g8 = CenteredUV15_g8;
+				float2 appendResult23_g8 = (float2(( length( CenteredUV15_g8 ) * 1.0 * 2.0 ) , ( atan2( break17_g8.x , break17_g8.y ) * ( 1.0 / TWO_PI ) * _PolarLengthh )));
 				float mulTime43 = _TimeParameters.x * _DissolvePanCtrl.z;
 				float2 appendResult42 = (float2(_DissolvePanCtrl.x , _DissolvePanCtrl.y));
-				float2 panner45 = ( ( mulTime43 + _DissolvePanCtrl.w ) * appendResult42 + (( _DissolvePolar )?( appendResult23_g4 ):( uv_Dissolve_Tex )));
-				float4 tex2DNode30 = tex2D( _Dissolve_Tex, (( _Dissolve_Panning )?( panner45 ):( (( _DissolvePolar )?( appendResult23_g4 ):( uv_Dissolve_Tex )) )) );
+				float2 panner45 = ( ( mulTime43 + _DissolvePanCtrl.w ) * appendResult42 + (( _DissolvePolar )?( appendResult23_g8 ):( uv_Dissolve_Tex )));
+				float4 tex2DNode30 = tex2D( _Dissolve_Tex, (( _Dissolve_Panning )?( panner45 ):( (( _DissolvePolar )?( appendResult23_g8 ):( uv_Dissolve_Tex )) )) );
 				float DissolveStrCustom77 = texCoord21.y;
 				float mulTime152 = _TimeParameters.x * _DissolveMaskCtrlZ.z;
 				float DissolveMaskStr78 = texCoord21.z;
@@ -2444,138 +2460,141 @@ Shader "Custom/MasterR&D"
 }
 /*ASEBEGIN
 Version=18935
-437.6;304.8;1535.2;571.8;1975.189;-1006.094;1;True;False
-Node;AmplifyShaderEditor.CommentaryNode;47;-3297.619,-467.4709;Inherit;False;1450.268;460.3232;UVDistortion;11;50;32;34;39;68;65;36;69;37;38;35;;1,1,1,1;0;0
+2099;183;1274;682;-1806.132;426.7425;1;True;False
+Node;AmplifyShaderEditor.CommentaryNode;47;-3297.619,-467.4709;Inherit;False;1450.268;460.3232;UVDistortion;12;50;32;34;39;68;65;36;69;37;38;35;167;;1,1,1,1;0;0
+Node;AmplifyShaderEditor.Vector4Node;35;-3232.885,-185.0144;Inherit;False;Property;_DistortionPanCtrl;DistortionPanCtrl;25;0;Create;True;0;0;0;False;0;False;0,0,0,0;0,0,0,0;0;5;FLOAT4;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.RangedFloatNode;167;-3152.784,-275.4205;Inherit;False;Property;_PolarLength;PolarLength;23;0;Create;True;0;0;0;False;0;False;1;1;0;0;0;1;FLOAT;0
 Node;AmplifyShaderEditor.TextureCoordinatesNode;38;-3251.568,-438.7325;Inherit;False;0;32;2;3;2;SAMPLER2D;;False;0;FLOAT2;1,1;False;1;FLOAT2;0,0;False;5;FLOAT2;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.Vector4Node;35;-3207.619,-235.5476;Inherit;False;Property;_DistortionPanCtrl;DistortionPanCtrl;23;0;Create;True;0;0;0;False;0;False;0,0,0,0;0,0,0,0;0;5;FLOAT4;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.SimpleTimeNode;37;-2990.973,-137.2995;Inherit;False;1;0;FLOAT;1;False;1;FLOAT;0
 Node;AmplifyShaderEditor.FunctionNode;69;-2982.977,-364.0164;Inherit;False;Polar Coordinates;-1;;1;7dab8e02884cf104ebefaa2e788e4162;0;4;1;FLOAT2;0,0;False;2;FLOAT2;0.5,0.5;False;3;FLOAT;1;False;4;FLOAT;1;False;1;FLOAT2;0
 Node;AmplifyShaderEditor.SimpleAddOpNode;65;-2751.866,-108.5892;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.ToggleSwitchNode;68;-2748.563,-421.9574;Inherit;False;Property;_DistortionPolar;DistortionPolar;21;0;Create;True;0;0;0;False;0;False;0;True;2;0;FLOAT2;0,0;False;1;FLOAT2;0,0;False;1;FLOAT2;0
+Node;AmplifyShaderEditor.ToggleSwitchNode;68;-2748.563,-421.9574;Inherit;False;Property;_DistortionPolar;DistortionPolar;22;0;Create;True;0;0;0;False;0;False;0;True;2;0;FLOAT2;0,0;False;1;FLOAT2;0,0;False;1;FLOAT2;0
 Node;AmplifyShaderEditor.DynamicAppendNode;36;-2824.792,-224.0614;Inherit;False;FLOAT2;4;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;3;FLOAT;0;False;1;FLOAT2;0
 Node;AmplifyShaderEditor.CommentaryNode;104;-1585.658,-767.287;Inherit;False;589.4069;433.9417;Custom;5;21;73;77;78;79;;1,1,1,1;0;0
-Node;AmplifyShaderEditor.CommentaryNode;46;-1961.744,652.9777;Inherit;False;1370.011;487.8423;Dissolve;14;44;43;42;30;45;40;41;53;62;64;70;71;81;80;;1,1,1,1;0;0
 Node;AmplifyShaderEditor.PannerNode;39;-2632.809,-206.3602;Inherit;False;3;0;FLOAT2;0,0;False;2;FLOAT2;0,0;False;1;FLOAT;1;False;1;FLOAT2;0
+Node;AmplifyShaderEditor.CommentaryNode;46;-1961.744,652.9777;Inherit;False;1370.011;487.8423;Dissolve;15;44;43;42;30;45;40;41;53;62;64;70;71;81;80;168;;1,1,1,1;0;0
 Node;AmplifyShaderEditor.TextureCoordinatesNode;21;-1535.658,-645.4213;Inherit;False;1;-1;4;3;2;SAMPLER2D;;False;0;FLOAT2;1,1;False;1;FLOAT2;0,0;False;5;FLOAT4;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.RegisterLocalVarNode;78;-1234.004,-542.7353;Inherit;False;DissolveMaskStr;-1;True;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.Vector4Node;41;-1911.744,931.8199;Inherit;False;Property;_DissolvePanCtrl;DissolvePanCtrl;14;0;Create;True;0;0;0;False;0;False;0,0,0,0;-1,0,1,0;0;5;FLOAT4;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.TextureCoordinatesNode;44;-1934.325,694.2897;Inherit;False;0;30;2;3;2;SAMPLER2D;;False;0;FLOAT2;1,1;False;1;FLOAT2;0,0;False;5;FLOAT2;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.ToggleSwitchNode;34;-2440.365,-303.4852;Inherit;False;Property;_Distortion_Panning;Distortion_Panning;22;0;Create;True;0;0;0;False;0;False;1;True;2;0;FLOAT2;0,0;False;1;FLOAT2;0,0;False;1;FLOAT2;0
-Node;AmplifyShaderEditor.Vector4Node;156;-1584.846,1340.939;Inherit;False;Property;_DissolveMaskCtrlZ;DissolveMaskCtrl(Z);16;0;Create;True;0;0;0;False;0;False;0,0,0,0;1,0,0,-2.09;0;5;FLOAT4;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.Vector4Node;156;-1584.846,1340.939;Inherit;False;Property;_DissolveMaskCtrlZ;DissolveMaskCtrl(Z);17;0;Create;True;0;0;0;False;0;False;0,0,0,0;0,0,0,0;0;5;FLOAT4;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.RangedFloatNode;168;-1895.383,842.673;Inherit;False;Property;_PolarLengthh;PolarLengthh;12;0;Create;True;0;0;0;False;0;False;1;1;0;0;0;1;FLOAT;0
 Node;AmplifyShaderEditor.TextureCoordinatesNode;16;-2161.427,26.20602;Inherit;False;0;15;2;3;2;SAMPLER2D;;False;0;FLOAT2;1,1;False;1;FLOAT2;0,0;False;5;FLOAT2;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.Vector4Node;41;-1911.744,931.8199;Inherit;False;Property;_DissolvePanCtrl;DissolvePanCtrl;13;0;Create;True;0;0;0;False;0;False;0,0,0,0;0,0,0,0;0;5;FLOAT4;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.FunctionNode;75;-1929.044,99.05051;Inherit;False;Polar Coordinates;-1;;5;7dab8e02884cf104ebefaa2e788e4162;0;4;1;FLOAT2;0,0;False;2;FLOAT2;0.5,0.5;False;3;FLOAT;1;False;4;FLOAT;1;False;1;FLOAT2;0
-Node;AmplifyShaderEditor.RangedFloatNode;50;-2091.353,-450.9916;Inherit;False;Property;_DistortionStr;DistortionStr;19;0;Create;True;0;0;0;False;0;False;0;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.Vector4Node;28;-1657.657,315.0917;Inherit;False;Property;_PanCtrl;PanCtrl;5;0;Create;True;0;0;0;False;0;False;0,0,0,0;0,0,0,0;0;5;FLOAT4;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.ToggleSwitchNode;34;-2440.365,-303.4852;Inherit;False;Property;_Distortion_Panning;Distortion_Panning;24;0;Create;True;0;0;0;False;0;False;0;True;2;0;FLOAT2;0,0;False;1;FLOAT2;0,0;False;1;FLOAT2;0
+Node;AmplifyShaderEditor.RegisterLocalVarNode;78;-1234.004,-542.7353;Inherit;False;DissolveMaskStr;-1;True;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.Vector4Node;28;-1657.657,315.0917;Inherit;False;Property;_PanCtrl;PanCtrl;5;0;Create;True;0;0;0;False;0;False;0,0,0,0;1,0,0,0;0;5;FLOAT4;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.GetLocalVarNode;164;-1380.029,1491.184;Inherit;False;78;DissolveMaskStr;1;0;OBJECT;;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleTimeNode;43;-1582.938,1002.901;Inherit;False;1;0;FLOAT;1;False;1;FLOAT;0
-Node;AmplifyShaderEditor.FunctionNode;71;-1700.709,764.9831;Inherit;False;Polar Coordinates;-1;;4;7dab8e02884cf104ebefaa2e788e4162;0;4;1;FLOAT2;0,0;False;2;FLOAT2;0.5,0.5;False;3;FLOAT;1;False;4;FLOAT;1;False;1;FLOAT2;0
+Node;AmplifyShaderEditor.SamplerNode;32;-2168.95,-285.758;Inherit;True;Property;_Distortion_Tex;Distortion_Tex;21;0;Create;True;0;0;0;False;0;False;-1;None;None;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;8;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;6;FLOAT;0;False;7;SAMPLERSTATE;;False;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.SimpleTimeNode;152;-1361.556,1417.556;Inherit;False;1;0;FLOAT;1;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SamplerNode;32;-2168.95,-285.758;Inherit;True;Property;_Distortion_Tex;Distortion_Tex;20;0;Create;True;0;0;0;False;0;False;-1;None;None;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;8;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;6;FLOAT;0;False;7;SAMPLERSTATE;;False;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.ToggleSwitchNode;70;-1449.842,692.6879;Inherit;False;Property;_DissolvePolar;DissolvePolar;11;0;Create;True;0;0;0;False;0;False;0;True;2;0;FLOAT2;0,0;False;1;FLOAT2;0,0;False;1;FLOAT2;0
-Node;AmplifyShaderEditor.SimpleAddOpNode;159;-1184.949,1411.616;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleAddOpNode;64;-1404.306,1029.136;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.FunctionNode;75;-1929.044,99.05051;Inherit;False;Polar Coordinates;-1;;7;7dab8e02884cf104ebefaa2e788e4162;0;4;1;FLOAT2;0,0;False;2;FLOAT2;0.5,0.5;False;3;FLOAT;1;False;4;FLOAT;1;False;1;FLOAT2;0
+Node;AmplifyShaderEditor.RangedFloatNode;50;-2091.353,-450.9916;Inherit;False;Property;_DistortionStr;DistortionStr;20;0;Create;True;0;0;0;False;0;False;0;0;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.FunctionNode;71;-1700.709,764.9831;Inherit;False;Polar Coordinates;-1;;8;7dab8e02884cf104ebefaa2e788e4162;0;4;1;FLOAT2;0,0;False;2;FLOAT2;0.5,0.5;False;3;FLOAT;1;False;4;FLOAT;1;False;1;FLOAT2;0
 Node;AmplifyShaderEditor.DynamicAppendNode;42;-1505.639,896.3869;Inherit;False;FLOAT2;4;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;3;FLOAT;0;False;1;FLOAT2;0
-Node;AmplifyShaderEditor.TextureCoordinatesNode;148;-1408.203,1201.831;Inherit;False;0;-1;2;3;2;SAMPLER2D;;False;0;FLOAT2;1,1;False;1;FLOAT2;0,0;False;5;FLOAT2;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.SimpleTimeNode;27;-1433.961,416.1868;Inherit;False;1;0;FLOAT;1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleAddOpNode;64;-1404.306,1029.136;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.RegisterLocalVarNode;73;-1226.813,-717.287;Inherit;False;PanTimeCtrl;-1;True;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;49;-1716.231,-241.5762;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.DynamicAppendNode;157;-1349.846,1321.345;Inherit;False;FLOAT2;4;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;3;FLOAT;0;False;1;FLOAT2;0
+Node;AmplifyShaderEditor.TextureCoordinatesNode;148;-1408.203,1201.831;Inherit;False;0;-1;2;3;2;SAMPLER2D;;False;0;FLOAT2;1,1;False;1;FLOAT2;0,0;False;5;FLOAT2;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.ToggleSwitchNode;76;-1707.63,23.1095;Inherit;False;Property;_Polar;Polar;3;0;Create;True;0;0;0;False;0;False;0;True;2;0;FLOAT2;0,0;False;1;FLOAT2;0,0;False;1;FLOAT2;0
+Node;AmplifyShaderEditor.ToggleSwitchNode;70;-1449.842,692.6879;Inherit;False;Property;_DissolvePolar;DissolvePolar;11;0;Create;True;0;0;0;False;0;False;0;True;2;0;FLOAT2;0,0;False;1;FLOAT2;0,0;False;1;FLOAT2;0
+Node;AmplifyShaderEditor.SimpleTimeNode;27;-1433.961,416.1868;Inherit;False;1;0;FLOAT;1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;49;-1716.231,-241.5762;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleAddOpNode;159;-1184.949,1411.616;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.PannerNode;154;-1119.352,1289.291;Inherit;False;3;0;FLOAT2;0,0;False;2;FLOAT2;0,0;False;1;FLOAT;1;False;1;FLOAT2;0
-Node;AmplifyShaderEditor.PannerNode;45;-1313.656,914.0883;Inherit;False;3;0;FLOAT2;0,0;False;2;FLOAT2;0,0;False;1;FLOAT;1;False;1;FLOAT2;0
+Node;AmplifyShaderEditor.RegisterLocalVarNode;77;-1247.451,-632.2708;Inherit;False;DissolveStrCustom;-1;True;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.GetLocalVarNode;72;-1441.373,538.7111;Inherit;False;73;PanTimeCtrl;1;0;OBJECT;;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleAddOpNode;63;-1270.95,421.9449;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleAddOpNode;48;-1315.808,-152.4323;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT2;0,0;False;1;FLOAT2;0
-Node;AmplifyShaderEditor.GetLocalVarNode;72;-1441.373,538.7111;Inherit;False;73;PanTimeCtrl;1;0;OBJECT;;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RegisterLocalVarNode;77;-1247.451,-632.2708;Inherit;False;DissolveStrCustom;-1;True;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.ToggleSwitchNode;40;-1133.698,718.1737;Inherit;False;Property;_Dissolve_Panning;Dissolve_Panning;12;0;Create;True;0;0;0;False;0;False;1;True;2;0;FLOAT2;0,0;False;1;FLOAT2;0,0;False;1;FLOAT2;0
-Node;AmplifyShaderEditor.BreakToComponentsNode;155;-939.491,1202.822;Inherit;False;FLOAT2;1;0;FLOAT2;0,0;False;16;FLOAT;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4;FLOAT;5;FLOAT;6;FLOAT;7;FLOAT;8;FLOAT;9;FLOAT;10;FLOAT;11;FLOAT;12;FLOAT;13;FLOAT;14;FLOAT;15
-Node;AmplifyShaderEditor.RangedFloatNode;53;-1075.203,942.6729;Inherit;False;Property;_DissolveStr;DissolveStr;8;0;Create;True;0;0;0;False;0;False;-1;-1.01;-2;1;0;1;FLOAT;0
-Node;AmplifyShaderEditor.DynamicAppendNode;25;-1239.637,323.1487;Inherit;False;FLOAT2;4;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;3;FLOAT;0;False;1;FLOAT2;0
-Node;AmplifyShaderEditor.ToggleSwitchNode;33;-1267.6,65.30674;Inherit;False;Property;_Distortion;Distortion;18;0;Create;True;0;0;0;False;0;False;0;True;2;0;FLOAT2;0,0;False;1;FLOAT2;0,0;False;1;FLOAT2;0
+Node;AmplifyShaderEditor.PannerNode;45;-1313.656,914.0883;Inherit;False;3;0;FLOAT2;0,0;False;2;FLOAT2;0,0;False;1;FLOAT;1;False;1;FLOAT2;0
+Node;AmplifyShaderEditor.ToggleSwitchNode;74;-1135.479,443.5436;Inherit;False;Property;_PanTimeCustomX;PanTimeCustom(X);6;0;Create;True;0;0;0;False;0;False;1;True;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.ToggleSwitchNode;40;-1133.698,718.1737;Inherit;False;Property;_Dissolve_Panning;Dissolve_Panning;13;0;Create;True;0;0;0;False;0;False;1;True;2;0;FLOAT2;0,0;False;1;FLOAT2;0,0;False;1;FLOAT2;0
 Node;AmplifyShaderEditor.GetLocalVarNode;80;-1269.26,1053.375;Inherit;False;77;DissolveStrCustom;1;0;OBJECT;;False;1;FLOAT;0
-Node;AmplifyShaderEditor.ToggleSwitchNode;74;-1135.479,443.5436;Inherit;False;Property;_PanTimeCustomX;PanTimeCustom(X);6;0;Create;True;0;0;0;False;0;False;0;True;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.DynamicAppendNode;25;-1239.637,323.1487;Inherit;False;FLOAT2;4;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;3;FLOAT;0;False;1;FLOAT2;0
+Node;AmplifyShaderEditor.BreakToComponentsNode;155;-939.491,1202.822;Inherit;False;FLOAT2;1;0;FLOAT2;0,0;False;16;FLOAT;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4;FLOAT;5;FLOAT;6;FLOAT;7;FLOAT;8;FLOAT;9;FLOAT;10;FLOAT;11;FLOAT;12;FLOAT;13;FLOAT;14;FLOAT;15
+Node;AmplifyShaderEditor.ToggleSwitchNode;33;-1267.6,65.30674;Inherit;False;Property;_Distortion;Distortion;19;0;Create;True;0;0;0;False;0;False;0;True;2;0;FLOAT2;0,0;False;1;FLOAT2;0,0;False;1;FLOAT2;0
+Node;AmplifyShaderEditor.RangedFloatNode;53;-1075.203,942.6729;Inherit;False;Property;_DissolveStr;DissolveStr;8;0;Create;True;0;0;0;False;0;False;-1;-0.52;-2;1;0;1;FLOAT;0
+Node;AmplifyShaderEditor.ToggleSwitchNode;81;-1034.813,1023.135;Inherit;False;Property;_DissovleStrCustomY;DissovleStrCustom(Y);9;0;Create;True;0;0;0;False;0;False;1;True;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SamplerNode;30;-913.3332,703.8494;Inherit;True;Property;_Dissolve_Tex;Dissolve_Tex;10;0;Create;True;0;0;0;False;0;False;-1;None;20c0b0cb78525ae45af8eb078147784a;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;8;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;6;FLOAT;0;False;7;SAMPLERSTATE;;False;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.RangedFloatNode;145;-437.2972,1222.506;Inherit;False;Property;_DissolveMaskPow;DissolveMaskPow;18;0;Create;True;0;0;0;False;0;False;6.21;6.21;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.ToggleSwitchNode;140;-761.3057,1200.643;Inherit;True;Property;_DissolveMaskDirection;DissolveMaskDirection;16;0;Create;True;0;0;0;False;0;False;0;True;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.PannerNode;18;-933.6541,315.8501;Inherit;False;3;0;FLOAT2;0,0;False;2;FLOAT2;0,0;False;1;FLOAT;1;False;1;FLOAT2;0
-Node;AmplifyShaderEditor.SamplerNode;30;-913.3332,703.8494;Inherit;True;Property;_Dissolve_Tex;Dissolve_Tex;10;0;Create;True;0;0;0;False;0;False;-1;None;None;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;8;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;6;FLOAT;0;False;7;SAMPLERSTATE;;False;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.ToggleSwitchNode;140;-761.3057,1200.643;Inherit;True;Property;_DissolveMaskDirection;DissolveMaskDirection;15;0;Create;True;0;0;0;False;0;False;0;True;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.ToggleSwitchNode;81;-1034.813,1023.135;Inherit;False;Property;_DissovleStrCustomY;DissovleStrCustom(Y);9;0;Create;True;0;0;0;False;0;False;0;True;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;145;-437.2972,1222.506;Inherit;False;Property;_DissolveMaskPow;DissolveMaskPow;17;0;Create;True;0;0;0;False;0;False;6.21;0.8;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.LerpOp;137;-251.279,948.395;Inherit;True;3;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.ToggleSwitchNode;19;-935.2122,112.4894;Inherit;False;Property;_Main_Panning;Main_Panning;4;0;Create;True;0;0;0;False;0;False;0;True;2;0;FLOAT2;0,0;False;1;FLOAT2;0,0;False;1;FLOAT2;0
-Node;AmplifyShaderEditor.TFHCRemapNode;62;-763.5271,910.9775;Inherit;False;5;0;FLOAT;0;False;1;FLOAT;-1;False;2;FLOAT;1;False;3;FLOAT;0;False;4;FLOAT;50;False;1;FLOAT;0
 Node;AmplifyShaderEditor.CommentaryNode;103;-983.0258,-1131.467;Inherit;False;1488.185;789.6182;Mask;21;124;123;121;122;118;96;92;91;83;90;82;101;97;98;99;100;111;116;127;128;163;;1,1,1,1;0;0
-Node;AmplifyShaderEditor.OneMinusNode;161;-18.46379,951.202;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.TFHCRemapNode;62;-763.5271,910.9775;Inherit;False;5;0;FLOAT;0;False;1;FLOAT;-1;False;2;FLOAT;1;False;3;FLOAT;0;False;4;FLOAT;50;False;1;FLOAT;0
+Node;AmplifyShaderEditor.LerpOp;137;-251.279,948.395;Inherit;True;3;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.ToggleSwitchNode;19;-935.2122,112.4894;Inherit;False;Property;_Main_Panning;Main_Panning;4;0;Create;True;0;0;0;False;0;False;1;True;2;0;FLOAT2;0,0;False;1;FLOAT2;0,0;False;1;FLOAT2;0
 Node;AmplifyShaderEditor.TexCoordVertexDataNode;82;-929.3416,-629.2308;Inherit;False;0;2;0;5;FLOAT2;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.RangedFloatNode;67;-531.7323,336.6227;Inherit;False;Property;_MainStr;MainStr;1;0;Create;True;0;0;0;False;0;False;1;1.53;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.SamplerNode;15;-646.5851,128.5414;Inherit;True;Property;_Main_Tex;Main_Tex;2;0;Create;True;0;0;0;False;0;False;-1;None;3a0b5bfc117d6494b82e55b6d533afad;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;8;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;6;FLOAT;0;False;7;SAMPLERSTATE;;False;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;52;-493.9385,723.5346;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SamplerNode;15;-646.5851,128.5414;Inherit;True;Property;_Main_Tex;Main_Tex;2;0;Create;True;0;0;0;False;0;False;-1;None;842b4e52c53c2c949b37dfc762ff9d6a;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;8;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;6;FLOAT;0;False;7;SAMPLERSTATE;;False;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.ComponentMaskNode;101;-691.2112,-469.3341;Inherit;False;True;True;True;True;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.OneMinusNode;161;-18.46379,951.202;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;67;-531.7323,336.6227;Inherit;False;Property;_MainStr;MainStr;1;0;Create;True;0;0;0;False;0;False;1;1;0;0;0;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;66;-303.6411,156.8602;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.ToggleSwitchNode;147;-357.0491,816.6555;Inherit;True;Property;_DissolveMaskVer;DissolveMaskVer;14;0;Create;True;0;0;0;False;0;False;1;True;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleSubtractOpNode;56;-197.5004,600.2903;Inherit;True;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.ComponentMaskNode;101;-691.2112,-469.3341;Inherit;False;True;True;True;True;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.ToggleSwitchNode;147;-357.0491,816.6555;Inherit;True;Property;_DissolveMaskVer;DissolveMaskVer;15;0;Create;True;0;0;0;False;0;False;0;True;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.OneMinusNode;98;-484.0164,-478.3159;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.ComponentMaskNode;97;-690.0029,-555.4203;Inherit;False;True;True;True;True;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.TFHCRemapNode;57;51.99263,564.5009;Inherit;True;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;3;FLOAT;0;False;4;FLOAT;1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleSubtractOpNode;56;-197.5004,600.2903;Inherit;True;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;99;-346.9708,-554.2043;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.TFHCRemapNode;57;51.99263,564.5009;Inherit;True;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;3;FLOAT;0;False;4;FLOAT;1;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SaturateNode;59;283.9115,505.5625;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.TFHCRemapNode;100;-189.6428,-584.3154;Inherit;True;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;3;FLOAT;0;False;4;FLOAT;4;False;1;FLOAT;0
+Node;AmplifyShaderEditor.ToggleSwitchNode;31;35.89084,171.7664;Inherit;False;Property;_Dissolve;Dissolve;7;0;Create;True;0;0;0;False;0;False;0;True;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.WireNode;116;275.4735,-374.4018;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.ToggleSwitchNode;31;35.89084,171.7664;Inherit;False;Property;_Dissolve;Dissolve;7;0;Create;True;0;0;0;False;0;False;1;True;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;89;444.6616,-236.466;Inherit;True;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.WireNode;114;667.4778,-284.2522;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.WireNode;113;539.478,-337.0522;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.ComponentMaskNode;90;-688.2101,-728.7133;Inherit;False;True;True;True;True;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.WireNode;113;539.478,-337.0522;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.WireNode;117;198.522,-268.7412;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.ToggleSwitchNode;102;563.8843,-473.2518;Inherit;False;Property;_MaskDirectionY;MaskDirectionY;24;0;Create;True;0;0;0;False;0;False;0;True;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.ComponentMaskNode;83;-676.3038,-829.5949;Inherit;False;True;True;True;True;1;0;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.OneMinusNode;91;-448.9214,-763.3707;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;128;-453.6904,-945.3161;Inherit;False;Property;_MaskTexStr;MaskTexStr;28;0;Create;True;0;0;0;False;0;False;1;1;0;10;0;1;FLOAT;0
+Node;AmplifyShaderEditor.ComponentMaskNode;83;-676.3038,-829.5949;Inherit;False;True;True;True;True;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.ToggleSwitchNode;102;563.8843,-473.2518;Inherit;False;Property;_MaskDirectionY;MaskDirectionY;26;0;Create;True;0;0;0;False;0;False;0;True;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;128;-453.6904,-945.3161;Inherit;False;Property;_MaskTexStr;MaskTexStr;30;0;Create;True;0;0;0;False;0;False;1;1;0;10;0;1;FLOAT;0
+Node;AmplifyShaderEditor.SamplerNode;118;-742.3595,-1062.718;Inherit;True;Property;_MaskTex;MaskTex;29;0;Create;True;0;0;0;False;0;False;118;None;None;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;8;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;6;FLOAT;0;False;7;SAMPLERSTATE;;False;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.WireNode;112;774.1184,-501.2361;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SamplerNode;118;-742.3595,-1062.718;Inherit;True;Property;_MaskTex;MaskTex;27;0;Create;True;0;0;0;False;0;False;118;None;None;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;8;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;6;FLOAT;0;False;7;SAMPLERSTATE;;False;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.WireNode;124;150.1482,-834.2311;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;92;-340.0872,-806.251;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.WireNode;111;368.3454,-562.1302;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.WireNode;124;150.1482,-834.2311;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.WireNode;123;-215.7691,-937.6191;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;127;-334.6904,-1049.316;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.WireNode;111;368.3454,-562.1302;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.TFHCRemapNode;96;-180.3493,-828.0081;Inherit;True;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;3;FLOAT;0;False;4;FLOAT;4;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;110;660.5372,-717.6379;Inherit;True;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.WireNode;125;91.17774,-91.9174;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;110;660.5372,-717.6379;Inherit;True;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;121;-137.0075,-1051.41;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.TFHCRemapNode;122;217.6064,-1033.504;Inherit;True;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;3;FLOAT;0;False;4;FLOAT;1;False;1;FLOAT;0
 Node;AmplifyShaderEditor.WireNode;120;922.7594,-586.8702;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.TFHCRemapNode;122;217.6064,-1033.504;Inherit;True;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;3;FLOAT;0;False;4;FLOAT;1;False;1;FLOAT;0
 Node;AmplifyShaderEditor.WireNode;119;798.3532,-244.118;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.ToggleSwitchNode;108;970.9229,-121.9899;Inherit;False;Property;_MaskDirectionX;MaskDirectionX;25;0;Create;True;0;0;0;False;0;False;1;True;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.ToggleSwitchNode;108;970.9229,-121.9899;Inherit;False;Property;_MaskDirectionX;MaskDirectionX;27;0;Create;True;0;0;0;False;0;False;0;True;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.WireNode;126;1166.469,-772.4519;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.ToggleSwitchNode;115;1241.275,-124.6677;Inherit;True;Property;_MaskTexture;MaskTexture;26;0;Create;True;0;0;0;False;0;False;0;True;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.ToggleSwitchNode;115;1241.275,-124.6677;Inherit;True;Property;_MaskTexture;MaskTexture;28;0;Create;True;0;0;0;False;0;False;0;True;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.RangedFloatNode;130;1489.31,-151.6841;Inherit;False;Constant;_ToonStr;ToonStr;26;0;Create;True;0;0;0;False;0;False;0.7;0.95;0;0;0;1;FLOAT;0
 Node;AmplifyShaderEditor.StepOpNode;129;1642.539,-327.9508;Inherit;True;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.OneMinusNode;131;1868.874,-320.8818;Inherit;True;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.ToggleSwitchNode;132;2095.623,-24.18563;Inherit;False;Property;_Toon;Toon;29;0;Create;True;0;0;0;False;0;False;0;True;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;61;2353.82,292.9608;Inherit;False;Property;_DepthFade;DepthFade;30;0;Create;True;0;0;0;False;0;False;0;0;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.ToggleSwitchNode;132;2095.623,-24.18563;Inherit;False;Property;_Toon;Toon;31;0;Create;True;0;0;0;False;0;False;0;True;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;61;2353.82,292.9608;Inherit;False;Property;_DepthFade;DepthFade;32;0;Create;True;0;0;0;False;0;False;0;0;0;0;0;1;FLOAT;0
 Node;AmplifyShaderEditor.DepthFade;60;2562.113,240.9607;Inherit;False;True;True;True;2;1;FLOAT3;0,0,0;False;0;FLOAT;1;False;1;FLOAT;0
-Node;AmplifyShaderEditor.VertexColorNode;11;2344.465,-72.37212;Inherit;False;0;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.WireNode;133;2282.296,148.4826;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.Vector4Node;105;-2598.961,34.87785;Inherit;False;Constant;_Vector0;Vector 0;23;0;Create;True;0;0;0;False;0;False;1,2,0,0;0,0,0,0;0;5;FLOAT4;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.VertexColorNode;11;2344.465,-72.37212;Inherit;False;0;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.RegisterLocalVarNode;79;-1240.217,-448.7452;Inherit;False;myVarName;-1;True;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.DynamicAppendNode;106;-2380.989,27.06095;Inherit;False;FLOAT2;4;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;3;FLOAT;0;False;1;FLOAT2;0
-Node;AmplifyShaderEditor.SaturateNode;146;127.2512,898.2634;Inherit;True;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RegisterLocalVarNode;163;100.8098,-728.5787;Inherit;False;MaskTex;-1;True;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;12;2787.732,-73.92073;Inherit;False;3;3;0;COLOR;0,0,0,0;False;1;FLOAT;0;False;2;FLOAT;0;False;1;COLOR;0
-Node;AmplifyShaderEditor.DynamicAppendNode;107;-2386.062,121.4204;Inherit;False;FLOAT2;4;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;3;FLOAT;0;False;1;FLOAT2;0
-Node;AmplifyShaderEditor.WireNode;136;2344.751,137.4614;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;14;2783.702,112.6962;Inherit;False;3;3;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;13;2580.934,-132.4208;Inherit;False;Property;_inten;inten;0;0;Create;True;0;0;0;False;0;False;1;5;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;8;0,0;Float;False;False;-1;2;UnityEditor.ShaderGraphUnlitGUI;0;1;New Amplify Shader;2992e84f91cbeb14eab234972e07ea9d;True;ScenePickingPass;0;7;ScenePickingPass;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;-1;False;True;0;False;-1;False;False;False;False;False;False;False;False;False;True;False;255;False;-1;255;False;-1;255;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;False;False;False;True;3;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;True;2;True;17;d3d9;d3d11;glcore;gles;gles3;metal;vulkan;xbox360;xboxone;xboxseries;ps4;playstation;psp2;n3ds;wiiu;switch;nomrt;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;LightMode=Picking;False;True;4;d3d11;glcore;gles;gles3;0;Hidden/InternalErrorShader;0;0;Standard;0;False;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;1;2855.927,140.6007;Float;False;False;-1;2;UnityEditor.ShaderGraphUnlitGUI;0;1;New Amplify Shader;2992e84f91cbeb14eab234972e07ea9d;True;ExtraPrePass;0;0;ExtraPrePass;5;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;-1;False;True;0;False;-1;False;False;False;False;False;False;False;False;False;True;False;255;False;-1;255;False;-1;255;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;False;False;False;True;3;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;True;2;True;17;d3d9;d3d11;glcore;gles;gles3;metal;vulkan;xbox360;xboxone;xboxseries;ps4;playstation;psp2;n3ds;wiiu;switch;nomrt;0;False;True;1;1;False;-1;0;False;-1;0;1;False;-1;0;False;-1;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;-1;False;True;True;True;True;True;0;False;-1;False;False;False;False;False;False;False;True;False;255;False;-1;255;False;-1;255;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;True;1;False;-1;True;3;False;-1;True;True;0;False;-1;0;False;-1;True;0;False;False;0;Hidden/InternalErrorShader;0;0;Standard;0;False;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;6;0,0;Float;False;False;-1;2;UnityEditor.ShaderGraphUnlitGUI;0;1;New Amplify Shader;2992e84f91cbeb14eab234972e07ea9d;True;Universal2D;0;5;Universal2D;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;-1;False;True;0;False;-1;False;False;False;False;False;False;False;False;False;True;False;255;False;-1;255;False;-1;255;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;False;False;False;True;3;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;True;2;True;17;d3d9;d3d11;glcore;gles;gles3;metal;vulkan;xbox360;xboxone;xboxseries;ps4;playstation;psp2;n3ds;wiiu;switch;nomrt;0;False;True;1;5;False;-1;10;False;-1;1;1;False;-1;10;False;-1;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;True;True;True;0;False;-1;False;False;False;False;False;False;False;True;False;255;False;-1;255;False;-1;255;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;True;2;False;-1;True;3;False;-1;True;True;0;False;-1;0;False;-1;True;1;LightMode=Universal2D;False;False;0;Hidden/InternalErrorShader;0;0;Standard;0;False;0
+Node;AmplifyShaderEditor.SaturateNode;146;127.2512,898.2634;Inherit;True;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.Vector4Node;105;-2598.961,34.87785;Inherit;False;Constant;_Vector0;Vector 0;23;0;Create;True;0;0;0;False;0;False;1,2,0,0;0,0,0,0;0;5;FLOAT4;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.RegisterLocalVarNode;163;100.8098,-728.5787;Inherit;False;MaskTex;-1;True;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.DynamicAppendNode;107;-2386.062,121.4204;Inherit;False;FLOAT2;4;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;3;FLOAT;0;False;1;FLOAT2;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;12;2787.732,-73.92073;Inherit;False;3;3;0;COLOR;0,0,0,0;False;1;FLOAT;0;False;2;FLOAT;0;False;1;COLOR;0
+Node;AmplifyShaderEditor.WireNode;136;2344.751,137.4614;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.DynamicAppendNode;106;-2380.989,27.06095;Inherit;False;FLOAT2;4;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;3;FLOAT;0;False;1;FLOAT2;0
+Node;AmplifyShaderEditor.RangedFloatNode;13;2519.636,-206.2353;Inherit;False;Property;_inten;inten;0;0;Create;True;0;0;0;False;0;False;1;1;0;0;0;1;FLOAT;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;10;0,0;Float;False;False;-1;2;UnityEditor.ShaderGraphUnlitGUI;0;1;New Amplify Shader;2992e84f91cbeb14eab234972e07ea9d;True;DepthNormalsOnly;0;9;DepthNormalsOnly;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;-1;False;True;0;False;-1;False;False;False;False;False;False;False;False;False;True;False;255;False;-1;255;False;-1;255;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;False;False;False;True;3;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;True;2;True;17;d3d9;d3d11;glcore;gles;gles3;metal;vulkan;xbox360;xboxone;xboxseries;ps4;playstation;psp2;n3ds;wiiu;switch;nomrt;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;False;-1;True;3;False;-1;False;True;1;LightMode=DepthNormalsOnly;False;True;15;d3d9;d3d11_9x;d3d11;metal;vulkan;xbox360;xboxone;xboxseries;ps4;playstation;psp2;n3ds;wiiu;switch;nomrt;0;Hidden/InternalErrorShader;0;0;Standard;0;False;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;2;3101.025,36.93737;Float;False;True;-1;2;UnityEditor.ShaderGraphUnlitGUI;0;3;Custom/MasterR&D;2992e84f91cbeb14eab234972e07ea9d;True;Forward;0;1;Forward;8;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;-1;False;True;2;False;-1;False;False;False;False;False;False;False;False;False;True;False;255;False;-1;255;False;-1;255;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;False;False;False;True;3;RenderPipeline=UniversalPipeline;RenderType=Transparent=RenderType;Queue=Transparent=Queue=0;True;2;True;17;d3d9;d3d11;glcore;gles;gles3;metal;vulkan;xbox360;xboxone;xboxseries;ps4;playstation;psp2;n3ds;wiiu;switch;nomrt;0;False;True;1;5;False;-1;10;False;-1;1;1;False;-1;10;False;-1;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;True;True;True;0;False;-1;False;False;False;False;False;False;False;True;False;255;False;-1;255;False;-1;255;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;True;2;False;-1;True;3;False;-1;True;True;0;False;-1;0;False;-1;True;1;LightMode=UniversalForwardOnly;False;False;0;Hidden/InternalErrorShader;0;0;Standard;22;Surface;1;637997630582106543;  Blend;0;0;Two Sided;0;637997630598478626;Cast Shadows;0;637997630606860054;  Use Shadow Threshold;0;0;Receive Shadows;0;637997630613328417;GPU Instancing;1;0;LOD CrossFade;0;0;Built-in Fog;0;0;DOTS Instancing;0;0;Meta Pass;0;0;Extra Pre Pass;0;0;Tessellation;0;0;  Phong;0;0;  Strength;0.5,False,-1;0;  Type;0;0;  Tess;16,False,-1;0;  Min;10,False,-1;0;  Max;25,False,-1;0;  Edge Length;16,False,-1;0;  Max Displacement;25,False,-1;0;Vertex Position,InvertActionOnDeselection;1;0;0;10;False;True;False;True;False;True;True;True;True;True;False;;False;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;1;2855.927,140.6007;Float;False;False;-1;2;UnityEditor.ShaderGraphUnlitGUI;0;1;New Amplify Shader;2992e84f91cbeb14eab234972e07ea9d;True;ExtraPrePass;0;0;ExtraPrePass;5;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;-1;False;True;0;False;-1;False;False;False;False;False;False;False;False;False;True;False;255;False;-1;255;False;-1;255;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;False;False;False;True;3;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;True;2;True;17;d3d9;d3d11;glcore;gles;gles3;metal;vulkan;xbox360;xboxone;xboxseries;ps4;playstation;psp2;n3ds;wiiu;switch;nomrt;0;False;True;1;1;False;-1;0;False;-1;0;1;False;-1;0;False;-1;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;-1;False;True;True;True;True;True;0;False;-1;False;False;False;False;False;False;False;True;False;255;False;-1;255;False;-1;255;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;True;1;False;-1;True;3;False;-1;True;True;0;False;-1;0;False;-1;True;0;False;False;0;Hidden/InternalErrorShader;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;4;0,0;Float;False;False;-1;2;UnityEditor.ShaderGraphUnlitGUI;0;1;New Amplify Shader;2992e84f91cbeb14eab234972e07ea9d;True;DepthOnly;0;3;DepthOnly;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;-1;False;True;0;False;-1;False;False;False;False;False;False;False;False;False;True;False;255;False;-1;255;False;-1;255;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;False;False;False;True;3;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;True;2;True;17;d3d9;d3d11;glcore;gles;gles3;metal;vulkan;xbox360;xboxone;xboxseries;ps4;playstation;psp2;n3ds;wiiu;switch;nomrt;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;-1;False;False;False;True;False;False;False;False;0;False;-1;False;False;False;False;False;False;False;False;False;True;1;False;-1;False;False;True;1;LightMode=DepthOnly;False;False;0;Hidden/InternalErrorShader;0;0;Standard;0;False;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;5;0,0;Float;False;False;-1;2;UnityEditor.ShaderGraphUnlitGUI;0;1;New Amplify Shader;2992e84f91cbeb14eab234972e07ea9d;True;Meta;0;4;Meta;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;-1;False;True;0;False;-1;False;False;False;False;False;False;False;False;False;True;False;255;False;-1;255;False;-1;255;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;False;False;False;True;3;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;True;2;True;17;d3d9;d3d11;glcore;gles;gles3;metal;vulkan;xbox360;xboxone;xboxseries;ps4;playstation;psp2;n3ds;wiiu;switch;nomrt;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;2;False;-1;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;LightMode=Meta;False;False;0;Hidden/InternalErrorShader;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;7;0,0;Float;False;False;-1;2;UnityEditor.ShaderGraphUnlitGUI;0;1;New Amplify Shader;2992e84f91cbeb14eab234972e07ea9d;True;SceneSelectionPass;0;6;SceneSelectionPass;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;-1;False;True;0;False;-1;False;False;False;False;False;False;False;False;False;True;False;255;False;-1;255;False;-1;255;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;False;False;False;True;3;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;True;2;True;17;d3d9;d3d11;glcore;gles;gles3;metal;vulkan;xbox360;xboxone;xboxseries;ps4;playstation;psp2;n3ds;wiiu;switch;nomrt;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;2;False;-1;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;LightMode=SceneSelectionPass;False;True;4;d3d11;glcore;gles;gles3;0;Hidden/InternalErrorShader;0;0;Standard;0;False;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;9;0,0;Float;False;False;-1;2;UnityEditor.ShaderGraphUnlitGUI;0;1;New Amplify Shader;2992e84f91cbeb14eab234972e07ea9d;True;DepthNormals;0;8;DepthNormals;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;-1;False;True;0;False;-1;False;False;False;False;False;False;False;False;False;True;False;255;False;-1;255;False;-1;255;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;False;False;False;True;3;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;True;2;True;17;d3d9;d3d11;glcore;gles;gles3;metal;vulkan;xbox360;xboxone;xboxseries;ps4;playstation;psp2;n3ds;wiiu;switch;nomrt;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;False;-1;True;3;False;-1;False;True;1;LightMode=DepthNormalsOnly;False;True;4;d3d11;glcore;gles;gles3;0;Hidden/InternalErrorShader;0;0;Standard;0;False;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;2;3148.025,88.93739;Float;False;True;-1;2;UnityEditor.ShaderGraphUnlitGUI;0;3;Custom/MasterR&D;2992e84f91cbeb14eab234972e07ea9d;True;Forward;0;1;Forward;8;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;-1;False;True;2;False;-1;False;False;False;False;False;False;False;False;False;True;False;255;False;-1;255;False;-1;255;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;False;False;False;True;3;RenderPipeline=UniversalPipeline;RenderType=Transparent=RenderType;Queue=Transparent=Queue=0;True;2;True;17;d3d9;d3d11;glcore;gles;gles3;metal;vulkan;xbox360;xboxone;xboxseries;ps4;playstation;psp2;n3ds;wiiu;switch;nomrt;0;False;True;1;5;False;-1;10;False;-1;1;1;False;-1;10;False;-1;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;True;True;True;0;False;-1;False;False;False;False;False;False;False;True;False;255;False;-1;255;False;-1;255;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;True;True;2;False;-1;True;3;False;-1;True;True;0;False;-1;0;False;-1;True;1;LightMode=UniversalForwardOnly;False;False;0;Hidden/InternalErrorShader;0;0;Standard;22;Surface;1;638023834785723175;  Blend;0;0;Two Sided;0;637997630598478626;Cast Shadows;0;637997630606860054;  Use Shadow Threshold;0;0;Receive Shadows;0;637997630613328417;GPU Instancing;1;0;LOD CrossFade;0;0;Built-in Fog;0;0;DOTS Instancing;0;0;Meta Pass;0;0;Extra Pre Pass;0;0;Tessellation;0;0;  Phong;0;0;  Strength;0.5,False,-1;0;  Type;0;0;  Tess;16,False,-1;0;  Min;10,False,-1;0;  Max;25,False,-1;0;  Edge Length;16,False,-1;0;  Max Displacement;25,False,-1;0;Vertex Position,InvertActionOnDeselection;1;0;0;10;False;True;False;True;False;True;True;True;True;True;False;;False;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;8;0,0;Float;False;False;-1;2;UnityEditor.ShaderGraphUnlitGUI;0;1;New Amplify Shader;2992e84f91cbeb14eab234972e07ea9d;True;ScenePickingPass;0;7;ScenePickingPass;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;-1;False;True;0;False;-1;False;False;False;False;False;False;False;False;False;True;False;255;False;-1;255;False;-1;255;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;False;False;False;True;3;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;True;2;True;17;d3d9;d3d11;glcore;gles;gles3;metal;vulkan;xbox360;xboxone;xboxseries;ps4;playstation;psp2;n3ds;wiiu;switch;nomrt;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;LightMode=Picking;False;True;4;d3d11;glcore;gles;gles3;0;Hidden/InternalErrorShader;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;3;0,0;Float;False;False;-1;2;UnityEditor.ShaderGraphUnlitGUI;0;1;New Amplify Shader;2992e84f91cbeb14eab234972e07ea9d;True;ShadowCaster;0;2;ShadowCaster;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;-1;False;True;0;False;-1;False;False;False;False;False;False;False;False;False;True;False;255;False;-1;255;False;-1;255;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;False;False;False;True;3;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;True;2;True;17;d3d9;d3d11;glcore;gles;gles3;metal;vulkan;xbox360;xboxone;xboxseries;ps4;playstation;psp2;n3ds;wiiu;switch;nomrt;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;-1;False;False;False;True;False;False;False;False;0;False;-1;False;False;False;False;False;False;False;False;False;True;1;False;-1;True;3;False;-1;False;True;1;LightMode=ShadowCaster;False;False;0;Hidden/InternalErrorShader;0;0;Standard;0;False;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;6;0,0;Float;False;False;-1;2;UnityEditor.ShaderGraphUnlitGUI;0;1;New Amplify Shader;2992e84f91cbeb14eab234972e07ea9d;True;Universal2D;0;5;Universal2D;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;-1;False;True;0;False;-1;False;False;False;False;False;False;False;False;False;True;False;255;False;-1;255;False;-1;255;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;False;False;False;True;3;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;True;2;True;17;d3d9;d3d11;glcore;gles;gles3;metal;vulkan;xbox360;xboxone;xboxseries;ps4;playstation;psp2;n3ds;wiiu;switch;nomrt;0;False;True;1;5;False;-1;10;False;-1;1;1;False;-1;10;False;-1;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;True;True;True;0;False;-1;False;False;False;False;False;False;False;True;False;255;False;-1;255;False;-1;255;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;True;2;False;-1;True;3;False;-1;True;True;0;False;-1;0;False;-1;True;1;LightMode=Universal2D;False;False;0;Hidden/InternalErrorShader;0;0;Standard;0;False;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;9;0,0;Float;False;False;-1;2;UnityEditor.ShaderGraphUnlitGUI;0;1;New Amplify Shader;2992e84f91cbeb14eab234972e07ea9d;True;DepthNormals;0;8;DepthNormals;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;-1;False;True;0;False;-1;False;False;False;False;False;False;False;False;False;True;False;255;False;-1;255;False;-1;255;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;False;False;False;True;3;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;True;2;True;17;d3d9;d3d11;glcore;gles;gles3;metal;vulkan;xbox360;xboxone;xboxseries;ps4;playstation;psp2;n3ds;wiiu;switch;nomrt;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;False;-1;True;3;False;-1;False;True;1;LightMode=DepthNormalsOnly;False;True;4;d3d11;glcore;gles;gles3;0;Hidden/InternalErrorShader;0;0;Standard;0;False;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;5;0,0;Float;False;False;-1;2;UnityEditor.ShaderGraphUnlitGUI;0;1;New Amplify Shader;2992e84f91cbeb14eab234972e07ea9d;True;Meta;0;4;Meta;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;-1;False;True;0;False;-1;False;False;False;False;False;False;False;False;False;True;False;255;False;-1;255;False;-1;255;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;False;False;False;True;3;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;True;2;True;17;d3d9;d3d11;glcore;gles;gles3;metal;vulkan;xbox360;xboxone;xboxseries;ps4;playstation;psp2;n3ds;wiiu;switch;nomrt;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;2;False;-1;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;LightMode=Meta;False;False;0;Hidden/InternalErrorShader;0;0;Standard;0;False;0
 WireConnection;37;0;35;3
 WireConnection;69;1;38;0
+WireConnection;69;4;167;0
 WireConnection;65;0;37;0
 WireConnection;65;1;35;4
 WireConnection;68;0;38;0
@@ -2585,113 +2604,114 @@ WireConnection;36;1;35;2
 WireConnection;39;0;68;0
 WireConnection;39;2;36;0
 WireConnection;39;1;65;0
-WireConnection;78;0;21;3
 WireConnection;34;0;68;0
 WireConnection;34;1;39;0
-WireConnection;75;1;16;0
+WireConnection;78;0;21;3
 WireConnection;43;0;41;3
-WireConnection;71;1;44;0
-WireConnection;152;0;156;3
 WireConnection;32;1;34;0
-WireConnection;70;0;44;0
-WireConnection;70;1;71;0
-WireConnection;159;0;152;0
-WireConnection;159;1;164;0
-WireConnection;64;0;43;0
-WireConnection;64;1;41;4
+WireConnection;152;0;156;3
+WireConnection;75;1;16;0
+WireConnection;71;1;44;0
+WireConnection;71;4;168;0
 WireConnection;42;0;41;1
 WireConnection;42;1;41;2
-WireConnection;27;0;28;3
+WireConnection;64;0;43;0
+WireConnection;64;1;41;4
 WireConnection;73;0;21;1
-WireConnection;49;0;50;0
-WireConnection;49;1;32;1
 WireConnection;157;0;156;1
 WireConnection;157;1;156;2
 WireConnection;76;0;16;0
 WireConnection;76;1;75;0
+WireConnection;70;0;44;0
+WireConnection;70;1;71;0
+WireConnection;27;0;28;3
+WireConnection;49;0;50;0
+WireConnection;49;1;32;1
+WireConnection;159;0;152;0
+WireConnection;159;1;164;0
 WireConnection;154;0;148;0
 WireConnection;154;2;157;0
 WireConnection;154;1;159;0
-WireConnection;45;0;70;0
-WireConnection;45;2;42;0
-WireConnection;45;1;64;0
+WireConnection;77;0;21;2
 WireConnection;63;0;27;0
 WireConnection;63;1;28;4
 WireConnection;48;0;49;0
 WireConnection;48;1;76;0
-WireConnection;77;0;21;2
-WireConnection;40;0;70;0
-WireConnection;40;1;45;0
-WireConnection;155;0;154;0
-WireConnection;25;0;28;1
-WireConnection;25;1;28;2
-WireConnection;33;0;76;0
-WireConnection;33;1;48;0
+WireConnection;45;0;70;0
+WireConnection;45;2;42;0
+WireConnection;45;1;64;0
 WireConnection;74;0;63;0
 WireConnection;74;1;72;0
-WireConnection;18;0;33;0
-WireConnection;18;2;25;0
-WireConnection;18;1;74;0
+WireConnection;40;0;70;0
+WireConnection;40;1;45;0
+WireConnection;25;0;28;1
+WireConnection;25;1;28;2
+WireConnection;155;0;154;0
+WireConnection;33;0;76;0
+WireConnection;33;1;48;0
+WireConnection;81;0;53;0
+WireConnection;81;1;80;0
 WireConnection;30;1;40;0
 WireConnection;140;0;155;0
 WireConnection;140;1;155;1
-WireConnection;81;0;53;0
-WireConnection;81;1;80;0
+WireConnection;18;0;33;0
+WireConnection;18;2;25;0
+WireConnection;18;1;74;0
+WireConnection;62;0;81;0
 WireConnection;137;0;30;1
 WireConnection;137;1;140;0
 WireConnection;137;2;145;0
 WireConnection;19;0;33;0
 WireConnection;19;1;18;0
-WireConnection;62;0;81;0
-WireConnection;161;0;137;0
+WireConnection;15;1;19;0
 WireConnection;52;0;30;1
 WireConnection;52;1;62;0
-WireConnection;15;1;19;0
-WireConnection;101;0;82;2
+WireConnection;161;0;137;0
 WireConnection;66;0;15;1
 WireConnection;66;1;67;0
+WireConnection;101;0;82;2
 WireConnection;147;0;52;0
 WireConnection;147;1;161;0
-WireConnection;56;0;66;0
-WireConnection;56;1;147;0
 WireConnection;98;0;101;0
 WireConnection;97;0;82;2
-WireConnection;57;0;56;0
-WireConnection;57;4;66;0
+WireConnection;56;0;66;0
+WireConnection;56;1;147;0
 WireConnection;99;0;97;0
 WireConnection;99;1;98;0
+WireConnection;57;0;56;0
+WireConnection;57;4;66;0
 WireConnection;59;0;57;0
 WireConnection;100;0;99;0
-WireConnection;116;0;100;0
 WireConnection;31;0;66;0
 WireConnection;31;1;59;0
+WireConnection;116;0;100;0
 WireConnection;89;0;116;0
 WireConnection;89;1;31;0
 WireConnection;114;0;89;0
-WireConnection;113;0;114;0
 WireConnection;90;0;82;1
+WireConnection;113;0;114;0
 WireConnection;117;0;31;0
+WireConnection;91;0;90;0
+WireConnection;83;0;82;1
 WireConnection;102;0;117;0
 WireConnection;102;1;113;0
-WireConnection;83;0;82;1
-WireConnection;91;0;90;0
 WireConnection;112;0;102;0
-WireConnection;124;0;31;0
 WireConnection;92;0;83;0
 WireConnection;92;1;91;0
-WireConnection;111;0;112;0
+WireConnection;124;0;31;0
 WireConnection;123;0;124;0
 WireConnection;127;0;118;1
 WireConnection;127;1;128;0
+WireConnection;111;0;112;0
 WireConnection;96;0;92;0
+WireConnection;125;0;31;0
 WireConnection;110;0;96;0
 WireConnection;110;1;111;0
-WireConnection;125;0;31;0
 WireConnection;121;0;127;0
 WireConnection;121;1;123;0
+WireConnection;120;0;110;0
 WireConnection;122;0;121;0
 WireConnection;122;4;125;0
-WireConnection;120;0;110;0
 WireConnection;119;0;102;0
 WireConnection;108;0;119;0
 WireConnection;108;1;120;0
@@ -2705,20 +2725,20 @@ WireConnection;132;0;115;0
 WireConnection;132;1;131;0
 WireConnection;60;0;61;0
 WireConnection;133;0;132;0
-WireConnection;106;0;105;1
-WireConnection;106;1;105;2
-WireConnection;146;0;161;0
-WireConnection;163;0;96;0
-WireConnection;12;0;11;0
-WireConnection;12;1;13;0
-WireConnection;12;2;136;0
-WireConnection;107;0;105;3
-WireConnection;107;1;105;4
-WireConnection;136;0;132;0
 WireConnection;14;0;133;0
 WireConnection;14;1;11;4
 WireConnection;14;2;60;0
+WireConnection;146;0;161;0
+WireConnection;163;0;96;0
+WireConnection;107;0;105;3
+WireConnection;107;1;105;4
+WireConnection;12;0;11;0
+WireConnection;12;1;13;0
+WireConnection;12;2;136;0
+WireConnection;136;0;132;0
+WireConnection;106;0;105;1
+WireConnection;106;1;105;2
 WireConnection;2;2;12;0
 WireConnection;2;3;14;0
 ASEEND*/
-//CHKSM=0696FE418C8290916CCEAE706015BA0F694D5527
+//CHKSM=7C28D04A8D03AE357B3344C6AA59B7756FB4BBC8

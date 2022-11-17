@@ -7,6 +7,7 @@ public class MoveObject : MonoBehaviour
     [SerializeField] private Vector3 moveTarget;
     [SerializeField] private float moveSpeed;
 
+    [SerializeField] private bool absolute;
     private Vector3 startPos;
     private bool moving = false;
 
@@ -17,17 +18,19 @@ public class MoveObject : MonoBehaviour
     private void Start()
     {
         startPos = transform.position;
-        moveTarget = startPos + moveTarget;        
+        if (!absolute) moveTarget = startPos + moveTarget;
     }
 
     public void StartMove()
     {
+        if (absolute) moveTarget = transform.position + moveTarget;
         if (startRoutine != null) StopCoroutine(startRoutine);
         startRoutine = StartCoroutine(TargetRoutine());
     }
 
     public void StartMove(float time)
     {
+        if (absolute) moveTarget = transform.position + moveTarget;
         if (startRoutine != null) StopCoroutine(startRoutine);
         startRoutine = StartCoroutine(TargetRoutine(time));
     }

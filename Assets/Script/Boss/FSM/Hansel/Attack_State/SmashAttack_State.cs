@@ -16,20 +16,26 @@ public class SmashAttack_State : FSM_State<Hansel>
     private bool m_isAttack_2 = false;
     private bool m_isAttack_3 = false;
     private bool m_isAttack_4 = false;
-
     static SmashAttack_State() { }
     private SmashAttack_State() { }
 
 
     public override void EnterState(Hansel _Hansel)
     {
-        //타겟 확인(플레이어)
         if (_Hansel.myTarget == null)
         {
             return;
         }
-
+        _Hansel.SmashCollider_L.SetActive(false);
+        _Hansel.SmashCollider_R.SetActive(false);
         _Hansel.isSmash = true;
+        _Hansel.isRolling = false;
+        _Hansel.isBelly = false;
+        _Hansel.isRushing = false;
+        m_isAttack_1 = false;
+        m_isAttack_2 = false;
+        m_isAttack_3 = false;
+        m_isAttack_4 = false;
 
         #region Damage Collider
         int m_Damage = _Hansel.Hansel_SmashDamage;
@@ -45,7 +51,7 @@ public class SmashAttack_State : FSM_State<Hansel>
         #region Random Checker
         if (_Hansel.isSmashRandomBool)
         {
-            _Hansel.RandCalculateForSmash(5);
+            _Hansel.RandCalculateForSmash(7);
             _Hansel.isSmashRandomBool = false;
         }
         #endregion
@@ -85,23 +91,21 @@ public class SmashAttack_State : FSM_State<Hansel>
 
     public override void UpdateState(Hansel _Hansel)
     {
-        //Dead Check
-        if (_Hansel.CurrentHP <= 0)
-        {
-            _Hansel.ChangeState(HanselDie_State.Instance);
-        }
 
 
         if (_Hansel.myTarget && _Hansel.isSmash)
         {
+            _Hansel.Attack_Time += Time.deltaTime;
             switch (_Hansel.ForSmashP)
             {
                 case 1:
-
                     if (_Hansel.Attack_Time >= _Hansel.AttackPattern_1)
                     {
                         _Hansel.isSmashRandomBool = true;
-                        m_isAttack_1 = false;
+                        m_isAttack_1 = false;             
+                        m_isAttack_2 = false;
+                        m_isAttack_3 = false;
+                        m_isAttack_4 = false;
                         _Hansel.isSmash = false;
                         _Hansel.Attack_Time = 0;
                         return;
@@ -114,7 +118,10 @@ public class SmashAttack_State : FSM_State<Hansel>
                     if (_Hansel.Attack_Time >= _Hansel.AttackPattern_2)
                     {
                         _Hansel.isSmashRandomBool = true;
+                        m_isAttack_1 = false;
                         m_isAttack_2 = false;
+                        m_isAttack_3 = false;
+                        m_isAttack_4 = false;
                         _Hansel.isSmash = false;
                         _Hansel.Attack_Time = 0;
                         return;
@@ -126,7 +133,10 @@ public class SmashAttack_State : FSM_State<Hansel>
                     if (_Hansel.Attack_Time >= _Hansel.AttackPattern_3)
                     {
                         _Hansel.isSmashRandomBool = true;
+                        m_isAttack_1 = false;
+                        m_isAttack_2 = false;
                         m_isAttack_3 = false;
+                        m_isAttack_4 = false;
                         _Hansel.isSmash = false;
                         _Hansel.Attack_Time = 0;
                         return;
@@ -137,38 +147,45 @@ public class SmashAttack_State : FSM_State<Hansel>
                     if (_Hansel.Attack_Time >= _Hansel.AttackPattern_4)
                     {
                         _Hansel.isSmashRandomBool = true;
+                        m_isAttack_1 = false;
+                        m_isAttack_2 = false;
+                        m_isAttack_3 = false;
                         m_isAttack_4 = false;
                         _Hansel.isSmash = false;
                         _Hansel.Attack_Time = 0;
                         return;
                     }
                     break;
-
+                case 5:
+                    if (true)  
+                    {
+                        _Hansel.ChangeState(RushAttack_State.Instance);
+                    }
+                    break;
+                case 6:
+                    if (true)
+                    {
+                        _Hansel.ChangeState(BellyAttack_State.Instance);
+                    }
+                    break;
                 default:
+                    Debug.LogError("caseOver" + _Hansel.ForSmashP);
                     break;
 
             }
             return;
 
         }
-        else if (!_Hansel.CheckRange()  || (!_Hansel.isSmash &&
-            !m_isAttack_1 && !m_isAttack_2 && !m_isAttack_3 && !m_isAttack_4))
+        else if ((!_Hansel.CheckRange() || !_Hansel.LookPlayer) && (!_Hansel.isSmash &&!m_isAttack_1 && !m_isAttack_2 && !m_isAttack_3 && !m_isAttack_4))
         {
-            
             _Hansel.ChangeState(HanselMove_State.Instance);
         }
-
     }
 
     public override void ExitState(Hansel _Hansel)
     {
-
         _Hansel.isSmash = false;
-        _Hansel.Ani.ResetTrigger("H_SmashAttack");
-        _Hansel.Ani.ResetTrigger("H_SmashAttack2");
-        _Hansel.Ani.ResetTrigger("H_SmashAttack3");
-        _Hansel.Ani.ResetTrigger("H_SmashAttack4");
-
+        _Hansel.Attack_Time = 0;
         _Hansel.isSmashRandomBool = true;
         return;
     }

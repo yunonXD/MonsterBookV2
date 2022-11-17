@@ -6,24 +6,65 @@ using UnityEngine;
 public class Anna : MonoBehaviour , IEntity
 {
     #region Anna HP Part
-    [HideInInspector] public float AnnaHP_Phase1 = 100;             //페이즈 1
-    [HideInInspector] public float AnnaHP_Phase2 = 100;             //페이즈 2
-    [HideInInspector] public float AnnaHP_Phase3 = 100;             //페이즈 3
-    [Header("현재 Anna HP")] public float Anna_CurrentHP = 100;      //현재 HP
+     public float AnnaHP_Phase1 = 100;             //페이즈 1
+     public float AnnaHP_Phase2;             //페이즈 2
+    [HideInInspector] public float AnnaHP_Phase3 ;             //페이즈 3
+    [Header("현재 Anna HP")] public float Anna_CurrentHP;      //현재 HP
+    public int AnnaPhase = 1;
     #endregion
 
     [Header("Matches Normal")]
     public GameObject Matches;
 
+    #region Anna Move
+    public float MoveSpeed;
+    public float MoveRandomRange;
+    public int CurrentPosiiton;
+    public int NextPosition1;
+    public int NextPosition2;
+    public GameObject[] PatrolPoint;
+    public float Anna_IdleTime;
+    public float Anna_IdleTime_Cur;
+    public int Anna_MatchAttack_Probability;
+    public int Anna_Halo_Probability;
+    public int Anna_ProtectionofGod_Probability;
+    public GameObject AnnaBody;
+    public GameObject AnnaFace;
+    public bool HitMotionAble;
+    #endregion
 
 
     //Phase1
-    [Header("TossingMatches")]
-    public float MatchesSpeed = 4;
-
+    [Header("Phase1")]
+    public float MatchesSpeed_1;
+    public float MatchesSpeed_2;
+    public float MatchesSpeed_Halo_1;
+    public int Matches_Attack01_Damage;
+    public int Matches_Attack02_Damage;
+    public int Matches_Attack03_Damage;
+    public float Match_distance;
+    public GameObject MatchObjectPool;
+    public Transform MatchSpawnPoint;
+    public int MatchCount;
+    public int HaloCount;
+    public GameObject ProtectArea;
+    public bool ProtectAreaActive = false;
+    public GameObject[] HaloPoint;
+    public GameObject[] HaloMiddlePoint;
+    public GameObject[] HaloSpawnPoint;
+    public bool ProtectedMoveAble = false;
 
     //Phase2
-
+    [Header("Phase2")]
+    public float ProtectAreaRoundSpeed;
+    public float AutoFollowTime;    //0 ~ 1;
+    public float DownSpeed;
+    public bool GroundLanding;
+    public bool finishAttackAble;
+    public bool AnnaFalling;
+    public int Matches_Attack04_Damage;
+    public int Matches_Attack05_Damage;
+    public int Matches_Attack06_Damage;
 
 
     //Phase3
@@ -34,6 +75,8 @@ public class Anna : MonoBehaviour , IEntity
 
     //etc
     [SerializeField] private StringParticle m_Anna_Particle;
+    [HideInInspector] public Material[] NumMat;
+   
 
 
 
@@ -47,7 +90,8 @@ public class Anna : MonoBehaviour , IEntity
     [HideInInspector] public CapsuleCollider Anna_CapCol;
 
     [HideInInspector] public bool Isinvincibility = false;
-    [HideInInspector] public int Anna_PhaseChecker = 1;
+    [HideInInspector] public int Anna_
+        = 1;
 
     #endregion
 
@@ -57,23 +101,77 @@ public class Anna : MonoBehaviour , IEntity
         Anna_Ani = GetComponent<Animator>();
         Anna_Rigid = GetComponent<Rigidbody>();
         Anna_CapCol = GetComponent<CapsuleCollider>();
-        Anna_Player = GameObject.FindGameObjectWithTag("Player");
-        ResetState_Anna(Anna_PhaseChecker);
-
+        //Anna_Player = GameObject.FindGameObjectWithTag("Player");
+        //ResetState_Anna(Anna_PhaseChecker);
     }
 
 
     protected void Start()
     {
+        state = new StateMachine<Anna>();
+        Anna_CurrentHP = AnnaHP_Phase1;
+        state.Initial_Setting(this, Idle_State.Instance);
+        AnnaHP_Phase3 = 350;
 
     }
 
     protected void FixedUpdate()
     {
         state.Update();
+
+        if (AnnaPhase == 1 && Anna_CurrentHP <= 0)   //안나 2페이즈 리셋
+        {
+            ResetState_Anna(2);
+            
+        }
+
+
+        if (AnnaPhase == 2 && Anna_CurrentHP <= 0)
+        {
+            ChangeState(Anna_Grogy_State.Instance);
+        }
+
+
+
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            Debug.Log("이동입력");
+            ChangeState(AnnaMove_State.Instance);
+        }
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            Debug.Log("공격1입력");
+            ChangeState(Anna_Match_Attack.Instance);
+        }
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            Debug.Log("Phase UP");
+            if (AnnaPhase == 1)
+            {
+                HaloCount = 3;
+                AnnaPhase++;
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            OnDamage(10,Vector3.zero);
+        }
+    }
+    public void ProtectedMove()
+    {
+        ProtectedMoveAble = true;
     }
 
+    public void finishAtackAble()
+    {
+        finishAttackAble = true;
+    }
 
+    public void AnnaFall()
+    {
+        AnnaFalling = true;
+    }
 
     protected void following_Matches(int MatchNum)
     {
@@ -84,7 +182,7 @@ public class Anna : MonoBehaviour , IEntity
 
 
     #region No Reference
-    protected void ChangeState(FSM_State<Anna> _State)
+    public void ChangeState(FSM_State<Anna> _State)
     {
         state.ChangeState(_State);
     }
@@ -96,16 +194,15 @@ public class Anna : MonoBehaviour , IEntity
         {
             case 1:
                 Anna_CurrentHP = AnnaHP_Phase1;
-
-               
-
-                ChangeState(Anna_Phase1.Instance);
-
+                AnnaPhase = 1;
                 break;
 
             case 2:
                 Anna_CurrentHP = AnnaHP_Phase2;
-
+                Debug.Log("안나 페이즈2 HP : "+AnnaHP_Phase2);
+                AnnaPhase = 2;
+                //NumMat = AnnaBody.GetComponent<SkinnedMeshRenderer>().material;
+                //AnnaBody.GetComponent<SkinnedMeshRenderer>().materials = NumMat;
                 break;
 
             case 3:
@@ -130,7 +227,45 @@ public class Anna : MonoBehaviour , IEntity
     #endregion
 
 
+    public void ChangeState_Idle()
+    {
+        ChangeState(Idle_State.Instance);
+    }
+    public void ChangeState_Attack()   //확률 추가 필요
+    {
+        if (ProtectAreaActive == true)
+        {
+            ProtectArea.SetActive(false);
+            ProtectAreaActive = false;
+            ChangeState(Idle_State.Instance);
+            return;
+        }
 
+
+        var Randomvalue = Random.Range(0, 100);
+        Debug.Log(Randomvalue + ": 랜덤값");
+        if(Randomvalue <= Anna_MatchAttack_Probability)
+        {
+            ChangeState(Anna_Match_Attack.Instance);
+        }
+        else if (Anna_MatchAttack_Probability < Randomvalue && Randomvalue <= Anna_MatchAttack_Probability+ Anna_Halo_Probability)
+        {
+            ChangeState(Anna_Halo_Attack.Instance);
+        }
+        else if (Anna_MatchAttack_Probability + Anna_Halo_Probability < Randomvalue && Randomvalue <= Anna_MatchAttack_Probability + Anna_Halo_Probability + Anna_ProtectionofGod_Probability)
+        {
+            ChangeState(Anna_Protected_Attack.Instance);
+        }
+        else
+        {
+            Debug.Log(Randomvalue + "확률 Range 에러");
+        }
+    }
+    public void ChangeState_Move()
+    {
+        ChangeState(AnnaMove_State.Instance);  
+
+    }
 
 
     //===================================================//
@@ -145,10 +280,31 @@ public class Anna : MonoBehaviour , IEntity
             Debug.LogError(" *Anna is invincible !! ");
         }
 
+        if(HitMotionAble == true)   //Idle State때 타격시 
+        {
+            Anna_Ani.SetTrigger("Anna_Hit");    
+        }
+
+
+        if (finishAttackAble == true)
+        {
+            Anna_Ani.SetTrigger("Anna_Death");
+            Isinvincibility = true;
+        }
+
+
     }
 
     public void OnRecovery(int heal)
     {
        
+    }
+
+    public void OnTriggerEnter(Collider col)
+    {
+        if(col.tag == "Ground")
+        {
+            GroundLanding = true;
+        }
     }
 }

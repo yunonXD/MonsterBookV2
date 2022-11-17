@@ -1,21 +1,50 @@
+
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public class CameraController : MonoBehaviour
 {
     public static CameraController Instance;
 
-    private Transform target;    
+    private Transform cameraTrans;
+    private Transform target;
+    private Transform player;
     [SerializeField] private float cameraSpeed;
+    [SerializeField] private float startYPos;
+    [SerializeField] private Vector3 basicRotation;
 
     [SerializeField] private LayerMask targetLayer;
     private Vector3 startPos;
-    
+    private float lastYPos;
+
+    #region Camera Shake
     private float shakeTime;
     private float shakePower;
 
+    #endregion
+
     private Vector2 limitPos;
+    private Vector2 limitYPos;
+
+    private Axis curAxis;
+    private Quaternion rotation;
+    private bool type;
+
+    #region Direct Vlaue
+    private Vector3 directPos;
+    private float directSpeed;
+    private bool directBool;
+
+    private bool moveCameraBool;
+    private Vector3 moveCameraPos;
+    private Quaternion moveCameraRotation;
+
+    #endregion
+
+    [SerializeField] private Volume volume;
+    private DepthOfField depth;
 
 
     private void Awake()
@@ -23,10 +52,15 @@ public class CameraController : MonoBehaviour
         if (Instance == null) Instance = this;
         else Destroy(this);
 
-        target = GameObject.FindGameObjectWithTag("Player").transform.GetChild(1).GetChild(0).transform;
-
+        player = GameObject.FindGameObjectWithTag("Player").transform;
+        target = player.GetChild(1).GetChild(0).transform;
+        cameraTrans = transform.GetChild(0).transform;
         startPos = transform.position;
-    }
+
+        if (volume != null) volume.profile.TryGet<DepthOfField>(out depth);
+
+        limitYPos = new Vector2(100, -20);
+    }    
 
     private void Update()
     {
@@ -35,32 +69,77 @@ public class CameraController : MonoBehaviour
             transform.position = Random.insideUnitSphere * shakePower + transform.position; /*new Vector3(target.position.x, target.position.y + cameraPos.y, -10);*/
             shakeTime -= Time.deltaTime;
         }
+        if (type)
+        {
+            transform.rotation = Quaternion.Lerp(transform.rotation, rotation, Time.deltaTime * 4);
+            if (transform.rotation == rotation) type = false;
+        }
+        if (moveCameraBool)
+        {
+            cameraTrans.position = Vector3.Lerp(cameraTrans.position, moveCameraPos, Time.deltaTime * 2);
+            cameraTrans.localRotation = Quaternion.Lerp(cameraTrans.localRotation, moveCameraRotation, Time.deltaTime * 2);
+        }
     }
 
     private void FixedUpdate()
     {
         if (limitPos == Vector2.zero) limitPos = startPos + new Vector3(-1000, 1000);        
 
-        RaycastHit hit;
-        var yPos = 0f;
-        if (Physics.Raycast(target.position, Vector3.down, out hit, Mathf.Infinity, targetLayer))
+        if (directBool)
         {
-            yPos = hit.point.y;
+            transform.position = Vector3.Lerp(transform.position, directPos, Time.deltaTime * directSpeed);
         }
-
-        var cameraPos = new Vector3(target.position.x, yPos + startPos.y, target.position.z) ;
-
-        transform.position = Vector3.Lerp(transform.position, cameraPos, Time.deltaTime * cameraSpeed);
-
-        if (transform.position.x <= limitPos.x + 14)
+        else
         {
-            transform.position = new Vector3(limitPos.x + 14, cameraPos.y, cameraPos.z);
-        }
-        else if (transform.position.x >= limitPos.y - 14)
-        {
-            transform.position = new Vector3(limitPos.y - 14, cameraPos.y, cameraPos.z);
+            RaycastHit hit;
+            var yPos = 0f;
+            //Physics.BoxCast(target.position, new Vector3(0.5f, 0.5f, 1f), Vector3.down, out hit, Quaternion.identity, 8, targetLayer)
+            if (Physics.Raycast(target.position, Vector3.down, out hit, 10, targetLayer))
+            {
+                yPos = hit.point.y;
+                lastYPos = yPos;                
+            }
+            else
+            {
+                yPos = player.position.y;
+            }
+
+            var cameraPos = curAxis == Axis.XAxis ? new Vector3(target.position.x, yPos + startYPos, player.position.z) : new Vector3(player.position.x, yPos + startYPos, target.position.z);
+
+            transform.position = Vector3.Lerp(transform.position, cameraPos, Time.deltaTime * cameraSpeed);
+
+            if (transform.position.x <= limitPos.x + 14)
+            {
+                transform.position = new Vector3(limitPos.x + 14, cameraPos.y, cameraPos.z);
+            }
+            else if (transform.position.x >= limitPos.y - 14)
+            {
+                transform.position = new Vector3(limitPos.y - 14, cameraPos.y, cameraPos.z);
+            }
+            //if (transform.position.y <= limitYPos.y + 2)
+            //{
+            //    transform.position = new Vector3(cameraPos.x, limitYPos.y + 2, cameraPos.z);
+            //}
+            //else if (transform.position.y >= limitYPos.x - 2)
+            //{
+            //    transform.position = new Vector3(cameraPos.x, limitYPos.x - 2, cameraPos.z);
+            //}
         }
     }
+
+    public static void SetCameraMove(Vector3 pos, Quaternion rotation)
+    {
+        
+    }
+
+    public static void StartDirectCamera(Vector3 pos, float sp = 4)
+    {
+        Instance.directBool = true;
+        Instance.directPos = pos;
+        Instance.directSpeed = sp;
+    }
+
+    public static void EndDirecCamera() { Instance.directBool = false; }
 
     public static void CameraShaking(float power = 1, float time = 0.3f)
     {
@@ -74,9 +153,38 @@ public class CameraController : MonoBehaviour
         else Instance.limitPos.y = value;
     }
 
-    public static void RotateCameraView(Vector3 euler = default(Vector3))
+    public static void SetYCameraLimit(Vector2 value)
     {
-        Instance.transform.rotation = Quaternion.Euler(euler);
+        Instance.limitYPos = value;
     }
+
+    public static void RotateCameraView(bool right)
+    {
+        Instance.type = true;
+        //Instance.rotation = axis == Axis.XAxis ? Quaternion.Euler(Vector3.zero) : Quaternion.Euler(new Vector3(0, -90, 0));
+        Instance.rotation = right ? Quaternion.Euler(Instance.rotation.eulerAngles + new Vector3(0, -90, 0)) : Quaternion.Euler(Instance.rotation.eulerAngles + new Vector3(0, 90, 0));
+    }
+
+    public static void SetCameraView(Vector3 value = default(Vector3))
+    {
+        Instance.rotation = Quaternion.Euler(value);
+    }
+
+    public static void SetGlobalVolume(float value)
+    {
+        Instance.StartCoroutine(Instance.GlobalRoutine(value));
+    }
+
+    private IEnumerator GlobalRoutine(float value)
+    {
+        while (depth.focusDistance != value)
+        {
+            depth.focusDistance.value = Mathf.Lerp(depth.focusDistance.value, value, Time.deltaTime * 3);
+
+            yield return YieldInstructionCache.waitForFixedUpdate;
+        }
+    }
+
+    public static Vector3 GetCameraPos() { return Instance.transform.GetChild(0).position; }
 
 }

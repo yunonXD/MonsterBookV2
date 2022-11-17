@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 //WayPoiner 로 구현 
@@ -13,12 +11,8 @@ public class RollingAttack_State : FSM_State<Hansel>
         get { return instance; }
     }
 
-    //음식 먹기 딜레이
     private float m_WaitForFood = 0;
-    //종료 후 딜레이
     private float m_WaitEnd= 0;
-
-    //현재 노드
     private int m_CountPointer = 0;
 
     static RollingAttack_State() { }
@@ -43,29 +37,28 @@ public class RollingAttack_State : FSM_State<Hansel>
         #endregion
         
         _Hansel.OnDircalculator(1);
-
+        _Hansel.SmashCollider_L.SetActive(false);
+        _Hansel.SmashCollider_R.SetActive(false);
         _Hansel.CapCol_Hansel.isTrigger = true;
         _Hansel.Isinvincibility = true;
         _Hansel.Ani.SetTrigger("H_RollingAttackR");
         _Hansel.Ani.SetBool("H_RollingAttack", true);
         _Hansel.isRolling = true;
+        _Hansel.isBelly = false;
+        _Hansel.isSmash = false;
+        _Hansel.isRolling = false;
     }
 
     public override void UpdateState(Hansel _Hansel)
     {
         //Dead Check
-        if (_Hansel.CurrentHP <= 0)
-        {
-            _Hansel.ChangeState(HanselDie_State.Instance);
-        }
+
 
         m_WaitForFood += Time.fixedDeltaTime;
         if (m_WaitForFood >= _Hansel.RollingWaitTime)
         {
-            //_Hansel.Ani.SetBool("H_RollingAttack", true);
             if (m_CountPointer != _Hansel.Rolling_Position.Length)
             {
-                
                 _Hansel.RollingCollider.SetActive(true);
 
                 #region Movement to m_CountPointer
@@ -82,7 +75,7 @@ public class RollingAttack_State : FSM_State<Hansel>
                     Quaternion.LookRotation(m_lookatVec), Time.fixedDeltaTime * _Hansel.RollingRotation);
                 #endregion
 
-                if (_Hansel.transform.position == _Hansel.Rolling_Position[m_CountPointer].transform.position && _Hansel.Col_with_Wall)
+                if (_Hansel.transform.position == _Hansel.Rolling_Position[m_CountPointer].transform.position) //&& _Hansel.Col_with_Wall
                 {
                     _Hansel.OnDircalculator(1);
                     m_CountPointer++;
@@ -96,9 +89,10 @@ public class RollingAttack_State : FSM_State<Hansel>
             else if(m_CountPointer == _Hansel.Rolling_Position.Length)
             {
                 _Hansel.Ani.SetBool("H_RollingAttack", false);
-
+                _Hansel.Isinvincibility = false;
                 m_WaitEnd += Time.fixedDeltaTime;
-                if (m_WaitEnd >= 2)
+                _Hansel.isRolling = false;
+                if (m_WaitEnd >= 4)         //구르기 이후에 4초 대기;
                 {                  
                     m_WaitEnd = 0;
                     _Hansel.ChangeState(HanselMove_State.Instance);   

@@ -1,61 +1,65 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
-using MonsterFSM;
+
 
 namespace MonsterFSM.RollRollFSM
 {
-    public class RollRoll_Patrol : NonAttackFSMBase
+    public class RollRoll_Patrol : MonsterFSMBase
     {
-        private bool isHit = false;
-        private Vector3 Jumpforce;
-        private bool isJump = false;
+        
+        private Vector3 Jumpforce;        
 
         private RollRoll RollRollMon;
+
+        private bool VisitePatrolPoint;
+
+
 
 
         public void init(MonsterBase MonsterController)
         {
-            Monster = MonsterController;
-            RollRollMon = Monster as RollRoll;
-            isJump = false;
-            RollRollMon.gIsChase = false;
+            //Monster = MonsterController;
+            RollRollMon = Monster as RollRoll;                 
             RollRollMon.gAnimator.SetTrigger("Walk");
-
+            VisitePatrolPoint = false;
         }
 
 
 
         public override void FixedExecute(Rigidbody rigid)
         {
-            AngleTurn();
+            AngleTurn(MovePatrolCallBack);
             Move(rigid , Monster.transform.forward , Monster.gWalkSpeed);
-            Jumpforce = JumpForce(Monster.gWalkSpeed);
-            if (Jumpforce != Vector3.zero)
-                isJump = true;
         }
 
 
-        public override MonsterFSMBase Transition()
+        //public override MonsterFSMBase Transition()
+        //{
+        //    if (RollRollMon.gIsChase)
+        //    {                
+        //        return RollRollFSMCreator.CreateRunning(Monster);
+        //    }
+        //    else if (VisitePatrolPoint)
+        //    {
+        //        return RollRollFSMCreator.CreateIdle(Monster);
+        //    }
+        //    else if (isJump)
+        //    {                
+        //        return RollRollFSMCreator.CreateJump(Monster, Jumpforce);
+        //    }               
+        //
+        //
+        //    return this;
+        //}
+
+        private void MovePatrolCallBack()
         {
-            if (isHit)
-            {                
-                return RollRollFSMCreator.CreateRunning(Monster);
-            }
-            else if (isJump)
-            {                
-                return RollRollFSMCreator.CreateJump(Monster, Jumpforce);
-            }               
-
-            return this;
+            VisitePatrolPoint = true;
         }
+
 
         public override void UpdateExecute()
-        {
-            if (Input.GetKeyDown(KeyCode.A))
-            {                
-                isHit = true;
-            }
+        {            
         }
     }
 

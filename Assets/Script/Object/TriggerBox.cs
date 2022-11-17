@@ -5,15 +5,16 @@ using UnityEngine.Events;
 
 public class TriggerBox : MonoBehaviour
 {
+    [SerializeField] private bool playOnece;
     [SerializeField] private UnityEvent enterTrigger;
     [SerializeField] private UnityEvent exitTrigger;
-
-
+    
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.layer == LayerMask.NameToLayer("Player") || other.gameObject.layer == LayerMask.NameToLayer("Monster"))
+        if (other.gameObject.layer == LayerMask.NameToLayer("Player") || other.gameObject.layer == LayerMask.NameToLayer("PlayerDash"))
         {
-            enterTrigger.Invoke();            
+            enterTrigger.Invoke();
+            if (playOnece) gameObject.SetActive(false);
         }
     }
 
@@ -22,6 +23,7 @@ public class TriggerBox : MonoBehaviour
         if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
             exitTrigger.Invoke();
+            if (playOnece) gameObject.SetActive(false);
         }
     }
 

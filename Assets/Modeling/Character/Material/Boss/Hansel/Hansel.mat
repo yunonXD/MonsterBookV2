@@ -28,6 +28,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: 9bd10940b40e7c448982a94991501ac2, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _BasecolorOpacity_Berserk:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -61,8 +65,8 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NoiseTexture:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
+        m_Texture: {fileID: 2800000, guid: 09e4af3d0564df04da9c67cfda959911, type: 3}
+        m_Scale: {x: 2, y: 2}
         m_Offset: {x: 0, y: 0}
     - _Normal:
         m_Texture: {fileID: 2800000, guid: 1e06b8b70d27d4541a04f72ff8bfefd6, type: 3}
@@ -95,13 +99,14 @@ Material:
     m_Ints: []
     m_Floats:
     - _AlphaClip: 0
+    - _BerserkMode: 0
     - _Blend: 0
     - _BumpScale: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
     - _Cull: 2
     - _Cutoff: 0.5
-    - _DepthShadingInten: 0.341
+    - _DepthShadingInten: 1
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
@@ -110,38 +115,38 @@ Material:
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _HasNormal: 1
-    - _HighlightThreshold: 0.006
-    - _HightlightSmoothness: 0
+    - _HighlightThreshold: 0.464
+    - _HightlightSmoothness: 0.032
     - _Metallic: 0
-    - _MidtoneSmoothness: 0
-    - _MidtoneThreshold: 0
-    - _NoiseInten: 0.5
+    - _MidtoneSmoothness: 0.023
+    - _MidtoneThreshold: 0.724
+    - _NoiseInten: 0.332
     - _OcclusionStrength: 1
     - _Parallax: 0.005
     - _QueueControl: 0
     - _QueueOffset: 0
     - _ReceiveShadows: 1
-    - _ShadowSmoothness: 0
-    - _ShadowThreshold: 0
+    - _ShadowSmoothness: 0.067
+    - _ShadowThreshold: 0.238
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _Surface: 0
-    - _UseCustomLightDirection: 1
+    - _UseCustomLightDirection: 0
     - _WorkflowMode: 1
-    - _X: 0
-    - _Y: 0
-    - _Z: 1
+    - _X: 0.6
+    - _Y: 0.4
+    - _Z: -0.2
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _HighlightColor: {r: 1, g: 1, b: 1, a: 0}
-    - _MidtoneColor: {r: 1, g: 1, b: 1, a: 0}
-    - _ReflectColor: {r: 1, g: 1, b: 1, a: 0}
-    - _ShadowColor: {r: 1, g: 1, b: 1, a: 1}
+    - _HighlightColor: {r: 4.5412054, g: 3.8041513, b: 3.423736, a: 0}
+    - _MidtoneColor: {r: 3.9999995, g: 3.9999995, b: 3.9999995, a: 1}
+    - _ReflectColor: {r: 0.24528301, g: 0.049519394, b: 0.049519394, a: 0}
+    - _ShadowColor: {r: 0.9528302, g: 0.7244677, b: 0.7056337, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &869008621544766498

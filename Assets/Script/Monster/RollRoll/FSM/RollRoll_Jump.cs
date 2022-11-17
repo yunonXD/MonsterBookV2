@@ -1,10 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 
 namespace MonsterFSM.RollRollFSM
 {
-    public class RollRoll_Jump : NonAttackFSMBase
+    public class RollRoll_Jump : MonsterFSMBase
     {
 
         private bool isTransition = false;
@@ -35,27 +34,25 @@ namespace MonsterFSM.RollRollFSM
 
         }
 
-        public override MonsterFSMBase Transition()
-        {
-            if (isTransition )
-            {
-                if (!RollRollMon.gIsChase)
-                {
-                    isJump = false;
-                    
-                    return RollRollFSMCreator.CreatePatrol(Monster);
-                }
-
-                else
-                {
-                    
-                    return RollRollFSMCreator.CreateRunning(Monster);
-                }
-                    
-            }
-                
-            return this;
-        }
+        //public override MonsterFSMBase Transition()
+        //{
+        //    if (isTransition )
+        //    {
+        //        if (!RollRollMon.gIsChase)
+        //        {
+        //            isJump = false;                    
+        //            return RollRollFSMCreator.CreatePatrol(Monster);
+        //        }
+        //
+        //        else
+        //        {                    
+        //            return RollRollFSMCreator.CreateRunning(Monster);
+        //        }
+        //            
+        //    }
+        //        
+        //    return this;
+        //}
 
         public override void UpdateExecute()
         {

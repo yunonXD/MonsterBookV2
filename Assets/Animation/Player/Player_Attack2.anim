@@ -127774,11 +127774,18 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
+  - time: 0
+    functionName: AttackMove
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 4
+    intParameter: 0
+    messageOptions: 0
   - time: 0.06666667
     functionName: AttackMove
     data: 
     objectReferenceParameter: {fileID: 0}
-    floatParameter: 5
+    floatParameter: 4
     intParameter: 0
     messageOptions: 0
   - time: 0.13333334
@@ -127790,6 +127797,34 @@ AnimationClip:
     messageOptions: 0
   - time: 0.2
     functionName: AttackBoxOff
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.2
+    functionName: PlayVib_PlayMiddle
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.26666668
+    functionName: AttackMove
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 1
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.33333334
+    functionName: AttackMove
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.4
+    functionName: PlayVib_Stop
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class HanselDie_State : FSM_State<Hansel>
@@ -10,8 +8,6 @@ public class HanselDie_State : FSM_State<Hansel>
     {
         get { return instance; }
     }
-    //private float Count = 2.0f;
-    //private float time = 0f;
 
     static HanselDie_State() { }
     private HanselDie_State() { }
