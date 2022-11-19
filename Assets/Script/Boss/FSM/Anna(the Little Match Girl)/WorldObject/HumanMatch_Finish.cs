@@ -7,18 +7,21 @@ public class HumanMatch_Finish : MonoBehaviour ,IEntity
     public float time;
     public int curHp;
     private bool destroy;
+    private bool destroying;
     private GameObject Player;
     public float deleteTime;
     void Start()
     {
         time = 0;
         destroy = false;
+        destroying = false;
         Player = GameObject.FindWithTag("Player");
     }
 
 
     void Update()
     {
+        
         time += Time.deltaTime;
 
         if (time < 1)
@@ -49,8 +52,12 @@ public class HumanMatch_Finish : MonoBehaviour ,IEntity
         curHp -= damage;
         if (curHp <= 0)
         {
-            time = 20;
-            destroy = true;
+            if(destroying == false)
+            {
+                time = 20;
+                destroy = true;
+                destroying = true;
+            }
         }
     }
 

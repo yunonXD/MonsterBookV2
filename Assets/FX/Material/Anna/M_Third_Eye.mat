@@ -140,7 +140,7 @@ Material:
     - _Main_Pan_Y: 0
     - _Main_Tex_UV_X: 0
     - _Main_Tex_UV_Y: 0
-    - _Mask_Dissolve_Control: 1
+    - _Mask_Dissolve_Control: -1
     - _Metallic: 0
     - _Middle_Scale: 2.99
     - _OcclusionStrength: 1

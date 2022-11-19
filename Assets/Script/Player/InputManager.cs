@@ -2,17 +2,19 @@ using System.Collections;
 using UnityEngine;
 
 public class InputManager : MonoBehaviour   {
+    #region No Touch
     private PlayerAction m_action;
     private PlayerController m_player;
-    
     private float m_prevCurTime;
     private float m_JumpDelayTime = 0;
     private bool m_yesUcanJump = true;
     private bool m_yesUcanAttack = true;
     private bool m_yesUcanSkill = true;
     private bool m_yesUcanDash = true;
+    #endregion
 
     private void Awake()    {
+
         m_action = new PlayerAction();
         m_player = GetComponent<PlayerController>();
 
@@ -51,9 +53,7 @@ public class InputManager : MonoBehaviour   {
 
     private void OnEnable() {m_action.Enable();}
 
-    private void OnDisable()    {
-        m_action.Disable();
-    }
+    private void OnDisable()    {m_action.Disable();}
 
     private void Console()  {
         var value = !GameManager.GetConsoleEnable();
@@ -74,31 +74,32 @@ public class InputManager : MonoBehaviour   {
     private void isEndWalk()    {m_player.SetWalkVector(0);}
 
     private void isAttack() {
-        if (m_yesUcanAttack &&                          //Attack Key avaliable
-            !m_player.Player_Intro&&
-            !m_player.LockLookTartget &&
-            m_player.state != PlayerState.AttackState &&
-            m_player.state != PlayerState.DashState &&
-            m_player.state != PlayerState.SpecialAttackState)   {
+        if(m_player.state != PlayerState.JumpState && m_player.isGround){
+            if (m_yesUcanAttack &&                          //Attack Key avaliable
+                !m_player.Player_Intro&&
+                !m_player.LockLookTartget &&
+                m_player.state != PlayerState.AttackState &&
+                m_player.state != PlayerState.DashState &&
+                m_player.state != PlayerState.SpecialAttackState)   {
             
-            m_yesUcanAttack = false;
-            if (m_player.CheckAttack() && m_player.state != PlayerState.CuttingState) m_player.ChangeState(PlayerState.CuttingState);
-            else m_player.ChangeState(PlayerState.AttackState);
-            if (!m_player.prevInput)StartCoroutine(InputAttackRoutine());
-            else m_prevCurTime = 0;
+                m_yesUcanAttack = false;
+                if (m_player.CheckAttack() && m_player.state != PlayerState.CuttingState) m_player.ChangeState(PlayerState.CuttingState);
+                else m_player.ChangeState(PlayerState.AttackState);
+                if (!m_player.prevInput)StartCoroutine(InputAttackRoutine());
+                else m_prevCurTime = 0;
+            }
         }
+        else
+            m_player.ChangeState(PlayerState.JumpAttackState);
     }
 
     private void isSpecialAttack()  {
-        if(!m_player.LockLookTartget &&
-        !m_player.Player_Intro&&
+        if(!m_player.LockLookTartget && !m_player.Player_Intro && m_player.isGround &&
         m_player.state != PlayerState.DashState &&
         m_player.state != PlayerState.JumpState &&
         m_player.state != PlayerState.SpecialAttackState &&
         m_player.ui.SP_Cur >= 100 && m_player.isGround)  {
                 // this skill can use only 2 stage. 
-                m_player.ui.SP_Cur -= 100;
-                m_player.ui.SP_Using = true;
                 m_player.ChangeState(PlayerState.SpecialAttackState);
         }
     }
@@ -169,6 +170,7 @@ public class InputManager : MonoBehaviour   {
         else    return;
         StartCoroutine(DashDelay(m_player.dashDelayTime));
     }
+    
     #region IEnumerator
     private IEnumerator InputAttackRoutine()    {        
         m_player.prevInput = true;

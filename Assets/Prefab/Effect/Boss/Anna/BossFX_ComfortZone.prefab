@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4093095299773059832}
   - component: {fileID: 4093095299773059833}
   - component: {fileID: 5062814340529489405}
+  - component: {fileID: 1083554757900665441}
   m_Layer: 0
   m_Name: BossFX_ComfortZone
   m_TagString: Untagged
@@ -3671,7 +3672,7 @@ ParticleSystem:
         m_NumAlphaKeys: 2
     range: {x: 0, y: 1}
   CollisionModule:
-    enabled: 0
+    enabled: 1
     serializedVersion: 4
     type: 0
     collisionMode: 0
@@ -4883,3 +4884,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c00661aa154e7014cba66fe8e2a7a57c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!65 &1083554757900665441
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4093095299773059838}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 5.2931633, y: 7.4381914, z: 4.18161}
+  m_Center: {x: 0.01679802, y: 0.09772742, z: 2.0495248}

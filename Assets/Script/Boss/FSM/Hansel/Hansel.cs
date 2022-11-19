@@ -27,7 +27,9 @@ public class Hansel : MonoBehaviour, IEntity
     [HideInInspector] public GameObject RushPunch_end_R;
     public GameObject[] RollingPoint;
     [HideInInspector] public RigidbodyConstraints Constraints;
-
+    [SerializeField] private UnityEvent GretelHitEvent;
+    [SerializeField] private UnityEvent HanselHitEvent;
+    
     private ContactPoint HitPoint;
     public GameObject Lamp;
 
@@ -385,6 +387,7 @@ public class Hansel : MonoBehaviour, IEntity
             if (collision.collider.CompareTag("BossBuff"))
             {
                 ChangeState(RollingAttack_State.Instance);
+                Destroy(collision.gameObject);
             }
 
         }
@@ -696,12 +699,15 @@ public class Hansel : MonoBehaviour, IEntity
     //================================================================//
     public void OnDamage(int PlayerDamage, Vector3 pos)
     {
+        Debug.Log("asd");
         if (!Isinvincibility)
         {
             CurrentHP -= PlayerDamage;
             isAttacked = true;
+            Debug.Log("asd2");
+            //HanselHitEvent.Invoke();
 
-
+            //헨젤 Hit 이벤트
             if (Ani.GetFloat("H_Walk") <= 0.5f)
             {
                 if( (!isRushing && !isRolling && !_isStuned && !isBelly && !isTP && !isSmash))
@@ -710,17 +716,18 @@ public class Hansel : MonoBehaviour, IEntity
                     Ani.Play("I&W");
                 }
             }
-
-            if(myTarget.transform.position.x < gameObject.transform.position.x)
+            Debug.Log("asd3");
+            if (myTarget.transform.position.x < gameObject.transform.position.x)
             {
                 m_Particle["OnDamage_L"].Play();
             }
             else
             {
                 m_Particle["OnDamage_R"].Play();
-            }    
+            }
 
-
+            Debug.Log(PhaseChecker);
+            Debug.Log("CurrentHP"+ CurrentHP);
             if (PhaseChecker == 1 && CurrentHP <= 10)
             {
                 ChangeState(Stun_State.Instance);   //스턴 스테이트 -> 애니메이션 재생                
@@ -735,11 +742,13 @@ public class Hansel : MonoBehaviour, IEntity
             }
         }
 
-        else //그레텔 그로기타임 딜링
+        else 
         {
             if (m_Gretel.GetComponent<Gretel>()._Ani.GetBool("DamageTime")) 
             {
+                //그레텔 Hit 이벤트
                 m_Gretel.GetComponent<Gretel>().CurrentHP -= PlayerDamage;
+                GretelHitEvent.Invoke();
 
                 if (myTarget.GetComponent<PlayerController>().lookVector.x == 1)
                 {

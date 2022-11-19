@@ -2,58 +2,83 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Sirenix.OdinInspector;
 
 public class UI_Boss_1Stage : MonoBehaviour
 {
-    public Image hansel_Hp;
-    public Image Gretel_Hp;
-    public GameObject Gretel_Face;
-    public GameObject Gretel_Hit_Face;
-    public GameObject Hensel_Face;
-    public GameObject Hensel_Hit_Face;
-    public GameObject Hansel;
-    public GameObject Gretel;
-    private float time = 0.0f;
-    private float fill_Gretel;
-    private float fill_Hansel;
-    // Start is called before the first frame update
+    [SerializeField]
+    private Hansel hansel;
 
-    void FaceChange()
-    {
-        Gretel_Hit_Face.SetActive(false);
-        Hensel_Hit_Face.SetActive(false);
-        Hensel_Face.SetActive(true);
-        Gretel_Face.SetActive(true);
-    }
-    void HitFaceChange()
-    {
-        Gretel_Hit_Face.SetActive(true);
-        Hensel_Hit_Face.SetActive(true);
-        Hensel_Face.SetActive(false);
-        Gretel_Face.SetActive(false);
-    }
+    [SerializeField]
+    private UIGaugeWithPointer hpGauge;
+    [ReadOnly]
+    private float currentHanselHpAmount;
+    [ReadOnly]
+    private float targetHanselHpAmount;
 
-    void Start()
-    {
-        time = 0.0f;
-        fill_Gretel = 1;
-        fill_Hansel = 1;
-}
-    
+    [SerializeField]
+    private Gretel gratel;
 
-    // Update is called once per frame
+    [ReadOnly]
+    private float currentGratelHpAmount;
+    [ReadOnly]
+    private float targetGratelHpAmount;
+
+    public float dampingTime = 2f;
+
+    [SerializeField]
+    private RectTransform[] bossSticks;
+
+    [SerializeField]
+    private UITweenAnimator[] bossStickVisibleAnimations;
+
+    [SerializeField]
+    private UITweenAnimator[] bossStickInVisibleAnimations;
+
+    public bool isGratelPhase = false;
+
     void Update()
     {
-        fill_Hansel = Hansel.GetComponent<Hansel>().CurrentHP / Hansel.GetComponent<Hansel>().HanselHP;
-        fill_Gretel = Gretel.GetComponent<Gretel>().CurrentHP / Gretel.GetComponent<Gretel>().GretelHP;
+        //몬스터 체력 가져오는 법
+        targetHanselHpAmount = hansel.CurrentHP / hansel.HanselHP;
+        targetGratelHpAmount = gratel.CurrentHP / gratel.GretelHP;
 
-        if (hansel_Hp.fillAmount != fill_Hansel || Gretel_Hp.fillAmount != fill_Gretel)
+        currentHanselHpAmount = Mathf.Lerp(currentHanselHpAmount, targetHanselHpAmount, Time.deltaTime * dampingTime);
+        currentGratelHpAmount = Mathf.Lerp(currentGratelHpAmount, targetGratelHpAmount, Time.deltaTime * dampingTime);
+
+        if (isGratelPhase)
         {
-            time = 2.0f * Time.deltaTime;
-
-            hansel_Hp.fillAmount = Mathf.Lerp(hansel_Hp.fillAmount,fill_Hansel,time);
-            Gretel_Hp.fillAmount = Mathf.Lerp(Gretel_Hp.fillAmount,fill_Gretel,time);
+            hpGauge.UpdateGauge(currentGratelHpAmount);
         }
-
+        else
+        {
+            hpGauge.UpdateGauge(currentHanselHpAmount);
+        }
     }
+
+    [Button("페이즈 체인지")]
+    public void ChangePhase(bool isGratelPhase)
+    {
+        this.isGratelPhase = isGratelPhase;
+        hpGauge.ChangePointer(isGratelPhase ? bossSticks[1] : bossSticks[0]);
+
+        if (isGratelPhase)
+        {
+            bossStickInVisibleAnimations[0].PlayAnimation();
+            bossStickVisibleAnimations[1].PlayAnimation();
+        }
+        else
+        {
+            bossStickVisibleAnimations[0].PlayAnimation();
+            bossStickInVisibleAnimations[1].PlayAnimation();
+        }
+    }
+
+    public void HitAnimation()
+    {
+        var stick = isGratelPhase ? bossSticks[1] : bossSticks[0];
+        stick.GetComponent<UIBossStick>().PlayChangeAnimation();
+    }
+
+
 }

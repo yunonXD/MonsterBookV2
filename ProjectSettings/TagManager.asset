@@ -23,6 +23,7 @@ TagManager:
   - Snow
   - Ice
   - FrozenScreen
+  - Macaron
   layers:
   - Default
   - TransparentFX

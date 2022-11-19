@@ -101,7 +101,7 @@ Material:
     - _Main_Tex_UV_Y: 0.8
     - _Main_UV_X: 1
     - _Main_UV_Y: 1
-    - _Mask_Dissolve_Control: 0.9
+    - _Mask_Dissolve_Control: 1.1399995
     - _Middle_Intensity: 4.22
     - _Middle_Scale: 3
     - _Middle_Value: 0.66529465

@@ -94,4 +94,10 @@ public class UIPausePopup : UIBasePopup
         }
     }
 
+    public override void BeginClose()
+    {
+        action.Disable();
+        base.BeginClose();
+    }
+
 }

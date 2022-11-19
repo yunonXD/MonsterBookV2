@@ -57,6 +57,8 @@ public class Gretel : MonoBehaviour, IEntity
     [HideInInspector] public GameObject myTarget;
     [HideInInspector] public GameObject Hansel;
     [SerializeField] private UnityEvent endEvent;
+    [SerializeField] private UnityEvent<bool> ChangeHPBar;
+
 
 
 
@@ -136,6 +138,7 @@ public class Gretel : MonoBehaviour, IEntity
     {
         if (onoff == 1)
         {
+            ChangeHPBar.Invoke(true);
             _Ani.SetBool("DamageTime", true);
         }
         else
@@ -182,6 +185,7 @@ public class Gretel : MonoBehaviour, IEntity
     }
     void Hansel_ResetHP()
     {
+        ChangeHPBar.Invoke(false);
         Hansel.GetComponent<Hansel>().ResetState_Protected();
     }
 

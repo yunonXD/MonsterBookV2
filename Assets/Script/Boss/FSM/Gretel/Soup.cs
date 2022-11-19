@@ -18,7 +18,7 @@ public class Soup : MonoBehaviour
     void Start()
     {
         Gretel = GameObject.FindWithTag("Gretel");
-        SolidFood = GameObject.FindWithTag("BossBuff");
+        
     }
     private void Awake()
     {

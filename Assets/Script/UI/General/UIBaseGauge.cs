@@ -8,16 +8,17 @@ public class UIBaseGauge : MonoBehaviour
 {
     public Image fillGaugeImage;
 
-    public UnityEvent<float,float> updateDisplayEvent;
-    public void UpdateGauge(float progress)
+    public UnityEvent<float, float> updateDisplayEvent;
+
+    public virtual void UpdateGauge(float progress)
     {
         fillGaugeImage.fillAmount = progress;
     }
 
-    public void UpdateGauge(float current, float max)
+    public virtual void UpdateGauge(float current, float max)
     {
         fillGaugeImage.fillAmount = current / max;
-        updateDisplayEvent?.Invoke(current, max);   
+        updateDisplayEvent?.Invoke(current, max);
     }
 
 }

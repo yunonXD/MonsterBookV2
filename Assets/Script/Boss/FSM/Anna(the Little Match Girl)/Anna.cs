@@ -31,11 +31,17 @@ public class Anna : MonoBehaviour , IEntity
     public GameObject AnnaBody;
     public GameObject AnnaFace;
     public bool HitMotionAble;
+    public float FlySpeed;
+    public float FlyPosition;
+
+
     #endregion
 
 
     //Phase1
     [Header("Phase1")]
+    public GameObject WorldEvent;
+    public GameObject Halo;
     public float MatchesSpeed_1;
     public float MatchesSpeed_2;
     public float MatchesSpeed_Halo_1;
@@ -53,6 +59,8 @@ public class Anna : MonoBehaviour , IEntity
     public GameObject[] HaloMiddlePoint;
     public GameObject[] HaloSpawnPoint;
     public bool ProtectedMoveAble = false;
+    private bool BlizzardOneTime;
+    public int BlizzardTriggerHP;
 
     //Phase2
     [Header("Phase2")]
@@ -67,11 +75,7 @@ public class Anna : MonoBehaviour , IEntity
     public int Matches_Attack06_Damage;
 
 
-    //Phase3
-
-
-
-
+    
 
     //etc
     [SerializeField] private StringParticle m_Anna_Particle;
@@ -108,27 +112,36 @@ public class Anna : MonoBehaviour , IEntity
 
     protected void Start()
     {
+        BlizzardOneTime = false;
         state = new StateMachine<Anna>();
+        GroundLanding = false;
         Anna_CurrentHP = AnnaHP_Phase1;
-        state.Initial_Setting(this, Idle_State.Instance);
-        AnnaHP_Phase3 = 350;
+   
+        state.Initial_Setting(this, Anna_Wait_State.Instance);
+
+
 
     }
 
     protected void FixedUpdate()
     {
+
+
+
         state.Update();
 
         if (AnnaPhase == 1 && Anna_CurrentHP <= 0)   //안나 2페이즈 리셋
         {
             ResetState_Anna(2);
-            
+            WorldEvent.GetComponent<Anna_WorldEvent>().BlizzardEnd();
+
         }
 
 
         if (AnnaPhase == 2 && Anna_CurrentHP <= 0)
         {
             ChangeState(Anna_Grogy_State.Instance);
+
         }
 
 
@@ -152,12 +165,27 @@ public class Anna : MonoBehaviour , IEntity
                 AnnaPhase++;
             }
         }
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            AnnaStand();
+        }
 
         if (Input.GetKeyDown(KeyCode.F))
         {
             OnDamage(10,Vector3.zero);
         }
     }
+
+    public void AnnaStand()
+    {
+        Anna_Ani.SetTrigger("Anna_Stand");
+    }
+
+    public void Anna_StandEnd()
+    {
+        ChangeState(Anna_Fly_State.Instance);
+    }
+
     public void ProtectedMove()
     {
         ProtectedMoveAble = true;
@@ -291,6 +319,18 @@ public class Anna : MonoBehaviour , IEntity
             Anna_Ani.SetTrigger("Anna_Death");
             Isinvincibility = true;
         }
+
+        if(Anna_CurrentHP < BlizzardTriggerHP && AnnaPhase == 1 && BlizzardOneTime == false)
+        {
+            WorldEvent.GetComponent<Anna_WorldEvent>().BlizzardStart();
+        }
+
+        if (Anna_CurrentHP < BlizzardTriggerHP && AnnaPhase == 1 && BlizzardOneTime == false)
+        {
+            WorldEvent.GetComponent<Anna_WorldEvent>().GrannyAble = true;
+        }
+
+
 
 
     }

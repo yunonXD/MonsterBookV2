@@ -94,7 +94,6 @@ public class Match_Object_Pool : MonoBehaviour
 
     public static void ReturnObject(Match_Anna obj)
     {
-        
         obj.gameObject.SetActive(false);
         obj.transform.SetParent(Instance.transform);
         Instance.poolingObjectQueue.Enqueue(obj);

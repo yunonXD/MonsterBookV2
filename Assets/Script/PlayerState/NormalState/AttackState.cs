@@ -3,9 +3,9 @@ public class AttackState : IState   {
     private float m_AttackTimer = .0f;           //Set Timer
 
     public override void OnStateEnter(PlayerController player)  {
+        
         m_AttackdeltaTime = .0f;
-        if(player.isGround) {
-            player.ani.SetTrigger("Attack" + player.attackCount);
+        player.ani.SetTrigger("Attack" + player.attackCount);
             switch (player.attackCount) {
                     case 1:
                         m_AttackTimer = player.OneHandAttack_1;
@@ -18,20 +18,13 @@ public class AttackState : IState   {
                     case 3:
                         m_AttackTimer = player.OneHandAttack_3;
                         break;
-                }
-        }
-        else    {
-            player.ani.Play("JumpAttack");
-            player.CheckJumpAttack = true;
-            
-            m_AttackTimer = 0;
-            player.attackCount = 0;
-        }
+            }
     }
 
     public override void OnStateExcute(PlayerController player) {
         m_AttackdeltaTime += UnityEngine.Time.deltaTime;
-        if(m_AttackdeltaTime >= m_AttackTimer)  {      
+        if(m_AttackdeltaTime >= m_AttackTimer)  { 
+
             m_AttackdeltaTime = 0.0f;
             player.ChangeState(PlayerState.WalkState);
         }    

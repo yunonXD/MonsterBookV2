@@ -30,6 +30,7 @@ public class Stun_State : FSM_State<Hansel>   //스턴상태 -> 다시 복귀
         _Hansel.rb.velocity = Vector3.zero;
         m_OldPosition = _Hansel.transform.position;
         m_SpeedBoi = 0;
+        Debug.Log("Hansel stuned... ");
 
         _Hansel.BellyCollider.SetActive(false);   //특수모션중 hp가 0이 되면 끄기전에 스턴상태가 됨
         _Hansel.RushCollider.SetActive(false);  // 대미지 콜라이더가 켜져있다면 꺼주는 기능

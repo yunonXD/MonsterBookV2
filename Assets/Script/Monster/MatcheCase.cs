@@ -16,9 +16,7 @@ public class MatcheCase : Non_AttackMonster
     private int FireBugAmount;
     [SerializeField]
     private float ReSpawnTime;
-
     
-
     private int BugCount;
     private float CurrentTime;
     private float CurrentReSpawnTime;
@@ -34,9 +32,8 @@ public class MatcheCase : Non_AttackMonster
         SpawnRot = Quaternion.identity;
         CurrentReSpawnTime = ReSpawnTime;
         Matches = new GameObject[FireBugAmount];
-
-
     }
+
     protected override void Update()
     {
         base.Update();

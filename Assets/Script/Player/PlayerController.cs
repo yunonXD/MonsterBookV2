@@ -19,6 +19,7 @@ public enum PlayerState {
     HitState,
     CuttingState,
     KnockBackState,
+    JumpAttackState,
     PatrolState
 }
 
@@ -180,7 +181,6 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack, IRotate {
     [HideInInspector]public LineRenderer line;
     [HideInInspector]public Transform effectEuler;
 
-
     //Controller Setting
     protected bool isVibration = false;                 //Xbox vibration
     protected bool isInfinityVib = false;               //vibration loop
@@ -195,6 +195,7 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack, IRotate {
     #endregion
 
     #region Initialize
+
     private void Awake(){   
         collid = GetComponent<CapsuleCollider>();
         input = GetComponent<InputManager>();
@@ -213,6 +214,7 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack, IRotate {
         effectEuler = GameObject.Find("Effect").GetComponent<Transform>();     
         wirePos = GameObject.Find("Wire_Pos").GetComponent<Transform>();
 
+        attackWeapon[3] = GameObject.Find("SAttack_Damage").GetComponent<Weapon>();
         attackWeapon[0] = GameObject.Find("Scissors_00").GetComponent<Weapon>();
         attackWeapon[1] = GameObject.Find("WireAttack").GetComponent<Weapon>();
         attackWeapon[2] = GameObject.Find("Cutting").GetComponent<Weapon>();
@@ -235,13 +237,9 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack, IRotate {
 
     #region Anim Event
 
-    protected void AttackBoxOn(int i)   {
-        attackWeapon[i].Collider(true);
-    }
+    protected void AttackBoxOn(int i)   {attackWeapon[i].Collider(true);}
 
-    public void AttackBoxOff(int i) {
-        attackWeapon[i].Collider(false);
-    }
+    public void AttackBoxOff(int i) {attackWeapon[i].Collider(false);}
 
     protected void AttackMove(float value)  {
         if (!CheckMonster())
@@ -596,6 +594,7 @@ protected void WireTartgetFollow()  {         //Xbox controller Thumbstick Parts
             Arrow_Lookat.transform.rotation = QuaternionExt.zero;
             Arrow_Lookat.SetActive(true);
 
+#region  Check Bool With Ray
             //Check Wire Obj
             isLookDir = Physics.SphereCast(PlayerLookat.transform.position, PlayerLookat.transform.lossyScale.x,
             PlayerLookat.transform.up, out m_Lookat_hit, m_WireDistance, wireLayer);
@@ -605,6 +604,8 @@ protected void WireTartgetFollow()  {         //Xbox controller Thumbstick Parts
             isMonsterCheck = Physics.SphereCast(PlayerLookat.transform.position, PlayerLookat.transform.lossyScale.x,
             PlayerLookat.transform.up, out monster_hit, m_WireDistance, monsterLayer);
 
+#endregion
+
             var Distance = Vector3.Distance(transform.position, m_Lookat_hit.point);
             if (isLookDir && Distance >= 4) {
                 isLockDistance = true;
@@ -613,7 +614,7 @@ protected void WireTartgetFollow()  {         //Xbox controller Thumbstick Parts
                     wirePos.SetParent(null , true);
                     wirePos.rotation = QuaternionExt.zero;
 
-                    SaveBouceYPos = m_Lookat_hit.collider.bounds.size.y / 2;
+                    SaveBouceYPos = m_Lookat_hit.collider.bounds.size.y / 2;        //Save contect Col half of size.
                     var yMiddle = new Vector3(m_Lookat_hit.transform.position.x  , m_Lookat_hit.transform.position.y + SaveBouceYPos, 0 );
                     wirePos.position = yMiddle;
                     LookUpHead(); 
@@ -752,6 +753,7 @@ protected void WireTartgetFollow()  {         //Xbox controller Thumbstick Parts
 
         attackWeapon[0].SetDamage(isDamage);
         attackWeapon[1].SetDamage(isDamage * 3);
+        attackWeapon[3].SetDamage(Special_Damage);
 
         line.SetPosition(0, Vector3.zero);
         line.SetPosition(1, Vector3.zero);
@@ -812,12 +814,7 @@ protected void WireTartgetFollow()  {         //Xbox controller Thumbstick Parts
             m_SetJumpLoopTimer = 0; 
             ani.SetBool("FallingLoop", false);
         }
-//=================================================================//
-        if(isGround == true && CheckJumpAttack) {
-            ani.SetTrigger("jumpAttackReset");
-            CheckJumpAttack = false;
-        }
-//=================================================================//
+
         if(rigid.velocity.y < -1)   Falling = true;
         else    Falling = false;
     }

@@ -5,10 +5,13 @@ using UnityEngine;
 public class Anna_WorldEvent : MonoBehaviour
 {
     public GameObject FrozenScreen;
-
+    private float time;
+    [HideInInspector] public  bool GrannyAble;
+    public float GrannyCoolTime;
     public GameObject Granny;
     public GameObject Granny1_SpawnPoint;
     public GameObject Granny2_SpawnPoint;
+
 
     public ParticleSystem Blizzard;
     public GameObject HumanMatch_Blizzard;
@@ -18,9 +21,11 @@ public class Anna_WorldEvent : MonoBehaviour
 
     public GameObject[] HumanMatch_finish_SpawnPoint;
     public GameObject HumanMatch_finish;
+
+    private GameObject Player;
     
 
-    void LastMatch()
+    public void LastMatch()
     {
         Instantiate(HumanMatch_finish, HumanMatch_finish_SpawnPoint[0].transform);
         Instantiate(HumanMatch_finish, HumanMatch_finish_SpawnPoint[1].transform);
@@ -29,14 +34,15 @@ public class Anna_WorldEvent : MonoBehaviour
         Instantiate(HumanMatch_finish, HumanMatch_finish_SpawnPoint[4].transform);
     }
 
-    void CreateGranny()
+    public void CreateGranny()
     {
         Instantiate(Granny, Granny1_SpawnPoint.transform);
         Instantiate(Granny, Granny2_SpawnPoint.transform);
     }
 
-    void BlizzardStart()
+    public void BlizzardStart()
     {
+        Player.GetComponent<PlayerController>().m_OneHandWalkSpeed = 7.6f;
         FrozenScreen.GetComponent<FlozenScreen>().FlozenStart = true;
         Blizzard.Play();  //눈보라 실행
         Instantiate(HumanMatch_Blizzard, HumanMaych_Blizzard_SpawnPoint.transform.position, new Quaternion(0, 180, 180, 0)); 
@@ -46,29 +52,33 @@ public class Anna_WorldEvent : MonoBehaviour
 
     }
 
-    void BlizzardEnd()
+    public void BlizzardEnd()
     {
         Blizzard.Stop();  //눈보라 실행
     }
     void Start()
     {
         ComfortZoneRenderer = ComfortZone.GetComponent<Renderer>();
+        Player = GameObject.FindWithTag("Player");
+        GrannyAble = false;
     }
 
 
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.P))
+        if (GrannyAble == true)
         {
-            BlizzardStart();
+            time += Time.deltaTime;
+            if(time > GrannyCoolTime+10f)   //할머니 지속시간 10초
+            {
+                BlizzardEnd();
+                CreateGranny();
+                FrozenScreen.GetComponent<FlozenScreen>().Phasetwo = true;
+                time = 0f;
+            }
         }
 
-        if (Input.GetKeyDown(KeyCode.O))
-        {
-            BlizzardEnd();
-            CreateGranny();
-            FrozenScreen.GetComponent<FlozenScreen>().Phasetwo = true;
-        }
+
         if (Input.GetKeyDown(KeyCode.I))
         {
             LastMatch();

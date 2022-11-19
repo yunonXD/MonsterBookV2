@@ -23,8 +23,7 @@ namespace MonsterFSM
             {
                 rigid.velocity = new Vector3(0.0f , 0.0f , 0.0f);
                 InitCheck = false;
-            }
-            
+            }            
         }
 
         public override void UpdateExecute()

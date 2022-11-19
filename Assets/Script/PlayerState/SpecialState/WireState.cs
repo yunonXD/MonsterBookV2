@@ -15,16 +15,17 @@ public class WireState : IState{
 #endregion
 
         if (player.SaveMonDetect)   {              // Editable Plus distance for Wire Attack
-            m_SaveWireAttack = new Vector3 (player.wirePos.position.x + (6.0f * player.lookVector.x)  , player.wirePos.position.y - player.SaveBouceYPos, 0);
+            m_SaveWireAttack = new Vector3 (player.wirePos.position.x + (6.0f * player.lookVector.x),
+                player.wirePos.position.y - player.SaveBouceYPos, 0);
+
             player.ani.SetTrigger("WireAttack");
-            
             m_MinDistance = 1.0f;
         }
         else    {    //if there is no monster,
             m_SaveWireAttack = player.wirePos.position;
             player.ani.SetTrigger("WireMove");
             m_MinDistance = 2.0f;
-        }       
+        }
     }
 
     public override void OnStateExcute(PlayerController player) {
@@ -57,7 +58,6 @@ public class WireState : IState{
             if(!player.SaveMonDetect)   {        //if there is no monster
                 var playerRot = Quaternion.LookRotation(m_SaveWireAttack - player.transform.position).normalized;
                 player.transform.rotation = Quaternion.Slerp(player.transform.rotation , playerRot ,  Time.deltaTime * 10.0f);
-                //made player follow head to the target(not a monster)
                 player.rigid.MovePosition(m_movePosition);   
             }
 

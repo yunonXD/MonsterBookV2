@@ -29,6 +29,7 @@ public class RollingAttack_State : FSM_State<Hansel>
         m_CountPointer = 0;
         m_WaitForFood = 0;
         m_WaitEnd = 0;
+        _Hansel.rb.velocity = Vector3.zero;
 
         #region Damage Collider
         int m_Damage = _Hansel.Hansel_RollingDamage;

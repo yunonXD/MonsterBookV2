@@ -8,7 +8,7 @@ public class Raven : AttackMonster
 
     private bool IsAttack;
     private float CurrentIdleTime;
-   
+    
     protected override void Start()
     {
         base.Start();
@@ -102,11 +102,21 @@ public class Raven : AttackMonster
         return gFSM;
     }
 
+    protected void SetEffect()
+    {
+        if (gFSM is Monster_FlyingAttack)
+        {
+            gEffects[0].SetActive(true);
+        }
+        else
+        {
+            gEffects[0].SetActive(false);
+        }
+    }
     protected override void DeadSound()
     {
         SoundManager.PlayVFXSound("2Stage_Crow_Dead", transform.position);
         SoundManager.StopVFXLoopSound("2Stage_Crow_Flapping");
-
     }
 
     protected override void HitSound()
