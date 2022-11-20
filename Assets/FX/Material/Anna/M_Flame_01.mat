@@ -17,7 +17,7 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 3038
   stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
@@ -91,7 +91,7 @@ Material:
     - _Main_Dis_Pan_Y: 0
     - _Main_Dis_Polar_Control: 1
     - _Main_Dis_Polar_On: 1
-    - _Main_Dis_Str: 0.473
+    - _Main_Dis_Str: 0.5
     - _Main_Dis_UV_X: 0.4
     - _Main_Dis_UV_Y: 1
     - _Main_Pan_X: 0
@@ -105,10 +105,10 @@ Material:
     - _Middle_Intensity: 4.22
     - _Middle_Scale: 2.6
     - _Middle_Value: 0.66529465
-    - _Outer_Scale: 0.85
+    - _Outer_Scale: 1
     - _Outer_Value: 0.05
     - _QueueControl: 0
-    - _QueueOffset: 0
+    - _QueueOffset: 38
     - _Silhouette_Inten: 2
     - _Silhouette_Power: 1.13
     m_Colors:

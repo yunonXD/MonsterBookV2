@@ -24,7 +24,7 @@ public class WireThrowState : IState    {
         player.ani.GetCurrentAnimatorStateInfo(0).normalizedTime >= .95f)   {
             if (player.CheckDamage) player._CheckDamage();
             else    {
-                player.WireAttach();
+                player.SoundShot("Player_Wire_Attach");
                 player.ChangeState(PlayerState.WireState);
             }
         }

@@ -127207,7 +127207,7 @@ AnimationClip:
     messageOptions: 0
   - time: 0.36666667
     functionName: HanselSound
-    data: BellyAttack_Smoke
+    data: 1StageHansel_Bouncing
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0

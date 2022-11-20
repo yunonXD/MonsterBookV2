@@ -36,8 +36,8 @@ public class Anna_WorldEvent : MonoBehaviour
 
     public void CreateGranny()
     {
-        Instantiate(Granny, Granny1_SpawnPoint.transform);
-        Instantiate(Granny, Granny2_SpawnPoint.transform);
+        Instantiate(Granny, Granny1_SpawnPoint.transform.position, new Quaternion(0, 0, 0, 0));
+        Instantiate(Granny, Granny2_SpawnPoint.transform.position,new Quaternion(0,0,0,0));
     }
 
     public void BlizzardStart()

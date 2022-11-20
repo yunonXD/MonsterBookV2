@@ -45,7 +45,7 @@ public class Boomerang : MonoBehaviour
         transform.position = start;
         targetPos = target;
         centerPos = start + (target - start) / 2 + height;
-        objName = SoundManager.PlayVFXLoopSound("Fortune_Attack",transform);
+        //objName = SoundManager.PlayVFXLoopSound("Fortune_Attack",transform);
         StartCoroutine(Routine());
     }
 
@@ -95,11 +95,12 @@ public class Boomerang : MonoBehaviour
         coll.enabled = false;
         isPlay = false;
         Destroy(objName);
+        //SoundManager.StopVFXLoopSound(GetHashCode().ToString(), "Fortune_Attack");
     }
 
     private void OnDestroy()
     {
-        if (isPlay) SoundManager.StopVFXLoopSound("Fortune_Attack");
+        //if (isPlay) SoundManager.StopVFXLoopSound(GetHashCode().ToString() ,"Fortune_Attack");
     }
 
 

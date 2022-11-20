@@ -267,9 +267,7 @@ public class Hansel : MonoBehaviour, IEntity
         rb = GetComponent<Rigidbody>();
         CapCol_Hansel = GetComponent<CapsuleCollider>();
         Ani.SetTrigger("StageStart");
-        Constraints = rb.constraints;
-        Hansel_Start();
-        
+        Constraints = rb.constraints;                
     }
 
     void Start()
@@ -691,7 +689,14 @@ public class Hansel : MonoBehaviour, IEntity
     {
         SoundManager.PlayVFXSound(name, transform.position);
     }
-
+    public void HanselSoundLoop(string name)
+    {
+        SoundManager.PlayVFXLoopSound_World(name, transform);
+    }
+    public void HanselSoundLoopEnd(string name)
+    {
+        SoundManager.StopVFXLoopSound(name);
+    }
 
 
 
@@ -699,13 +704,13 @@ public class Hansel : MonoBehaviour, IEntity
     //================================================================//
     public void OnDamage(int PlayerDamage, Vector3 pos)
     {
-        Debug.Log("asd");
         if (!Isinvincibility)
         {
             CurrentHP -= PlayerDamage;
             isAttacked = true;
-            Debug.Log("asd2");
-            //HanselHitEvent.Invoke();
+            HanselSound("1StageHansel_Hit");
+            HanselSound("1StageHansel_HitVoice");
+            HanselHitEvent.Invoke();
 
             //헨젤 Hit 이벤트
             if (Ani.GetFloat("H_Walk") <= 0.5f)
@@ -716,7 +721,6 @@ public class Hansel : MonoBehaviour, IEntity
                     Ani.Play("I&W");
                 }
             }
-            Debug.Log("asd3");
             if (myTarget.transform.position.x < gameObject.transform.position.x)
             {
                 m_Particle["OnDamage_L"].Play();
@@ -726,8 +730,6 @@ public class Hansel : MonoBehaviour, IEntity
                 m_Particle["OnDamage_R"].Play();
             }
 
-            Debug.Log(PhaseChecker);
-            Debug.Log("CurrentHP"+ CurrentHP);
             if (PhaseChecker == 1 && CurrentHP <= 10)
             {
                 ChangeState(Stun_State.Instance);   //스턴 스테이트 -> 애니메이션 재생                
@@ -748,6 +750,8 @@ public class Hansel : MonoBehaviour, IEntity
             {
                 //그레텔 Hit 이벤트
                 m_Gretel.GetComponent<Gretel>().CurrentHP -= PlayerDamage;
+                HanselSound("1StageGretel_Hi");
+                HanselSound("1StageGretel_HitVoice");
                 GretelHitEvent.Invoke();
 
                 if (myTarget.GetComponent<PlayerController>().lookVector.x == 1)
@@ -761,6 +765,7 @@ public class Hansel : MonoBehaviour, IEntity
             }
         }
     }
+
 
     public void GretelAble()
     {

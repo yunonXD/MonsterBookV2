@@ -60,10 +60,10 @@ public class Soup : MonoBehaviour
         
         if (other.tag == "Ground")
         {
-
-           gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
+            SoundManager.PlayVFXSound("1StageGretel_ChocolateDrop", transform.position);
+            gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
            gameObject.GetComponent<Rigidbody>().useGravity = false;
-
+            SoundManager.PlayVFXSound("1StageGretel_ChocolateDropSizzle", transform.position);
             Effect.GetComponent<ParticleSystem>().Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
             ExplosionEffect.GetComponent<ParticleSystem>().Play();
 

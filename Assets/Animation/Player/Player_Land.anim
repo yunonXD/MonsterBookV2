@@ -85266,8 +85266,8 @@ AnimationClip:
     intParameter: 0
     messageOptions: 0
   - time: 0.06666667
-    functionName: JumpLaning
-    data: 
+    functionName: SoundShot
+    data: Player_Landing
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0

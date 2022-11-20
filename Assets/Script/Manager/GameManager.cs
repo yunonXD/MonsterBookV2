@@ -8,6 +8,8 @@ using System.Reflection;
 using System.Linq;
 using System;
 using UnityEngine.SceneManagement;
+using UnityEngine.Video;
+using static UnityEngine.Rendering.DebugUI;
 
 public class DualKeyDictionary<TKey1, TKey2, TValue> : Dictionary<TKey1, Dictionary<TKey2, TValue>>
 {
@@ -72,7 +74,7 @@ public class GameManager : MonoBehaviour
 
     public static GameManager Instance;
 
-    [Header("Prefab")]
+    [Header("[Prefab]")]
     [SerializeField] private GameObject playerPrefab;
     [SerializeField] private UnityEngine.UI.Image blackImage;
 
@@ -88,6 +90,11 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private CommandContainer command;
 
+    [Header("[Video]")]
+    [SerializeField] private VideoPlayer vidoePlayer;
+    [SerializeField] private GameObject videoImage;
+    [SerializeField] private VideoClip[] clip;    
+
     //private Dictionary<string, string> commandList = new Dictionary<string, string>();    
     private DualKeyDictionary<string, string, CommandData> commandList = new DualKeyDictionary<string, string, CommandData>();    
 
@@ -102,22 +109,7 @@ public class GameManager : MonoBehaviour
     {
         OutputConsole("Scene Loaded : " + SceneManager.GetActiveScene().buildIndex, ConsoleType.System);
         if (player == null) player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
-        switch (SceneManager.GetActiveScene().buildIndex)
-        {
-            case 0:
-                break;
-            case 1:
-                FadeEffect(false, 3);
-                break;
-            case 2:
-                FadeEffect(false, 4);
-                break;
-            case 3:
-                FadeEffect(false, 3);
-                break;
-            default:
-                break;
-        }
+        SceneStartEvent();
     }
 
     void OnDisable()
@@ -153,6 +145,36 @@ public class GameManager : MonoBehaviour
         {
             //commadList.Add(command[i].objectCommand, command[i].typeCommand, command[i].sendCommand);
             commandList.Add(command[i].objectCommand, command[i].typeCommand, command[i]);
+        }
+    }
+
+    private void Start()
+    {
+        SceneStartEvent();
+    }
+
+    private void SceneStartEvent()
+    {
+        switch (SceneManager.GetActiveScene().buildIndex)
+        {
+            case 0:
+                SoundManager.PlayBackGroundSound("Lobby_BGM");
+                break;
+            case 1:
+                PlayCutScene(0);
+                break;
+            case 2:
+                //player.ChangePatrol();
+                GameObject.Find("BossSceneDirector").GetComponent<BossSceneDirector>().StartStage(1);
+                FadeEffect(false, 5);
+                break;
+            case 3:
+                player.isSecondEnable = true;
+                SoundManager.PlayBackGroundSound("2Stage_Nomal_BGM");
+                FadeEffect(false, 4);
+                break;
+            default:
+                break;
         }
     }
 
@@ -364,14 +386,38 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
-    public static void FadeEffect(bool value, float speed)
+    public static void PlayCutScene(int i)
     {
-        Instance.StartCoroutine(Instance.FadeRoutine(value, speed));
-        Debug.Log("DSDS");
+        Instance.blackImage.color = new Color32(0, 0, 0, 255);
+        VideoImage(true, 0);
+        Instance.vidoePlayer.clip = Instance.clip[i];
+        Instance.vidoePlayer.Play();
+        float videoTime = ((float)Instance.clip[i].length) + 2.5f;
+        if (i == 0) SoundManager.PlayBackGroundSound("1Stage_Nomal_BGM", videoTime);
+        else SoundManager.PlayBackGroundSound("1Stage_Nomal_BGM", videoTime);
+        VideoImage(false, videoTime);
+        FadeEffect(false, 4, videoTime);
     }
 
-    private IEnumerator FadeRoutine(bool value, float speed)
+    public static void VideoImage(bool value, float delay)
     {
+        Instance.StartCoroutine(Instance.VideoImageRoutine(value, delay));
+    }
+
+    private IEnumerator VideoImageRoutine(bool value, float delay)
+    {
+        yield return YieldInstructionCache.waitForSeconds(delay);
+        videoImage.SetActive(value);
+    }
+
+    public static void FadeEffect(bool value, float speed, float delay = 0)
+    {
+        Instance.StartCoroutine(Instance.FadeRoutine(value, speed, delay));        
+    }
+
+    private IEnumerator FadeRoutine(bool value, float speed, float delay = 0)
+    {
+        yield return YieldInstructionCache.waitForSeconds(delay);
         var time = 0f;
         var start = value ? 0 : 1;
         var end = value ? 1 : 0;

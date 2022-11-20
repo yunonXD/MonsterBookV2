@@ -11,15 +11,17 @@ public class PatrolState : IState   {
     public override void OnStateExcute(PlayerController player) {
         if (m_CountPointer != player.playerPatrolLocaiton.Length)   {
                 #region Movement to m_CountPointer
+
+                var m_PlayerMovePos = new UnityEngine.Vector3(player.playerPatrolLocaiton[m_CountPointer].transform.position.x , player.transform.position.y , player.transform.position.z);
                 player.transform.position = UnityEngine.Vector3.MoveTowards(
-                player.transform.position, player.playerPatrolLocaiton[m_CountPointer].transform.position,
-                 player.walkSpeed * UnityEngine.Time.fixedDeltaTime);
-                 player.ani.SetFloat("WalkSpeed", 1.0f);
+                player.transform.position, (player.playerPatrolLocaiton[m_CountPointer].transform.position),
+                player.walkSpeed * UnityEngine.Time.fixedDeltaTime);
+                player.ani.SetFloat("WalkSpeed", 1.0f);
                 #endregion
 
                 #region LookRotation
 
-                var m_lookatVec = (new UnityEngine.Vector3(player.playerPatrolLocaiton[m_CountPointer].transform.position.x, 0, 0)).normalized;
+                var m_lookatVec = (new UnityEngine.Vector3(player.playerPatrolLocaiton[m_CountPointer].transform.position.x, 0, 0));
 
                 player.transform.LookAt(m_lookatVec);
 

@@ -90,6 +90,7 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack, IRotate {
     [HideInInspector] public bool CheckJumpAttack = false;      //Check player Attack with jump
     private float m_SetJumpLoopTimer = 1.0f;                    //player falling timer.
     public bool Player_Intro = false;
+    public bool isSecondEnable = false;                         //For SAtatck the Check Second Stage
     [Space(3)]
     #endregion
 
@@ -174,7 +175,7 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack, IRotate {
     [Header("=====[Component Property]=====")]
    
     [SerializeField] [Tooltip("Change game speed")]private float m_GameSpeed = 1;
-    [HideInInspector] public Weapon[] attackWeapon;
+    public Weapon[] attackWeapon;
 
     private MultiAimConstraint m_HeadAim_Const;
     private GameObject m_WeaponIK;
@@ -241,11 +242,6 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack, IRotate {
 
     public void AttackBoxOff(int i) {attackWeapon[i].Collider(false);}
 
-    protected void AttackMove(float value)  {
-        if (!CheckMonster())
-            rigid.AddForce(lookVector * value, ForceMode.Impulse);
-    }
-
     protected void DashForce()  {
         if(Falling)
             rigid.AddForce(lookVector * dashForce + new Vector3(0, 10), ForceMode.Impulse);
@@ -283,7 +279,7 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack, IRotate {
         Instantiate(m_Particle[name].gameObject, transform.position, Quaternion.Euler(0, ParticleDir, 0));
     }
 
-    public void SoundShot(string name)  {SoundManager.PlayVFXSound(name , transform.position , 1, 50.0f);}
+    public void SoundShot(string name)  {SoundManager.PlayVFXSound(name , transform.position);}
 
     public void FootSound() {
         if(isGround){
@@ -315,7 +311,7 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack, IRotate {
         }
     }
 
-    public void AttackSound(int count)  {
+    protected void AttackSound(int count)  {
         switch(count)   {
             case 1:
                 SoundManager.PlayVFXSound("Player_Attack01" , transform.position);       
@@ -336,29 +332,12 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack, IRotate {
             case 5:
                 SoundManager.PlayVFXSound("Player_SAttack_Sus" , transform.position);
             break;
+
+            default:
+                Debug.Log(" There is no Attack Sound. Check Animator ");
+            break;
         }
     }
-
-    protected void HitSound_And_Voice() {
-            SoundManager.PlayVFXSound("Player_TakeHit" , transform.position);   
-            SoundManager.PlayVFXSound("Player_TakeHit_Voice" , transform.position);    
-    }
-
-    protected void JumpSound_And_Voice()    {
-        SoundManager.PlayVFXSound("Player_Jump_" , transform.position);
-
-        SoundManager.PlayVFXSound("Player_Jump_Voice" , transform.position);
-    }
-
-    protected void DashSound()  {SoundManager.PlayVFXSound("Player_Dash" , transform.position);}
-
-    public void WireAim()    {SoundManager.PlayVFXSound("Player_Wire_Aim" , transform.position);}
-
-    protected void WireShot()   {SoundManager.PlayVFXSound("Player_Wire_Shot" , transform.position);}
-
-    public void WireAttach() {SoundManager.PlayVFXSound("Player_Wire_Attach" , transform.position);}
-
-    public void JumpLaning()    {SoundManager.PlayVFXSound("Player_Landing" , transform.position);}
 
     protected void SetIdle(){if (state != PlayerState.IdleState) ChangeState(PlayerState.IdleState);}
 
@@ -574,6 +553,7 @@ protected void Update() {
 //=================Debug . ing=================//
         if (Input.GetKeyDown(KeyCode.F12))  {
             //ChangeState(PlayerState.PatrolState);
+            ChangePatrol();
             //IntroProduction();
         }
 //=============================================//
@@ -692,7 +672,6 @@ protected void WireTartgetFollow()  {         //Xbox controller Thumbstick Parts
         #endregion
 
         ParticlePlay("Hit");
-        HitSound_And_Voice();
         ui.SetHP(m_curHP);
 
         if (m_curHP <= 0)   {

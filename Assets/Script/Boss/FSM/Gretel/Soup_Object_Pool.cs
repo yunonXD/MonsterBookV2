@@ -71,6 +71,7 @@ public class Soup_Object_Pool : MonoBehaviour
             var obj = Instance.poolingObjectQueue.Dequeue();
             obj.transform.SetParent(null);
             obj.gameObject.SetActive(true);
+
             return obj;
         }
         else

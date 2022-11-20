@@ -23,8 +23,7 @@ public class PercentFoldObject : MonoBehaviour
 
     public void SeRotate(float value)
     {
-        var v = value / percent;
-        Debug.Log(value + "   -0   " + v);
+        var v = value / percent;        
         transform.localRotation = Quaternion.Slerp(Quaternion.Euler(startVector), Quaternion.Euler(endVector), v);
     }
 

@@ -110573,9 +110573,9 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 0.1
-    functionName: WireShot
-    data: 
+  - time: 0.13333334
+    functionName: SoundShot
+    data: Player_Wire_Shot
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0

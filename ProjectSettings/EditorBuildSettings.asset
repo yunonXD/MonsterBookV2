@@ -6,15 +6,18 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Build_/Main Scene.unity
+    path: Assets/Scenes/1_LastBuild/Main Scene.unity
     guid: 54251c6aec64dcf4784f58c07253ae88
   - enabled: 1
-    path: Assets/Scenes/1Stage_Rework/1Stage_BuildScene.unity
+    path: Assets/Scenes/1_LastBuild/1Stage_BuildScene.unity
     guid: deac1be5460aab247b7202fd7e187cfc
   - enabled: 1
-    path: Assets/Scenes/Build_/1StageBoss_AD_Lee221107.unity
+    path: Assets/Scenes/1_LastBuild/1StageBoss_AD_Lee221107.unity
     guid: 2153f40e276192a44b90723f262fc643
   - enabled: 1
+    path: Assets/Scenes/1_LastBuild/2Stage_Build.unity
+    guid: 80a8cfef4c312ee45b59d80bf75efac9
+  - enabled: 0
     path: Assets/Scenes/1Stage_Rework/2Stage_Build.unity
     guid: 30abe89ab3541bd449de0ef53f0da2d9
   m_configObjects: {}

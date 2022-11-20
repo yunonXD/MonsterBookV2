@@ -78,7 +78,7 @@ Material:
     - _Dissolve_Switch: 0
     - _Dissolve_UV_X: 0
     - _Dissolve_UV_Y: 0
-    - _Dissolve_Value: 0.62
+    - _Dissolve_Value: 0.647
     - _Highlight_Intensity: 1.7
     - _Highlight_Scale: 3
     - _Inner_Intensity: 1
@@ -101,7 +101,7 @@ Material:
     - _Main_Tex_UV_Y: 0.8
     - _Main_UV_X: 1
     - _Main_UV_Y: 1
-    - _Mask_Dissolve_Control: 1.1399995
+    - _Mask_Dissolve_Control: -1
     - _Middle_Intensity: 4.22
     - _Middle_Scale: 3
     - _Middle_Value: 0.66529465

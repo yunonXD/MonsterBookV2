@@ -64,8 +64,8 @@ public class SoundManager : MonoBehaviour
              , PlayerPrefs.GetFloat("BGMVolume", 0));
 
         var sfx = Instance.mixer.FindMatchingGroups("VFX")[0];
-        sfx.audioMixer.SetFloat("SFXVolume"
-             , PlayerPrefs.GetFloat("SFXVolume", 0));
+        sfx.audioMixer.SetFloat("VFXVolume"
+             , PlayerPrefs.GetFloat("VFXVolume", 0));
     }
 
     #region Base
@@ -87,41 +87,63 @@ public class SoundManager : MonoBehaviour
     public static void ChangeSFXVolume(float volume)
     {
         var sfx = Instance.mixer.FindMatchingGroups("VFX")[0];
-        sfx.audioMixer.SetFloat("SFXVolume", volume);
+        sfx.audioMixer.SetFloat("VFXVolume", volume);
 
-        PlayerPrefs.SetFloat("SFXVolume", volume);
+        PlayerPrefs.SetFloat("VFXVolume", volume);
     }
 
 
     public static void PlayBackGroundSound(string name)
     {
         if (!Instance.soundDic.ContainsKey(name)) return;
-        Instance.StartCoroutine(Instance.SoundRoutine(name));    
+        Instance.StartCoroutine(Instance.SoundRoutine(name, 0));
     }
 
-    private IEnumerator SoundRoutine(string name)
+    public static void PlayBackGroundSound(string name, float time)
     {
+        if (!Instance.soundDic.ContainsKey(name)) return;
+        Instance.StartCoroutine(Instance.SoundRoutine(name, time));
+    }
+
+    public static void StopBGM()
+    {
+        Instance.StartCoroutine(Instance.SoundStop());
+    }
+
+    private IEnumerator SoundRoutine(string name, float delay)
+    {
+        yield return YieldInstructionCache.waitForSeconds(delay);
         var time = 0f;
         if (myAudio.clip != null)
-        {
-            Instance.myAudio.Play();            
+        {                 
             while (myAudio.volume != 0)
             {
                 time += Time.deltaTime / 2;
                 myAudio.volume = Mathf.Lerp(1, 0, time);
                 yield return YieldInstructionCache.waitForFixedUpdate;
-            }
-            myAudio.clip = soundDic[name][0];
+            }            
         }
-        yield return YieldInstructionCache.waitForSeconds(0.7f);
         time = 0f;
+        myAudio.clip = soundDic[name][0];
         Instance.myAudio.Play();
         while (myAudio.volume != 1)
         {
             time += Time.deltaTime / 2;
             myAudio.volume = Mathf.Lerp(0, 1, time);
             yield return YieldInstructionCache.waitForFixedUpdate;
+        }        
+    }
+
+    private IEnumerator SoundStop()
+    {
+        var time = 0f;
+        while (myAudio.volume != 0)
+        {
+            time += Time.deltaTime / 2;
+            myAudio.volume = Mathf.Lerp(1, 0, time);
+            yield return YieldInstructionCache.waitForFixedUpdate;
         }
+        myAudio.clip = null;
     }
 
     public static void PlayVFXSound(string name, Vector3 pos, float min = 1, float max = 25)
@@ -168,13 +190,33 @@ public class SoundManager : MonoBehaviour
         audioS.maxDistance = max;
         audioS.minDistance = min;
         audioS.loop = true;
-        audioS.Play();        
+        audioS.Play();
+        Instance.loopSoundDic.Add(sound.name, sound);
         return sound;
+    }
+
+    public static GameObject PlayVFXLoopSound_World(string name, Transform parent, float min = 1, float max = 25)
+    {
+        if (!Instance.soundDic.ContainsKey(name)) return null;
+        GameObject sound = Instantiate(Instance.soundPrefab, new Vector3(parent.position.x, parent.position.y, CameraController.GetCameraPos().z), Quaternion.identity);
+        sound.name = name;
+        AudioSource audioS = sound.GetComponent<AudioSource>();
+        int rand = UnityEngine.Random.Range(0, Instance.soundDic[name].Length - 1);
+        audioS.clip = Instance.soundDic[name][rand];
+        audioS.maxDistance = max;
+        audioS.minDistance = min;
+        audioS.loop = true;
+        audioS.Play();
+        return sound;        
     }
 
     public static void StopVFXLoopSound(string name)
     {
-        if (!Instance.loopSoundDic.ContainsKey(name)) return;
+        if (!Instance.loopSoundDic.ContainsKey(name))
+        {
+            Debug.Log("sound를 찾을수없음");
+            return;
+        }
         Destroy(Instance.loopSoundDic[name]);
         Instance.loopSoundDic.Remove(name);
     }

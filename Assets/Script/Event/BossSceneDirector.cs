@@ -6,6 +6,11 @@ using UnityEngine.SceneManagement;
 public class BossSceneDirector : MonoBehaviour
 {
     [Header("Stage 1")]
+    [SerializeField] private Camera mainCamera;
+    [SerializeField] private LayerMask turnOnCameraLayer;
+    [SerializeField] private LayerMask turnOffCameraLayer;
+    [SerializeField] private Hansel hansel;
+
     [SerializeField] private Transform leftHinge;
     [SerializeField] private Transform rightHinge;
     [SerializeField] private GameObject ground;
@@ -25,7 +30,34 @@ public class BossSceneDirector : MonoBehaviour
 
     public void StartStage(int i)
     {
+        if (i == 1) StartCoroutine(Stage1StartRoutine());
+    }
 
+    private IEnumerator Stage1StartRoutine()
+    {
+        yield return YieldInstructionCache.waitForSeconds(2f);
+        GameManager.SetInGameInput(false);
+        var player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
+        player.ChangePatrol();
+
+        //while (player.transform.position != new Vector3())
+        //{
+
+        //    yield return YieldInstructionCache.waitForFixedUpdate;
+        //}
+        yield return YieldInstructionCache.waitForSeconds(4f);
+        var count = 0;
+        while (count <= 7)
+        {
+            mainCamera.cullingMask = turnOnCameraLayer;
+            yield return YieldInstructionCache.waitForSeconds(0.06f);
+            mainCamera.cullingMask = turnOffCameraLayer;
+            count++;
+            yield return YieldInstructionCache.waitForFixedUpdate;
+        }
+        mainCamera.cullingMask = turnOnCameraLayer;
+        GameManager.SetInGameInput(true);
+        hansel.Hansel_Start();
     }
 
     public void EndStage(int i)

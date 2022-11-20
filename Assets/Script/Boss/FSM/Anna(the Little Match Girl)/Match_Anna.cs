@@ -27,10 +27,12 @@ public class Match_Anna : MonoBehaviour
 
     private Vector3 lastPlayerPosition;
     private bool OneTimePlayerPosition = false;
+    private bool OneTimeSoundPlay = false;
 
     void Start()
     {
         MatchMesh = MatchObject.GetComponent<MeshFilter>().mesh;
+        OneTimeSoundPlay = false;
 
         randompoint1 = Random.Range(0, 8);
         randompoint2 = Random.Range(0, 8);
@@ -96,6 +98,12 @@ public class Match_Anna : MonoBehaviour
             }
             else
             {
+                if(OneTimeSoundPlay == false)
+                {
+                    Target_Anna.GetComponent<Anna>().AnnaSound("2StageAnna_Pattern1MatchShooting");
+                    OneTimeSoundPlay = true;
+                }
+
                 time += Time.deltaTime * Target_Anna.GetComponent<Anna>().MatchesSpeed_2;
                 
 
@@ -119,6 +127,7 @@ public class Match_Anna : MonoBehaviour
 
                     else //플레이어 추격 종료
                     {
+
                         if(OneTimePlayerPosition == false)
                         {
                             lastPlayerPosition = Target_Player.transform.position;
@@ -158,7 +167,11 @@ public class Match_Anna : MonoBehaviour
                 }
                 else
                 {
-                    
+                    if (OneTimeSoundPlay == false)
+                    {
+                        Target_Anna.GetComponent<Anna>().AnnaSound("2StageAnna_Pattern3MultiShooting");
+                        OneTimeSoundPlay = true;
+                    }
                     _Match_Rigid.AddForce(dir);
 
                 }
@@ -175,6 +188,12 @@ public class Match_Anna : MonoBehaviour
 
                 else
                 {
+                    if (OneTimeSoundPlay == false)
+                    {
+                        Target_Anna.GetComponent<Anna>().AnnaSound("2StageAnna_Pattern3MultiShooting");
+                        OneTimeSoundPlay = true;
+                    }
+
                     time += Time.deltaTime * Target_Anna.GetComponent<Anna>().MatchesSpeed_2;
                     time_2 = time + 0.0001f;
 

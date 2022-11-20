@@ -31,7 +31,7 @@ public class InputManager : MonoBehaviour   {
         //Xbox Right Thumstick   
         m_action.InGame.Rotate_Look.performed += val => m_player.PlayerAimObj = val.ReadValue<Vector2>();
         m_action.InGame.Rotate_Look.performed += val => isLookTarget();
-        m_action.InGame.Rotate_Look.started += val => m_player.WireAim();      
+        m_action.InGame.Rotate_Look.started += val => m_player.SoundShot("Player_Wire_Aim");       
         m_action.InGame.Rotate_Look.canceled += val => isLookTargetEnd();
 
         //Wire Attack (after LockOn target)
@@ -98,7 +98,8 @@ public class InputManager : MonoBehaviour   {
         m_player.state != PlayerState.DashState &&
         m_player.state != PlayerState.JumpState &&
         m_player.state != PlayerState.SpecialAttackState &&
-        m_player.ui.SP_Cur >= 100 && m_player.isGround)  {
+        m_player.ui.SP_Cur >= 100 && m_player.isGround &&
+        m_player.isSecondEnable)  {
                 // this skill can use only 2 stage. 
                 m_player.ChangeState(PlayerState.SpecialAttackState);
         }

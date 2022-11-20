@@ -175,7 +175,21 @@ public class Anna : MonoBehaviour , IEntity
             OnDamage(10,Vector3.zero);
         }
     }
+    public void AnnaSoundLoop(string name)
+    {
+        SoundManager.PlayVFXLoopSound(name,gameObject.transform);
+    }
+    public void AnnaSoundLoopEnd(string name)
+    {
+        SoundManager.StopVFXLoopSound(name);
+        
+    }
+    public void AnnaSound(string name)
+    {
+        SoundManager.PlayVFXSound(name, gameObject.transform.position);
+    }
 
+    
     public void AnnaStand()
     {
         Anna_Ani.SetTrigger("Anna_Stand");
@@ -302,6 +316,7 @@ public class Anna : MonoBehaviour , IEntity
         if (!Isinvincibility)
         {
             Anna_CurrentHP -= playerDamage;
+            AnnaSound("2StageAnna_HitVoice");
         }
         else
         {
@@ -325,7 +340,7 @@ public class Anna : MonoBehaviour , IEntity
             WorldEvent.GetComponent<Anna_WorldEvent>().BlizzardStart();
         }
 
-        if (Anna_CurrentHP < BlizzardTriggerHP && AnnaPhase == 1 && BlizzardOneTime == false)
+        if (Anna_CurrentHP < BlizzardTriggerHP && AnnaPhase == 2 && BlizzardOneTime == false)
         {
             WorldEvent.GetComponent<Anna_WorldEvent>().GrannyAble = true;
         }

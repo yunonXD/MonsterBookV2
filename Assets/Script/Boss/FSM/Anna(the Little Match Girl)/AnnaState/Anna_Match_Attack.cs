@@ -45,11 +45,13 @@ public class Anna_Match_Attack : FSM_State<Anna>
         {
             if (_Anna.AnnaPhase == 1)
             {
+                _Anna.AnnaSound("2StageAnna_MatchSummon");
                 _Anna.MatchObjectPool.GetComponent<Match_Object_Pool>().RespownMatch(_Anna.MatchSpawnPoint.transform.position);
             }
 
             else
             {
+                _Anna.AnnaSound("2StageAnna_MatchSummon");
                 _Anna.MatchObjectPool.GetComponent<Match_Object_Pool>().RespownMatch_2(_Anna.MatchSpawnPoint.transform.position);
             }
             timer = 0;

@@ -58,6 +58,7 @@ public class Protected_State : FSM_State<Gretel>
                 onetime = true;
             }
             //_Gretel.gameObject.SetActive(false);
+            _Gretel.Hansel.GetComponent<Hansel>().HanselSound("1StageHansel_Dead");
             _Gretel.Hansel.gameObject.SetActive(false);
             //게임 종료
         }

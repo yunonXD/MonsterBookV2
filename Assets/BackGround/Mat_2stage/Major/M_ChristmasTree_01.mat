@@ -130,7 +130,7 @@ Material:
     - _TearingLength: -0.05
     - _TearingOffset: 0
     - _TearingStep: 0.5
-    - _Torn: 0
+    - _Torn: 1
     - _Vertical: 1
     - _WorkflowMode: 1
     - _WorldPositionDepth: 1

@@ -12,7 +12,7 @@ public class RollingCol : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             IEntity entity = other.GetComponent<IEntity>();
-
+            SoundManager.PlayVFXSound("1StageHansel_RollingSmash", other.transform.position);
             if (entity != null) entity.OnDamage(g_Player_To_Damgage, g_Transform.position);
 
         }

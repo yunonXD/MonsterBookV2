@@ -1,7 +1,5 @@
 using UnityEngine;
 
-//WayPoiner ·Î ±¸Çö 
-
 public class RollingAttack_State : FSM_State<Hansel>
 {
     static readonly RollingAttack_State instance = new RollingAttack_State();
@@ -52,8 +50,6 @@ public class RollingAttack_State : FSM_State<Hansel>
 
     public override void UpdateState(Hansel _Hansel)
     {
-        //Dead Check
-
 
         m_WaitForFood += Time.fixedDeltaTime;
         if (m_WaitForFood >= _Hansel.RollingWaitTime)
@@ -79,6 +75,7 @@ public class RollingAttack_State : FSM_State<Hansel>
                 if (_Hansel.transform.position == _Hansel.Rolling_Position[m_CountPointer].transform.position) //&& _Hansel.Col_with_Wall
                 {
                     _Hansel.OnDircalculator(1);
+                    _Hansel.HanselSound("1StageHansel_Rolling");
                     m_CountPointer++;
                  
                 }

@@ -134593,8 +134593,8 @@ AnimationClip:
     intParameter: 0
     messageOptions: 0
   - time: 0.13333334
-    functionName: DashSound
-    data: 
+    functionName: SoundShot
+    data: Player_Dash
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0

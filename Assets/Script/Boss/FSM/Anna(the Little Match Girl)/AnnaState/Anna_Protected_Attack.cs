@@ -25,7 +25,8 @@ public class Anna_Protected_Attack : FSM_State<Anna>
 
     public override void EnterState(Anna _Anna)
     {
-
+        _Anna.AnnaSound("2StageAnna_MatchSummon");
+        _Anna.AnnaSoundLoop("2StageAnna_Pattern2MatchRunning");
         _Anna.ProtectArea.gameObject.SetActive(true);
         _Anna.ProtectAreaActive = true;
         time = 0f;
@@ -105,6 +106,7 @@ public class Anna_Protected_Attack : FSM_State<Anna>
     public override void ExitState(Anna _Anna)
     {
         time = 0f;
+        _Anna.AnnaSoundLoopEnd("2StageAnna_Pattern2MatchRunning");
         _Anna.CurrentPosiiton = _Anna.NextPosition2;
         _Anna.ProtectedMoveAble = false;
 

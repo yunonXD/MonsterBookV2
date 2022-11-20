@@ -157,7 +157,7 @@ Material:
     - _WallHorizontalTiling: 0.1
     - _WallTiling: 0.0641
     - _WallVerticalOffset: 0.01
-    - _WallVerticalTiling: 0.128
+    - _WallVerticalTiling: 0.109
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:

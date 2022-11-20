@@ -34,7 +34,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BaseColor:
-        m_Texture: {fileID: 2800000, guid: 41f00878df9bd784399c366ce31b71fb, type: 3}
+        m_Texture: {fileID: 2800000, guid: 8ce6decf271773747b067aa4c831a2b4, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BaseMap:
@@ -119,6 +119,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DetailScale: 1
     - _DstBlend: 0
+    - _EmissiveInten: 1
     - _EnvironmentReflections: 1
     - _FlipHorizontal: 0
     - _GlossMapScale: 0
@@ -139,8 +140,9 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _Surface: 0
+    - _TearingLength: -0.0141
     - _TearingOffset: 0
-    - _TearingStep: 0.5
+    - _TearingStep: 0.494
     - _Torn: 0
     - _Vertical: 1
     - _WorkflowMode: 1

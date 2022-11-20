@@ -58,7 +58,7 @@ public class Gretel : MonoBehaviour, IEntity
     [HideInInspector] public GameObject Hansel;
     [SerializeField] private UnityEvent endEvent;
     [SerializeField] private UnityEvent<bool> ChangeHPBar;
-
+    public Transform GretelSoundPoint;
 
 
 
@@ -78,6 +78,11 @@ public class Gretel : MonoBehaviour, IEntity
     {
         state.Update();
 
+        if(Input.GetKeyDown(KeyCode.T))
+        {
+            _Ani.Play("Death");
+        }
+
     }
 
 
@@ -91,6 +96,15 @@ public class Gretel : MonoBehaviour, IEntity
         state.ChangeState(_State);
     }
 
+    public void GretelSound(string name)
+    {
+        SoundManager.PlayVFXSound(name, GretelSoundPoint.position);
+    }
+
+    public void GretelKnifeSound(string name)
+    {
+        SoundManager.PlayVFXSound(name, KnifeObject.transform.position);
+    }
 
     public void OnDamage(int PlayerDamage, Vector3 pos)
     {
