@@ -135,7 +135,7 @@ namespace LDS.Jelly
         public override void OnExcute()
         {
             animTime += Time.deltaTime;
-            if (mon.runAttack && mon.TargetCast(mon.runAttackDistance)) mon.ChangeState(mon.RunAttack);
+            if (mon.runAttack && mon.TargetCast(mon.runAttackDistance) && animTime >= 0.2f) mon.ChangeState(mon.RunAttack);
             else if (mon.TargetCast(mon.attackDis) && mon.GetAttackDelay() < animTime) mon.ChangeState(mon.Attack);
             else if (mon.CheckPlayer() && !mon.StopCast()) mon.ChangeState(mon.Walk);
             else if (animTime > checkTime) mon.ChangeState(mon.Patrol);
@@ -216,7 +216,7 @@ namespace LDS.Jelly
             animTime += Time.deltaTime;
 
             if (mon.target == null) mon.ChangeState(mon.Idle);
-            else if (mon.runAttack && mon.TargetCast(mon.runAttackDistance) && animTime >= 0.1f) mon.ChangeState(mon.RunAttack);
+            else if (mon.runAttack && mon.TargetCast(mon.runAttackDistance) && animTime >= 0.2f) mon.ChangeState(mon.RunAttack);
             else if (mon.TargetCast(mon.attackDis) && mon.GetAttackDelay() < animTime) mon.ChangeState(mon.Attack);
             else mon.WalkToPos(mon.target.position);
         }
@@ -245,7 +245,7 @@ namespace LDS.Jelly
             animTime = 0;
             mon.SetRotate(mon.target.position);
             mon.ShotEffect("RunAttack", mon.lookVector == Vector3.right);
-            mon.ShotEffect("RunDust", mon.lookVector == Vector3.right);
+            //mon.ShotEffect("RunDust", mon.lookVector == Vector3.right);
             mon.ani.SetTrigger("RunAttack");
             mon.runBox.SetActive(true);
         }
@@ -262,8 +262,7 @@ namespace LDS.Jelly
 
         public override void OnExit()
         {
-            mon.StopEffect("RunAttack");
-            mon.StopEffect("RunDust");
+            mon.StopEffect("RunAttack");            
             gameObject.layer = LayerMask.NameToLayer("Monster");
             mon.runBox.SetActive(false);
         }

@@ -31,15 +31,25 @@ public class UIPausePopup : UIBasePopup
 
     private PlayerAction action;
 
+    private UIPausePopupData pausePopupData;
+
     public override void Init(UIData uiData)
     {
         action = new PlayerAction();
-
+        pausePopupData = uiData as UIPausePopupData;
         action.UI.Move.performed += val => Move(val.ReadValue<Vector2>());
         action.UI.Move.canceled += val => EndMove();
         action.UI.Select.started += val => Select();
 
         action.UI.Enable();
+    }
+
+    public override void EndOpen()
+    {
+        base.EndOpen();
+        Move(Vector2.zero);
+        isMove = false;
+        Time.timeScale = 0f;
     }
 
     private void Move(Vector2 dir)
@@ -83,7 +93,7 @@ public class UIPausePopup : UIBasePopup
                 break;
             case State.Setting:
                 //TODO :: 세팅 열기
-                Game.UI.UIController.Instance.OpenPopup(new UISettingPopupData(){ endCloseAction = ()=>{ gameObject.SetActive(true); } });
+                Game.UI.UIController.Instance.OpenPopup(new UISettingPopupData() { endCloseAction = () => { gameObject.SetActive(true); } });
                 gameObject.SetActive(false);
                 break;
             case State.Exit:
@@ -96,8 +106,16 @@ public class UIPausePopup : UIBasePopup
 
     public override void BeginClose()
     {
+        Time.timeScale = 1f;
         action.Disable();
         base.BeginClose();
+    }
+
+
+    public override void EndClose()
+    {
+        pausePopupData.endCloseAction?.Invoke();
+        base.EndClose();
     }
 
 }

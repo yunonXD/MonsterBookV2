@@ -42,6 +42,12 @@ public class Anna_Grogy_State : FSM_State<Anna>
             _Anna.Halo.GetComponent<Renderer>().sharedMaterial.SetFloat("_Mask_Dissolve_Control", time);
         }
 
+        if(_Anna.finishAttackAble == true)
+        {
+
+        }
+
+
         if(_Anna.GroundLanding == true)
         {
             if(onetime == false)

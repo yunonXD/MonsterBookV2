@@ -13,6 +13,7 @@ public class Protected_State : FSM_State<Gretel>
 
     private float m_AttackTimer;
     private bool onetime = false;
+    private bool onetimeSound = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -58,7 +59,12 @@ public class Protected_State : FSM_State<Gretel>
                 onetime = true;
             }
             //_Gretel.gameObject.SetActive(false);
-            _Gretel.Hansel.GetComponent<Hansel>().HanselSound("1StageHansel_Dead");
+            if (onetimeSound == false)
+            {
+                _Gretel.Hansel.GetComponent<Hansel>().HanselSound("1StageHansel_Dead");
+                onetimeSound = true;
+            }
+            
             _Gretel.Hansel.gameObject.SetActive(false);
             //게임 종료
         }

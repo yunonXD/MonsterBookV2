@@ -1,99 +1,63 @@
+using ladius3565;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BossDirector : MonoBehaviour
 {
-    private bool startEvent;
+    [Header("[Stage 1]")]
+    [SerializeField] private FlipBook book;
 
-    [SerializeField] private float speed;
-    [SerializeField] private Vector3 toWard;
+    [Header("[Paper Object]")]
+    [SerializeField] private PaperObject[] leftPage;
+    [SerializeField] private SequenceEvent rightPage;
 
-    [Header("")]
-    [SerializeField] private Vector3[] cameraPos;
-    [SerializeField] private float[] cameraSpeed;
+    [Header("[Valule]")]
+    [SerializeField] private float startWaitTime;
+    [SerializeField] private float endWaitTime;    
 
-    [SerializeField] Transform crackHouse;
-
-    [Header("[Move Effector]")]
-    [SerializeField] private MoveObject[] moveEffect;
-    [SerializeField] private float[] moveTime;
-
-    [Header("[Paper Effector]")]
-    [SerializeField] private PaperObject[] paperEffect;
-    [SerializeField] private float[] paperTime;
-
-
-    private void Start()
-    {
-        for (int i = 0; i < cameraPos.Length; i++)
-        {
-            cameraPos[i] += transform.position;
-        }
-    }
 
     public void StartEvent()
     {
-        startEvent = true;        
         StartCoroutine(Routine());
     }
 
     private IEnumerator Routine()
-    {        
-        StartMoveEffect();
-        CameraController.StartDirectCamera(cameraPos[1]);
-        yield return YieldInstructionCache.waitForSeconds(1.4f);
-
-        CameraController.StartDirectCamera(cameraPos[0], 1);
-
-        yield return YieldInstructionCache.waitForSeconds(2f);
-        StartPapaerEffect();
-        yield return YieldInstructionCache.waitForSeconds(5.2f);
-
-        CameraController.StartDirectCamera(cameraPos[1]);
-    }
-
-    private void StartPapaerEffect()
     {
-        for (int i = 0; i < paperEffect.Length; i++)
+        GameManager.SetInGameInput(false);
+        CameraController.StartDirectCamera(CameraController.Instance.transform.position);
+        yield return YieldInstructionCache.waitForSeconds(startWaitTime);
+
+        for (int i = 0; i < leftPage.Length; i++)
         {
-            paperEffect[i].StartEvent(paperTime[i]);
+            leftPage[i].StartEvent();
         }
-    }
+        book.StartEvent();
 
-    private void StartMoveEffect()
-    {
-        for (int i = 0; i < moveEffect.Length; i++)
+        
+
+        while (book.GetIsPlay())
         {
-            moveEffect[i].StartMove(moveTime[i]);
+            yield return YieldInstructionCache.waitForFixedUpdate;
         }
+        rightPage.StartEvent(0);        
+        yield return YieldInstructionCache.waitForSeconds(1);
+        GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>().ChangePatrol();
+
+    }
+    
+    public void MoveNextStage()
+    {
+        StartCoroutine(NextStageRoutine());
     }
 
-    public void TeleportBossRoom(float time)
+    private IEnumerator NextStageRoutine()
     {
-        StartCoroutine(TPBossRoutine(time));
-    }
-
-    private IEnumerator TPBossRoutine(float time)
-    {
-        yield return YieldInstructionCache.waitForSeconds(time);
-
-        GameObject.FindGameObjectWithTag("Player").transform.position = crackHouse.position;
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
-        {
-            if (!startEvent) StartEvent();
-        }
-    }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.white;
-        Gizmos.DrawWireCube(transform.position, transform.lossyScale);
+        GameManager.FadeEffect(true, 3);
+        yield return YieldInstructionCache.waitForSeconds(endWaitTime);
+        SceneManager.LoadScene(2);
     }
 
 }

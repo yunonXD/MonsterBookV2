@@ -9,6 +9,7 @@ public class HumanMatch_Finish : MonoBehaviour ,IEntity
     private bool destroy;
     private bool destroying;
     private GameObject Player;
+    private GameObject Anna;
     public float deleteTime;
     void Start()
     {
@@ -16,6 +17,8 @@ public class HumanMatch_Finish : MonoBehaviour ,IEntity
         destroy = false;
         destroying = false;
         Player = GameObject.FindWithTag("Player");
+        Anna = GameObject.FindWithTag("Anna");
+
     }
 
 
@@ -50,11 +53,16 @@ public class HumanMatch_Finish : MonoBehaviour ,IEntity
     public void OnDamage(int damage, Vector3 pos)
     {
         curHp -= damage;
-        if (curHp <= 0)
+        if (curHp < 0)
+            curHp = 0;
+
+        if (curHp == 0)
         {
             if(destroying == false)
             {
                 time = 20;
+                Anna.GetComponent<Anna>().LastMatchClear = Anna.GetComponent<Anna>().LastMatchClear + 1;
+                Debug.Log("인간성냥 파괴");
                 destroy = true;
                 destroying = true;
             }

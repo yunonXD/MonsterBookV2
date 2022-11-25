@@ -4,8 +4,9 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using Sirenix.OdinInspector;
 
-public class TalkSimulator : MonoBehaviour
+public class TalkSimulator : Singleton<TalkSimulator>
 {
     [SerializeField]
     private ScenarioData scenarioData;
@@ -44,39 +45,65 @@ public class TalkSimulator : MonoBehaviour
     [SerializeField]
     private bool isAllowNextTalk = false;
 
+    [SerializeField]
+    private bool isSkipHold = false;
 
-    //TEST용==
+    [SerializeField]
+    private float skipHoldTime = 2f;
+    private float currentSkipHoldTime = 0f;
 
-    private void Start()
+    private PlayerAction action;
+
+    [SerializeField]
+    private GameObject nextButton;
+
+    [Header("[UI Object]")]
+    [SerializeField] private GameObject dialogueRect;
+    [SerializeField] private GameObject skipRect;
+
+
+    protected override void Awake()
     {
-        StartScenario();
+        base.Awake();
+        action = new PlayerAction();
+        action.UI.Select.started += val => NextTalk();
+        action.UI.Skip.started += val => StartSkipHold();
     }
 
-
-    private void Update()
+    private void OnEnable()
     {
-        if (isAllowNextTalk && Input.GetKeyDown(KeyCode.Return))
-        {
-            NextTalk();
-        }
+        //action.Enable();
     }
-    //=======
 
-    public void StartScenario()
+    [Button("시나리오 시작")]
+    public void StartScenario(ScenarioData scenarioData)
     {
+        action.Enable();
+        GameManager.SetInGameInput(false);
+        dialogueRect.SetActive(true);
+        skipRect.SetActive(true);
+        this.scenarioData = scenarioData;        
         //NextTalk에서 ++하고 시작하기 때문에, -1부터 진행 해주세요.
         currentIndex = -1;
+        isAllowNextTalk = true;
         startScenarioEvnet?.Invoke();
         NextTalk();
     }
 
     public void EndScenario()
     {
+        action.Disable();
         endScenarioEvnet?.Invoke();
+        dialogueRect.SetActive(false);
+        skipRect.SetActive(false);
+        GameManager.SetInGameInput(true);
     }
 
     public void NextTalk()
     {
+        if (!isAllowNextTalk)
+            return;
+
         nextTalkEvent?.Invoke();
 
         // 만약, 잔여 대화가 존재하면, 자동으로 다음 대화를 시작합니다.
@@ -95,6 +122,8 @@ public class TalkSimulator : MonoBehaviour
 
     public void StartTalk()
     {
+        nextButton.gameObject.SetActive(false);
+        isAllowNextTalk = false;
         startTalkEvent?.Invoke();
 
         if (textDisplayAnimation != null)
@@ -115,6 +144,7 @@ public class TalkSimulator : MonoBehaviour
     public void EndTalk()
     {
         isAllowNextTalk = true;
+        nextButton.gameObject.SetActive(true);
         endTalkEvent?.Invoke();
     }
 
@@ -199,7 +229,6 @@ public class TalkSimulator : MonoBehaviour
     IEnumerator CoTextDisplayAnimation()
     {
         var waitForTime = new WaitForSeconds(textDisplayTimePerCharacter);
-        var currentText = "";
         var currentTextIndex = 0;
 
         StringBuilder stBuilder = new StringBuilder();
@@ -216,5 +245,29 @@ public class TalkSimulator : MonoBehaviour
         EndTalk();
     }
 
+    private void StartSkipHold()
+    {
+        currentSkipHoldTime = 0f;
+        isSkipHold = true;
+    }
+
+    private void Update()
+    {
+        if (!isSkipHold)
+            return;
+
+        currentSkipHoldTime += Time.deltaTime;
+        if (currentSkipHoldTime >= skipHoldTime)
+        {
+            isSkipHold = false;
+            currentSkipHoldTime = 0f;
+            SkipScenario();
+        }
+    }
+
+    private void OnDisable()
+    {
+        action.Disable();
+    }
 
 }

@@ -12,8 +12,10 @@ public class UIBaseImage : MonoBehaviour
     protected Image Image;
 
     [Button("¿ÀÅä Ä³½Ì")]
-    public void AutoCaching() {
-        Image = GetComponent<Image>();
+    public void AutoCaching()
+    {
+        if (Image == null)
+            Image = GetComponent<Image>();
     }
 
     private void Awake()
@@ -21,12 +23,18 @@ public class UIBaseImage : MonoBehaviour
         AutoCaching();
     }
 
-    public void SetImage(Sprite sprite) { 
-        Image.sprite = sprite;  
+    public void SetImage(Sprite sprite)
+    {
+        AutoCaching();
+
+        Image.sprite = sprite;
+        gameObject.SetActive(sprite != null);
     }
 
     public void SetColor(Color color)
     {
+        AutoCaching();
+
         Image.color = color;
     }
 

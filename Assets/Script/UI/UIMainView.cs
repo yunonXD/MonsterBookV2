@@ -75,6 +75,8 @@ public class UIMainView : UIBaseView
     {
         base.Start();
 
+        action.UI.Disable();
+
         for (var i = 0; i < menuObjects.Length; ++i)
         {
             menuObjects[i].SetActive(false);
@@ -120,8 +122,10 @@ public class UIMainView : UIBaseView
         }
 
         Move(Vector2.zero);
+        isMove = false;
 
         curState = State.StartGame;
+        action.UI.Enable();
     }
 
     private void Move(Vector2 dir)
@@ -168,6 +172,7 @@ public class UIMainView : UIBaseView
         switch (curState)
         {
             case State.StartGame:
+                action.UI.Disable();
                 cameraAnimator.SetTrigger("EnterGame");
                 FadeController.Instance.FadeIn(() =>
                 {
@@ -185,6 +190,7 @@ public class UIMainView : UIBaseView
                     }
                 });
                 gameObject.SetActive(false);
+                action.UI.Disable();
                 break;
             case State.Exit:
 #if UNITY_EDITOR
@@ -221,8 +227,9 @@ public class UIMainView : UIBaseView
 
     private void OnDestroy()
     {
-        action.UI.Move.performed -= val => Move(val.ReadValue<Vector2>());
-        action.UI.Select.started -= val => Select();
+        action.UI.Disable();
+        //action.UI.Move.performed -= val => Move(val.ReadValue<Vector2>());
+        //action.UI.Select.started -= val => Select();
     }
 
 }

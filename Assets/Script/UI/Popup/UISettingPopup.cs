@@ -23,6 +23,8 @@ public class UISettingPopup : UIBasePopup
     private int selectMenuIndex;
     [SerializeField]
     private State[] menuStates;
+    [SerializeField]
+    private GameObject[] menuHighlights;
 
     bool isMove = false;
 
@@ -169,7 +171,7 @@ public class UISettingPopup : UIBasePopup
         if (isMove)
             return;
 
-
+        menuHighlights[selectMenuIndex].SetActive(false);
         isMove = true;
 
         var absX = Mathf.Abs(dir.x);
@@ -238,6 +240,7 @@ public class UISettingPopup : UIBasePopup
             selectMenuIndex = menuStates.Length - 1;
         }
 
+        menuHighlights[selectMenuIndex].SetActive(true);
         curState = menuStates[selectMenuIndex];
     }
 
@@ -250,6 +253,11 @@ public class UISettingPopup : UIBasePopup
     {
         settingPopupData.endCloseAction?.Invoke();
         base.EndClose();
+    }
+
+    private void OnDisable()
+    {
+        action.UI.Disable();
     }
 
 }

@@ -29,6 +29,7 @@ public class Hansel : MonoBehaviour, IEntity
     [HideInInspector] public RigidbodyConstraints Constraints;
     [SerializeField] private UnityEvent GretelHitEvent;
     [SerializeField] private UnityEvent HanselHitEvent;
+    public GameObject BossUI;
     
     private ContactPoint HitPoint;
     public GameObject Lamp;
@@ -327,7 +328,7 @@ public class Hansel : MonoBehaviour, IEntity
     {
         Ani.SetTrigger("Hansel_Start");
 
-        WorldSound.GetComponent<WorldSound>().WorldSoundPlay("1StageBoss_LightElectricity",0);   //램프 지지직소리 루프
+        //WorldSound.GetComponent<WorldSound>().WorldSoundPlay("1StageBoss_LightElectricity",0);   //램프 지지직소리 루프
         rb.constraints = Constraints;
         HanselFSMStart = true;
     }
@@ -380,7 +381,7 @@ public class Hansel : MonoBehaviour, IEntity
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (!isRushing && !isRolling && !_isStuned && !isBelly && !isTP)
+        if (!isRushing && !isRolling && !_isStuned && !isBelly && !isTP &&!Isinvincibility)
         {
             if (collision.collider.CompareTag("BossBuff"))
             {
@@ -706,11 +707,20 @@ public class Hansel : MonoBehaviour, IEntity
     {
         if (!Isinvincibility)
         {
-            CurrentHP -= PlayerDamage;
+            if(CurrentHP <= 0)
+            {
+                CurrentHP -= 0;
+            }
+            else
+            {
+                CurrentHP -= PlayerDamage;
+            }
+            
             isAttacked = true;
             HanselSound("1StageHansel_Hit");
             HanselSound("1StageHansel_HitVoice");
             HanselHitEvent.Invoke();
+            BossUI.GetComponent<UI_Boss_1Stage>().ChangePhase(false);
 
             //헨젤 Hit 이벤트
             if (Ani.GetFloat("H_Walk") <= 0.5f)
@@ -749,10 +759,12 @@ public class Hansel : MonoBehaviour, IEntity
             if (m_Gretel.GetComponent<Gretel>()._Ani.GetBool("DamageTime")) 
             {
                 //그레텔 Hit 이벤트
+                GretelHitEvent.Invoke();
+                BossUI.GetComponent<UI_Boss_1Stage>().ChangePhase(true);
                 m_Gretel.GetComponent<Gretel>().CurrentHP -= PlayerDamage;
                 HanselSound("1StageGretel_Hi");
                 HanselSound("1StageGretel_HitVoice");
-                GretelHitEvent.Invoke();
+                
 
                 if (myTarget.GetComponent<PlayerController>().lookVector.x == 1)
                 {

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.30692244, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -597,9 +597,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d4d03baa85b70c45950b027dff6364e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isPage: 0
   startVector: {x: -178.757, y: -167.021, z: 174.086}
   foldVector: {x: -96.063, y: -90, z: 102.781}
   canSee: 0
+  isFinish: 0
   speed: 3
   awakeStart: 1
   awakeDelay: 0
@@ -964,9 +966,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d4d03baa85b70c45950b027dff6364e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isPage: 0
   startVector: {x: -0.483, y: 0.468, z: -0.408}
   foldVector: {x: -88.214, y: -77.244, z: 90}
   canSee: 0
+  isFinish: 0
   speed: 3
   awakeStart: 1
   awakeDelay: 0
@@ -1810,9 +1814,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d4d03baa85b70c45950b027dff6364e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isPage: 0
   startVector: {x: -2.622, y: -14.594, z: 6.148}
   foldVector: {x: -83.855, y: -102.417, z: 88.116}
   canSee: 0
+  isFinish: 0
   speed: 3
   awakeStart: 1
   awakeDelay: 0
@@ -2920,7 +2926,7 @@ RectTransform:
   m_GameObject: {fileID: 769170535}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 1.53}
-  m_LocalScale: {x: 0.008, y: 0.008, z: 1}
+  m_LocalScale: {x: 0.004, y: 0.004, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2005290806}
@@ -3764,9 +3770,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d4d03baa85b70c45950b027dff6364e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isPage: 0
   startVector: {x: 2.504, y: 29.772, z: 1.975}
   foldVector: {x: -87.88, y: -81.764, z: 111.436}
   canSee: 0
+  isFinish: 0
   speed: 3
   awakeStart: 1
   awakeDelay: 0
@@ -4514,9 +4522,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d4d03baa85b70c45950b027dff6364e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isPage: 0
   startVector: {x: 86.621, y: 0, z: 0}
   foldVector: {x: 0, y: 0, z: 0}
   canSee: 0
+  isFinish: 0
   speed: 3
   awakeStart: 0
   awakeDelay: 2.8
@@ -4769,9 +4779,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d4d03baa85b70c45950b027dff6364e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isPage: 0
   startVector: {x: -4.664, y: -5.083, z: 1.792}
   foldVector: {x: -88.214, y: -94.938, z: 90}
   canSee: 0
+  isFinish: 0
   speed: 3
   awakeStart: 1
   awakeDelay: 0
@@ -4981,9 +4993,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d4d03baa85b70c45950b027dff6364e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isPage: 0
   startVector: {x: 0, y: 0, z: 0}
   foldVector: {x: 0, y: 0, z: 0}
   canSee: 0
+  isFinish: 0
   speed: 3
   awakeStart: 0
   awakeDelay: 0
@@ -5550,9 +5564,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d4d03baa85b70c45950b027dff6364e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isPage: 0
   startVector: {x: 86.067, y: 0, z: 0}
   foldVector: {x: 0, y: 0, z: 0}
   canSee: 0
+  isFinish: 0
   speed: 3
   awakeStart: 0
   awakeDelay: 2
@@ -5783,9 +5799,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d4d03baa85b70c45950b027dff6364e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isPage: 0
   startVector: {x: -4.198, y: -12.25, z: 0}
   foldVector: {x: -90, y: 0, z: -12.25}
   canSee: 0
+  isFinish: 0
   speed: 3
   awakeStart: 1
   awakeDelay: 0
@@ -5818,7 +5836,7 @@ RectTransform:
   m_GameObject: {fileID: 1491878777}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 2.28}
-  m_LocalScale: {x: 0.008, y: 0.008, z: 1}
+  m_LocalScale: {x: 0.004, y: 0.004, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 474751559}
@@ -5980,9 +5998,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d4d03baa85b70c45950b027dff6364e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isPage: 0
   startVector: {x: 81.357, y: 0, z: 0}
   foldVector: {x: 0, y: 0, z: 0}
   canSee: 0
+  isFinish: 0
   speed: 3
   awakeStart: 0
   awakeDelay: 2.4
@@ -6473,9 +6493,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d4d03baa85b70c45950b027dff6364e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isPage: 0
   startVector: {x: -178.076, y: -145.149, z: 172.784}
   foldVector: {x: -127.837, y: -136.016, z: 168.19}
   canSee: 0
+  isFinish: 0
   speed: 3
   awakeStart: 1
   awakeDelay: 0
@@ -6706,9 +6728,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d4d03baa85b70c45950b027dff6364e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isPage: 0
   startVector: {x: 0.556, y: -17.589, z: 3.44}
   foldVector: {x: -86.391, y: -90, z: 72.41}
   canSee: 0
+  isFinish: 0
   speed: 3
   awakeStart: 1
   awakeDelay: 0
@@ -7146,9 +7170,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d4d03baa85b70c45950b027dff6364e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isPage: 0
   startVector: {x: -3.085, y: 14.572, z: 0}
   foldVector: {x: -90, y: 0, z: 14.572}
   canSee: 0
+  isFinish: 0
   speed: 3
   awakeStart: 1
   awakeDelay: 0
@@ -7885,9 +7911,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d4d03baa85b70c45950b027dff6364e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isPage: 0
   startVector: {x: -2.087, y: -10.786, z: -2.939}
   foldVector: {x: -86.878, y: 59.279, z: -70.199}
   canSee: 0
+  isFinish: 0
   speed: 3
   awakeStart: 1
   awakeDelay: 0

@@ -44,8 +44,7 @@ public enum CURRENT_TERRAIN {
 }
 #endregion
 
-[Serializable]
-public class StringParticle : SerializableDictionary<String, ParticleSystem> { }
+[Serializable]  public class StringParticle : SerializableDictionary<String, ParticleSystem> { }
 
 public class SomeComparer : IEqualityComparer<PlayerState>  {
     bool IEqualityComparer<PlayerState>.Equals(PlayerState x, PlayerState y) { return (int)x == (int)y; }
@@ -54,11 +53,11 @@ public class SomeComparer : IEqualityComparer<PlayerState>  {
 
 public class PlayerController : MonoBehaviour, IEntity, IKnockBack, IRotate {
     #region Component
-    [HideInInspector] public Rigidbody rigid;
-    [HideInInspector] public Animator ani;
-    [HideInInspector] public UIController ui;
     public CapsuleCollider collid { get; private set; }
     public InputManager input { get; set; }
+    [HideInInspector] public Rigidbody rigid;
+    [HideInInspector] public UIController ui;
+    [HideInInspector] public Animator ani;
 
     #endregion
 
@@ -70,32 +69,30 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack, IRotate {
     #endregion
 
     #region PlayerValue
-
     [Header("=====[Player State]=====")]
     [ReadOnly] public PlayerState state;
     [HideInInspector] public Axis curAxis;
-
     [HideInInspector]public bool prevInput;
-    [Tooltip("init HP")]private int m_maxHP = 90;
-    [Tooltip("init Sp , max 100")][SerializeField] private int m_maxSP;
+    [Tooltip("init HP")]private int m_maxHP = 90;  
     [ReadOnly][SerializeField] private int m_curHP;
-    public bool invinBool { get; set; }
+    [Tooltip("init Sp , max 100")][SerializeField] private int m_maxSP;
     [Tooltip("몬스터 충돌시 밀어낼 힘")] public float m_PlayerPushForceForUpper = 10.0f;
 
-    public Transform[] playerPatrolLocaiton;
-
-    public float InvinsibleTime = 1f;                           //running time for player invinsible time when player get hit or something.
+   
     [HideInInspector] public int attackCount;                   //attck counter . max 3.
     [HideInInspector] public bool CheckDamage = false;          //Check player get hit or something. same m_CheckDamage. this thing is for other script.
     [HideInInspector] public bool CheckJumpAttack = false;      //Check player Attack with jump
     private float m_SetJumpLoopTimer = 1.0f;                    //player falling timer.
-    public bool Player_Intro = false;
+    public float InvinsibleTime = 1f;                           //running time for player invinsible time when player get hit or something.
     public bool isSecondEnable = false;                         //For SAtatck the Check Second Stage
+    public bool Player_Intro = false;                           //Player Intro Scene Set bool 
+    public bool invinBool { get; set; }
+    public Transform[] playerPatrolLocaiton;
     [Space(3)]
     #endregion
 
     #region PlayerWeapon => One  Sword
-
+    [Space(10)]
     [Header("=====[Player Weapon One Hand Sword]=====")]
     [Tooltip("한손검 공격 데미지")]public int isDamage;
     [Tooltip("궁극기 데미지")]public int Special_Damage;
@@ -104,7 +101,11 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack, IRotate {
     [SerializeField][Tooltip("한손검 데쉬 Force")] private float m_OneHandDashForce = 14.0f;
     [SerializeField][Tooltip("한손검 Dash 지속시간")] private float m_OneHandDashRunTime = 0.5f;
     [SerializeField][Tooltip("한손검 Dash 인풋 딜레이")] private float m_OneHandDashDelay = 1.0f;
-    private GameObject m_Scissors;
+
+    private GameObject m_Delete_Scissors;       //Player Production Weapon
+    private GameObject m_Scissors;              //Player Weapon
+    private float m_SaveHighSpeed;              //Save Player Speed
+    private float m_SaveLowSpeed;               //Save Player Speed
 
     [Space(10)]
 
@@ -122,6 +123,7 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack, IRotate {
     #endregion
 
     #region Move Value
+    [Space(10)]
     [Header("=====[Move Value]=====")] 
     public LayerMask wallLayer;
     public LayerMask groundLayer;
@@ -138,14 +140,13 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack, IRotate {
     [Tooltip("경사 체크할 각도")][SerializeField]private float m_MaxAngle = 30.0f;
 
     public bool checkJump { get; set; }
-
     private AxisRotateObject m_axisRotate;
     [HideInInspector] public int isJump = 0;
 
-    [Space(3)]
     #endregion
 
     #region LookatTartget(Wire)
+    [Space(10)]
     [Header("=====[Wire Value]=====")]
     [Tooltip("와이어 당기는 힘 ")] public float WireForce = 6f;
     [SerializeField][Tooltip("와이어 탐지 길이")] private float m_WireDistance = 20.0f;
@@ -156,7 +157,8 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack, IRotate {
     [HideInInspector] public Transform wirePos;                     //wire target Pos Transform
     [HideInInspector] public GameObject PlayerLookat;               //Lootat Obj => this parent made rolation for wire
     [HideInInspector] public GameObject Arrow_Lookat;               //simple indicator for wire
-    [HideInInspector] public Vector2 PlayerAimObj;                  // For PlayerLookat Rotation value,
+    [HideInInspector] public Vector2 PlayerAimObj;                  //For PlayerLookat Rotation value,
+    [HideInInspector] public Vector3 PlayerAimMouse;                //For PlayerLookat Rotaion Value For Mouse.
     [HideInInspector] public bool SaveMonDetect;                    //save Monster detected value (bool)
     [HideInInspector] public bool isLookTarget = false;             //Moveing Thumstic? ==> true
     [HideInInspector] public bool LockLookTartget = false;          //if player is flying (wire) or something need to Lock the indicator. then made false.
@@ -171,14 +173,14 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack, IRotate {
     #endregion
 
     #region Inspector
-
+    [Space(10)]
     [Header("=====[Component Property]=====")]
-   
     [SerializeField] [Tooltip("Change game speed")]private float m_GameSpeed = 1;
-    public Weapon[] attackWeapon;
+    [HideInInspector]public Weapon[] attackWeapon;
 
     private MultiAimConstraint m_HeadAim_Const;
     private GameObject m_WeaponIK;
+    private Rig m_PlayerRig;
     [HideInInspector]public LineRenderer line;
     [HideInInspector]public Transform effectEuler;
 
@@ -190,7 +192,8 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack, IRotate {
     protected float ConRunningTime = 0.3f;
     protected Vector3 m_SaveColSize = Vector3.zero;     //player.collider Pos save
 
-    [Header("[Effect Prefab]")]
+    [Space(10)]
+    [Header("====[Effect Prefab]====")]
     [SerializeField]private StringParticle m_Particle;
 
     #endregion
@@ -219,8 +222,14 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack, IRotate {
         attackWeapon[0] = GameObject.Find("Scissors_00").GetComponent<Weapon>();
         attackWeapon[1] = GameObject.Find("WireAttack").GetComponent<Weapon>();
         attackWeapon[2] = GameObject.Find("Cutting").GetComponent<Weapon>();
+        m_PlayerRig = GameObject.Find("Player_Rig").GetComponent<Rig>();
+        try{m_Delete_Scissors = GameObject.Find("Scissors_Prop");}
+        catch{return;}
+        
+        m_PlayerRig.weight = .0f;
     }
 
+    [HideInInspector]public Vector2 Target;
     private void Start(){
         int enumCount = Enum.GetValues(typeof(PlayerState)).Length;
 
@@ -230,8 +239,10 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack, IRotate {
 
             stateDic.Add((PlayerState)i, state);
         }
-        IntroSection();
         PlayerInitialize();
+        IntroSection();
+
+        Target = PlayerLookat.transform.position;
     }
 
     #endregion
@@ -343,6 +354,16 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack, IRotate {
 
     protected void ShotWire(){line.enabled = true;}
 
+    protected void SetWeaponHide(int value)    {
+        if(value == 1){
+            m_Scissors.SetActive(true);
+            m_Delete_Scissors.SetActive(false);
+            }
+        
+        else 
+            return;
+        }
+
     #endregion
 
 //==================================================================//
@@ -361,9 +382,7 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack, IRotate {
         curState.OnStateEnter(this);
     }
 
-    public void ChangePatrol(){
-        ChangeState(PlayerState.PatrolState);
-    }
+    public void ChangePatrol(){ChangeState(PlayerState.PatrolState);}
 
     private Collider m_Locate;
     protected void OnCollisionStay(Collision col)   {
@@ -488,38 +507,27 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack, IRotate {
     #endregion
 
     private void IntroSection() {       //Introl Part player Setter
-        var m_SaveSpeed = m_OneHandWalkSpeed;
-        if(Player_Intro)    {
+        if (Player_Intro)    {
             ani.SetBool("isIntro" , true);
-            m_OneHandWalkSpeed = m_OneHandWalkSpeed / 2;
+            m_OneHandWalkSpeed = m_SaveLowSpeed;
             m_Scissors.SetActive(false);
         }
         else    {
             ani.SetBool("isIntro" , false);
-            m_OneHandWalkSpeed = m_SaveSpeed;
-            m_Scissors.SetActive(true);
+            m_OneHandWalkSpeed = m_SaveHighSpeed;
+            m_PlayerRig.weight = 1.0f;
         }
     }
 
-    private void IntroProduction()  {     //Introl Part player Setter
-        if (Input.GetKeyDown(KeyCode.F12))  {
-            input.SetInputAction(false);
+    public void IntroProduction()  {     //Introl Part player Setter    
             ani.SetTrigger("Intro");
-        }      
-            if(ani.GetCurrentAnimatorStateInfo(0).IsName("Player_S_Intro") &&
-            ani.GetCurrentAnimatorStateInfo(0).normalizedTime >= .95f)  {
-                Player_Intro = false;
-                IntroSection();
-                input.SetInputAction(true);
-            }
-            else
-                return;
+            input.SetInputAction(false);
     }
     
     private void OnDrawGizmos() {
         Gizmos.color = Color.red;
         if (Application.isPlaying)  {
-            Gizmos.DrawWireCube(collid.bounds.center + new Vector3(0, -collid.height), new Vector3(0.7f, 0.1f, 1f)); //Ground
+            Gizmos.DrawWireCube(collid.bounds.center + new Vector3(0, -collid.height/2), new Vector3(0.35f, 0.5f, 0.5f)); //Ground
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireCube(collid.bounds.center + lookVector * collid.radius * 2, new Vector3(0.3f, 1.0f, 0.3f));  //Front
         }
@@ -527,7 +535,7 @@ public class PlayerController : MonoBehaviour, IEntity, IKnockBack, IRotate {
         if (isLookTarget)   {
             if (isLookDir)  {
                 Gizmos.DrawRay(PlayerLookat.transform.position, PlayerLookat.transform.up * m_Lookat_hit.distance);
-                Gizmos.DrawWireSphere(PlayerLookat.transform.position + PlayerLookat.transform.up * m_Lookat_hit.distance, PlayerLookat.transform.lossyScale.x);
+                Gizmos.DrawWireSphere(PlayerLookat.transform.position + PlayerLookat.transform.up * m_Lookat_hit.distance, PlayerLookat.transform.lossyScale.x *2);
             }
             else
                 return;
@@ -544,19 +552,22 @@ protected void FixedUpdate()  {
         CheckGround();
         CheckGroundForSound();
         CheckRotation();
+
+        //=================Debug . ing=================//
+        if (Input.GetKeyDown(KeyCode.F11))  {
+            Cursor.visible = false;
+            //IntroProduction();
+            //ChangeState(PlayerState.PatrolState);
+        }
+        else if(Input.GetKeyDown(KeyCode.F10)) Cursor.visible = true;
+        
+        //=============================================//
     }
 
 protected void Update() {
-        CheckSlop();  
-        IntroProduction();
+        CheckSlop();
+        CheckIntro();
         SetVibrationXbox(LeftMoter, RightMoter, ConRunningTime, isInfinityVib);
-//=================Debug . ing=================//
-        if (Input.GetKeyDown(KeyCode.F12))  {
-            //ChangeState(PlayerState.PatrolState);
-            ChangePatrol();
-            //IntroProduction();
-        }
-//=============================================//
     }
 
 void OnApplicationQuit()    {
@@ -567,21 +578,32 @@ void OnApplicationQuit()    {
 
 protected void WireTartgetFollow()  {         //Xbox controller Thumbstick Parts.
         if (isLookTarget)   {
-            //Right Thunstick Rotation
-            PlayerLookat.transform.rotation = Quaternion.Euler(0, 0,
-                -Mathf.Atan2(PlayerAimObj.x, PlayerAimObj.y) * Mathf.Rad2Deg);
 
+            if (Gamepad.current == null)    {
+                
+                PlayerAimMouse.z = Camera.main.farClipPlane * 100;
+                Vector2 WorldPosition = Camera.main.ScreenToWorldPoint(PlayerAimMouse);
+                var yeet_ = -Mathf.Atan2(WorldPosition.x, WorldPosition.y) * Mathf.Rad2Deg;
+                PlayerLookat.transform.rotation = Quaternion.Euler(0, 0, yeet_);
+                Debug.Log(yeet_);
+            }
+            else    {
+                //Right Thunstick Rotation
+                var yeet = -Mathf.Atan2(PlayerAimObj.x, PlayerAimObj.y) * Mathf.Rad2Deg;
+                PlayerLookat.transform.rotation = Quaternion.Euler(0, 0, yeet);
+            }
+      
             Arrow_Lookat.transform.rotation = QuaternionExt.zero;
             Arrow_Lookat.SetActive(true);
 
 #region  Check Bool With Ray
             //Check Wire Obj
-            isLookDir = Physics.SphereCast(PlayerLookat.transform.position, PlayerLookat.transform.lossyScale.x,
+            isLookDir = Physics.SphereCast(PlayerLookat.transform.position, PlayerLookat.transform.lossyScale.x * 2,
             PlayerLookat.transform.up, out m_Lookat_hit, m_WireDistance, wireLayer);
 
             //Check Monster Obj
             RaycastHit monster_hit;
-            isMonsterCheck = Physics.SphereCast(PlayerLookat.transform.position, PlayerLookat.transform.lossyScale.x,
+            isMonsterCheck = Physics.SphereCast(PlayerLookat.transform.position, PlayerLookat.transform.lossyScale.x * 2,
             PlayerLookat.transform.up, out monster_hit, m_WireDistance, monsterLayer);
 
 #endregion
@@ -657,13 +679,13 @@ protected void WireTartgetFollow()  {         //Xbox controller Thumbstick Parts
 
     #region Interface
     
-    [SerializeField] private Transform darkPlane;       //For End Production
     public void OnDamage(int damage, Vector3 pos)   {       
         if (invinBool || cmdInvBool || state == PlayerState.DeadState || Player_Intro) return;
 
         CheckDamage = true;
         m_curHP -= damage;
-        SetVibValue(true, 0.5f, 0.5f, 0.3f, false);
+        ParticlePlay("Hit");
+        ui.SetHP(m_curHP);
 
         #region lookDir
         var val = transform.position.x < pos.x ? Vector3.right : Vector3.left;
@@ -671,13 +693,9 @@ protected void WireTartgetFollow()  {         //Xbox controller Thumbstick Parts
         transform.localRotation = Quaternion.Euler(0, 90 * val.x, 0);
         #endregion
 
-        ParticlePlay("Hit");
-        ui.SetHP(m_curHP);
-
         if (m_curHP <= 0)   {
             m_curHP = 0;
             m_WeaponIK.GetComponent<PlayerWeapon_Rigging>().m_WeaponIKSet.weight = 0;
-            StartCoroutine(DeadRoutine());      // Dead Production
 
             SoundShot("Player_Dead");
             SoundShot("Player_Dead_Voice");
@@ -737,6 +755,9 @@ protected void WireTartgetFollow()  {         //Xbox controller Thumbstick Parts
         line.SetPosition(0, Vector3.zero);
         line.SetPosition(1, Vector3.zero);
 
+        m_SaveLowSpeed = m_OneHandWalkSpeed/2;
+        m_SaveHighSpeed = m_OneHandWalkSpeed;
+
         ui.SP_Using = false;
 
         CameraController.SetCameraView();
@@ -747,16 +768,6 @@ protected void WireTartgetFollow()  {         //Xbox controller Thumbstick Parts
     #endregion
 
     #region Coroutine
-
-    private IEnumerator DeadRoutine()   {
-        darkPlane.localPosition = new Vector3(0, 20, -28.15f);
-        var target = new Vector3(0, 6, -28.15f);
-        while(darkPlane.localPosition != target)    {
-            darkPlane.localPosition = Vector3.MoveTowards(darkPlane.localPosition, target, Time.deltaTime * 16);
-
-            yield return YieldInstructionCache.waitForFixedUpdate;
-        }
-    }
 
     private IEnumerator DamageBoolChecker(int num)  {
         // when player's  get damaged, made CheckDamage => true to false. (wire skill)
@@ -771,7 +782,7 @@ protected void WireTartgetFollow()  {         //Xbox controller Thumbstick Parts
     public void CheckGround()   {
         
         isGround = Physics.BoxCast(collid.bounds.center, new Vector3(0.35f, 0.5f, 0.5f),
-            -transform.up, Quaternion.identity, collid.height, groundLayer);
+            -transform.up, Quaternion.identity, collid.height/2, groundLayer);
         //N sec after jump , play the falling animation (if Jump attacking, then dosent work.)
         if (!isGround && !LockLookTartget &&
          state != PlayerState.AttackState && state != PlayerState.DashState)    {
@@ -845,18 +856,18 @@ protected void WireTartgetFollow()  {         //Xbox controller Thumbstick Parts
     public bool CheckMonster()  {return Physics.BoxCast(collid.bounds.center, new Vector3(0.4f, 1.1f, 0.5f), lookVector, Quaternion.identity, collid.radius * 2, monsterLayer);}
 
     public void CheckRotation() {
-        var value = walkVector > 0 ? 1 : -1;
+        var m_value = walkVector > 0 ? 1 : -1;
         if (walkVector != 0 && (CheckState(PlayerState.WalkState) || CheckState(PlayerState.JumpState) ||
             CheckState(PlayerState.IdleState)))
-            lookVector = curAxis == Axis.XAxis ? new Vector3(value, 0, 0) : new Vector3(0, 0, value);
+            lookVector = curAxis == Axis.XAxis ? new Vector3(m_value, 0, 0) : new Vector3(0, 0, m_value);
          
-        var target = Quaternion.identity;
+        var m_target = Quaternion.identity;
         if (curAxis == Axis.XAxis)
-            target = Quaternion.Euler(0, 91 * lookVector.x, 0);
+            m_target = Quaternion.Euler(0, 91 * lookVector.x, 0);
         else       
-            target = lookVector.z == 1 ? Quaternion.Euler(0, 1f, 0) : Quaternion.Euler(0, 181f, 0);
+            m_target = lookVector.z == 1 ? Quaternion.Euler(0, 1f, 0) : Quaternion.Euler(0, 181f, 0);
         
-        transform.rotation = Quaternion.Lerp(transform.rotation, target, Time.deltaTime * RotationSpeed);
+        transform.rotation = Quaternion.Lerp(transform.rotation, m_target, Time.deltaTime * RotationSpeed);
     }
 
     public void  CheckSlop(){
@@ -870,9 +881,9 @@ protected void WireTartgetFollow()  {         //Xbox controller Thumbstick Parts
 
             if(m_Angle > 0 && m_Angle <= m_MaxAngle )   {
                 if(m_Angle <= 20 && m_Angle > 10)
-                    collid.center = new Vector3(0.0f , 0.78f, 0.0f);
+                    collid.center = new Vector3(0.0f , 1.56f, 0.0f);
                 if(m_Angle <= 30 && m_Angle > 20)
-                    collid.center = new Vector3(0.0f , 0.83f, 0.0f);
+                    collid.center = new Vector3(0.0f , 1.66f, 0.0f);
             }
             else            
                 collid.center = m_SaveColSize;
@@ -893,5 +904,16 @@ protected void WireTartgetFollow()  {         //Xbox controller Thumbstick Parts
             ChangeState(PlayerState.HitState);
         }
     }
+    
+    protected void CheckIntro() {    //Check Player Intro
+        if (ani.GetCurrentAnimatorStateInfo(0).IsName("Player_S_Intro") &&
+        ani.GetCurrentAnimatorStateInfo(0).normalizedTime >= .95f)  {
+            Player_Intro = false;
+            IntroSection();
+            return;
+        }
+        else return;
+    }
+
     #endregion    
 }

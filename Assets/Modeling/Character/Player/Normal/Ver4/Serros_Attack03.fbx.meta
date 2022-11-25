@@ -60,70 +60,42 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.008928572
+      - time: 0.120445095
         functionName: ParticlePlay
         data: Attack2
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.008928572
-        functionName: AttackMove
-        data: 
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 3
-        intParameter: 0
-        messageOptions: 0
-      - time: 0.075595245
-        functionName: AttackMove
-        data: 
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 3
-        intParameter: 0
-        messageOptions: 0
-      - time: 0.17559524
-        functionName: ParticlePlay
-        data: TestTrail
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
-      - time: 0.17559524
+      - time: 0.3744681
         functionName: AttackBoxOn
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.2422619
+      - time: 0.40780142
+        functionName: AttackSound
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 3
+        messageOptions: 0
+      - time: 0.47274396
         functionName: PlayVib_PlayHigh
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.30892858
-        functionName: AttackMove
-        data: 
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 2
-        intParameter: 0
-        messageOptions: 0
-      - time: 0.37559524
+      - time: 0.62159455
         functionName: AttackBoxOff
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.40892857
-        functionName: ParticleStopPlay
-        data: TestTrail
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
-      - time: 0.40892857
+      - time: 0.6405601
         functionName: PlayVib_Stop
         data: 
         objectReferenceParameter: {instanceID: 0}
@@ -137,7 +109,7 @@ ModelImporter:
     isReadable: 0
   meshes:
     lODScreenPercentages: []
-    globalScale: 1
+    globalScale: 2
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
@@ -190,7 +162,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 1
+    globalScale: 2
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0

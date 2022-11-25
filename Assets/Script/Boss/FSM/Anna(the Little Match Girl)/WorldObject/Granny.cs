@@ -40,7 +40,6 @@ public class Granny : MonoBehaviour
 
         else
         {
-
             Destroy(this.gameObject);
         }
 

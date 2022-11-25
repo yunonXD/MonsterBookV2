@@ -32,7 +32,7 @@ public class Anna_Fly_State : FSM_State<Anna>
         if(_Anna.transform.position.y > _Anna.FlyPosition)
         {
             _Anna.Anna_Ani.SetTrigger("Anna_FlyEnd");
-            _Anna.Halo.GetComponent<Renderer>().sharedMaterial.SetFloat("_Mask_Dissolve_Control",time);
+            _Anna.Halo.GetComponent<Renderer>().material.SetFloat("_Mask_Dissolve_Control",time);
             _Anna.GroundLanding = false;
         }
     }

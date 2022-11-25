@@ -2,13 +2,26 @@ using UnityEngine;
 
 public class WireThrowState : IState    {
 
+    private bool isAirMonsterPosY = false;
     public override void OnStateEnter(PlayerController player)  {     
         player.line.enabled = true;
+        isAirMonsterPosY = false;
         if (player.CheckDamage) {
             player._CheckDamage();
             return;
         }
-  
+
+        if(player.isMonsterCheck && (Mathf.Abs(player.wirePos.transform.position.y) - Mathf.Abs(player.transform.position.y) >= 5.0f))    {
+            Debug.Log("the Monster is too high for use wire attack.");
+            player.SetVibValue(true, .3f, .3f, .3f, false);
+            player.line.enabled = false;
+            isAirMonsterPosY = true;
+            player.LockLookTartget = false;
+            return;
+        }
+
+        if (player.PlayerLookat.transform.rotation.eulerAngles.z > 180) player.lookVector.x = 1;
+        else player.lookVector.x = -1;
         player.line.GetComponent<Renderer>().material = player.WireMaterial[0];
         player.SaveMonDetect = player.isMonsterCheck;
         player.LockLookTartget = true;
@@ -17,6 +30,9 @@ public class WireThrowState : IState    {
     }
 
     public override void OnStateExcute(PlayerController player) {
+
+        if(isAirMonsterPosY) { player.ChangeState(PlayerState.WalkState); return; }
+
         player.line.SetPosition(0, player.wireStart.position);
         player.line.SetPosition(1, player.wirePos.position);
 
@@ -38,13 +54,10 @@ public class WireThrowState : IState    {
     }
 
     public override void OnStateExit(PlayerController player)   {
-        if(!player.CheckDamage) {
+        if(!player.CheckDamage || !isAirMonsterPosY) {
             player.invinBool = true;
             player.line.GetComponent<Renderer>().material = null;
             player.line.GetComponent<Renderer>().material = player.WireMaterial[1];
         }
-        else{
-            return;
-        }          
     }
 }

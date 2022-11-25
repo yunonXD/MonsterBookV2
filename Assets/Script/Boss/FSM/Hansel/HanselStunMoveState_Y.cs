@@ -13,6 +13,7 @@ public class HanselStunMoveState_Y : FSM_State<Hansel>
 
     public override void EnterState(Hansel _Hansel)
     {
+        _Hansel.Isinvincibility = true;
         _Hansel.Ani.Play("H_Walk");
         _Hansel.SmashCollider_L.SetActive(false);
         _Hansel.SmashCollider_R.SetActive(false);
@@ -73,7 +74,7 @@ public class HanselStunMoveState_Y : FSM_State<Hansel>
 
             _Hansel.Ani.SetFloat("H_Walk", m_SpeedBoi);
             #endregion
-            if (((_Hansel.RuntoGretelPosition_Y.transform.position.z-0.1f <= _Hansel.transform.position.z)))
+            if ((_Hansel.transform.position.z > 4))
             {
                 _Hansel.StunMove = true;
                 _Hansel.ChangeState(HanselStunMoveState_X.Instance);

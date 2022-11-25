@@ -35,8 +35,7 @@ namespace LDS.Fire
         public override void OnDamage(int damage, Vector3 pos)
         {
             if (curState == Bomb) return;
-            ChangeState(Bomb);
-            base.OnDamage(damage, pos);
+            ChangeState(Bomb);            
         }
 
         public override void CutDamage()
@@ -108,7 +107,7 @@ namespace LDS.Fire
             if (animTime > 0.35f)
             {
                 mon.damageBox.SetActive(true);
-                Destroy(mon.gameObject, 0.5f);
+                Destroy(mon.gameObject, 0.1f);
                 mon.CreateEffect("Bomb", mon.transform.position);
                 mon.aliveObj.SetActive(false);
                 mon.isRun = false;

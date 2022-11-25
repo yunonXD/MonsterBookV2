@@ -106,6 +106,7 @@ public class Anna_Protected_Attack : FSM_State<Anna>
     public override void ExitState(Anna _Anna)
     {
         time = 0f;
+        _Anna.ProtectArea.SetActive(false);
         _Anna.AnnaSoundLoopEnd("2StageAnna_Pattern2MatchRunning");
         _Anna.CurrentPosiiton = _Anna.NextPosition2;
         _Anna.ProtectedMoveAble = false;

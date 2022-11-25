@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4622700796837581425}
   - component: {fileID: 5160028874735475236}
   - component: {fileID: 6056459999664469613}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Ember_Burst_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4935,6 +4935,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4806226542450186927, guid: e9a78481c7595cd4b9ee9f1a6e101525, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
     - target: {fileID: 4806226542553020318, guid: e9a78481c7595cd4b9ee9f1a6e101525, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -4983,6 +4987,54 @@ PrefabInstance:
       propertyPath: m_Name
       value: MatchPreb_New
       objectReference: {fileID: 0}
+    - target: {fileID: 4806226542553020319, guid: e9a78481c7595cd4b9ee9f1a6e101525, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 5632954178971744624, guid: e9a78481c7595cd4b9ee9f1a6e101525, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 7084748951529711589, guid: e9a78481c7595cd4b9ee9f1a6e101525, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 7166711602892915611, guid: e9a78481c7595cd4b9ee9f1a6e101525, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 9127207623075459340, guid: e9a78481c7595cd4b9ee9f1a6e101525, type: 3}
+      propertyPath: m_Size.x
+      value: 17.672695
+      objectReference: {fileID: 0}
+    - target: {fileID: 9127207623075459340, guid: e9a78481c7595cd4b9ee9f1a6e101525, type: 3}
+      propertyPath: m_Size.y
+      value: 3.1694164
+      objectReference: {fileID: 0}
+    - target: {fileID: 9127207623075459340, guid: e9a78481c7595cd4b9ee9f1a6e101525, type: 3}
+      propertyPath: m_Size.z
+      value: 6.5449004
+      objectReference: {fileID: 0}
+    - target: {fileID: 9127207623075459340, guid: e9a78481c7595cd4b9ee9f1a6e101525, type: 3}
+      propertyPath: m_Center.x
+      value: 0.35902596
+      objectReference: {fileID: 0}
+    - target: {fileID: 9127207623075459340, guid: e9a78481c7595cd4b9ee9f1a6e101525, type: 3}
+      propertyPath: m_Center.y
+      value: -0.032767296
+      objectReference: {fileID: 0}
+    - target: {fileID: 9127207623075459340, guid: e9a78481c7595cd4b9ee9f1a6e101525, type: 3}
+      propertyPath: m_Center.z
+      value: 0.5896399
+      objectReference: {fileID: 0}
+    - target: {fileID: 9178765632749516604, guid: e9a78481c7595cd4b9ee9f1a6e101525, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 9178765632771540382, guid: e9a78481c7595cd4b9ee9f1a6e101525, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e9a78481c7595cd4b9ee9f1a6e101525, type: 3}
 --- !u!4 &6038545325227244615 stripped
@@ -5000,6 +5052,10 @@ PrefabInstance:
     - target: {fileID: 3436466368147669694, guid: fd43a59d05847b147b6ffd46ab59126c, type: 3}
       propertyPath: m_Name
       value: BossFX_Anna_FlameBurst
+      objectReference: {fileID: 0}
+    - target: {fileID: 3436466368147669694, guid: fd43a59d05847b147b6ffd46ab59126c, type: 3}
+      propertyPath: m_Layer
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 3436466368147670339, guid: fd43a59d05847b147b6ffd46ab59126c, type: 3}
       propertyPath: m_RootOrder
@@ -5052,6 +5108,10 @@ PrefabInstance:
     - target: {fileID: 4563989472923746939, guid: fd43a59d05847b147b6ffd46ab59126c, type: 3}
       propertyPath: m_LocalPosition.z
       value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5286761877411596818, guid: fd43a59d05847b147b6ffd46ab59126c, type: 3}
+      propertyPath: m_Layer
+      value: 11
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fd43a59d05847b147b6ffd46ab59126c, type: 3}

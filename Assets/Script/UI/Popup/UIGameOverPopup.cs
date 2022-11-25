@@ -26,6 +26,14 @@ public class UIGameOverPopup : UIBasePopup
 
     private PlayerAction action;
 
+    //팝업 생성하는 법
+    /*
+    Game.UI.UIController.Instance.OpenPopup(new UIGameOverPopupData()                
+                {
+
+                });
+    */
+
     public override void Init(UIData uiData)
     {
         action = new PlayerAction();
@@ -35,6 +43,9 @@ public class UIGameOverPopup : UIBasePopup
         action.UI.Select.started += val => Select();
 
         action.UI.Enable();
+
+        Move(Vector2.zero);
+        isMove = false;
     }
 
     private void Move(Vector2 dir)
@@ -83,12 +94,14 @@ public class UIGameOverPopup : UIBasePopup
         }
     }
 
-    public void OnRetry() {
+    public void OnRetry()
+    {
         //TODO :: Go to Retry
         Debug.LogError("UIGameOverPopup :: 리트라이 되도록 구현 해주세요.");
     }
 
-    public void OnExit() {
+    public void OnExit()
+    {
         //TODO :: Move to Title
         Debug.LogError("UIGameOverPopup :: 타이틀로 가도록 구현 해주세요.");
     }

@@ -15,7 +15,7 @@ public class Raven : AttackMonster
         gCurrentAttackDelay = gAttackDelay;
         CurrentIdleTime = gIdleTime;
         FSM = MonsterFSMCreator.MonsterFlyIdleFSM(this);
-        SoundManager.PlayVFXLoopSound("2Stage_Crow_Flapping", transform);
+        //SoundManager.PlayVFXLoopSound("2Stage_Crow_Flapping", transform);
     }
     protected override void Update()
     {

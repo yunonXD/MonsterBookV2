@@ -68,6 +68,15 @@ public class SoundManager : MonoBehaviour
              , PlayerPrefs.GetFloat("VFXVolume", 0));
     }
 
+    public static AudioClip GetCurentBGM() { return Instance.myAudio.clip; }
+
+    public static bool CheckCureentBGM(string name)
+    {
+        if (Instance.myAudio.clip == null) return false;
+
+        return Instance.myAudio.clip == Instance.soundDic[name][0];
+    }
+
     #region Base
 
     public static void ChangeGlobalVolume(float volume)

@@ -969,7 +969,7 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.1
+  m_Radius: 0.08
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &7212092048903049984
 MonoBehaviour:
@@ -1153,7 +1153,7 @@ MonoBehaviour:
   isRun: 1
   maxHp: 100
   curHp: 0
-  attackDamage: 20
+  attackDamage: 10
   attackDelay: 0
   walkSpeed: 6
   runSpeed: 0

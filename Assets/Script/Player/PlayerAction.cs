@@ -89,6 +89,15 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MouseRotation"",
+                    ""type"": ""Value"",
+                    ""id"": ""65e63ba5-e527-401e-8098-90963751636c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -291,39 +300,6 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""Mouse"",
-                    ""id"": ""ce127064-5bde-47d2-ad98-b9f623065fb5"",
-                    ""path"": ""OneModifier"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Rotate_Look"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""modifier"",
-                    ""id"": ""98f9b945-02b1-4b95-bc33-6a8e2c13260d"",
-                    ""path"": ""<Mouse>/rightButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""GamePad"",
-                    ""action"": ""Rotate_Look"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""binding"",
-                    ""id"": ""b66133c9-fa0b-41cc-8d82-e5d5b142ee66"",
-                    ""path"": ""<Mouse>/position"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""GamePad"",
-                    ""action"": ""Rotate_Look"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
                     ""name"": """",
                     ""id"": ""6ef36b47-cf21-4e7b-b56a-a41609573834"",
                     ""path"": ""<Keyboard>/r"",
@@ -344,6 +320,39 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
                     ""action"": ""SpecialAttack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""15b2ab03-14f1-48ba-b75d-a7d06aaa1037"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MouseRotation"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""0fdd1800-db24-4dab-9c8f-93e34643483c"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MouseRotation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""fbe14902-532f-4af9-9813-c2664738639e"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MouseRotation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         },
@@ -359,6 +368,15 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Skip"",
+                    ""type"": ""Button"",
+                    ""id"": ""c864877d-21db-4fa1-b2bc-b6fda50254ac"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -368,8 +386,19 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/backquote"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""GamePad"",
                     ""action"": ""Console"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""677981a6-2292-4db5-a74f-8d84f73536e0"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""GamePad"",
+                    ""action"": ""Skip"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -410,6 +439,15 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
                     ""name"": ""MoveMode"",
                     ""type"": ""Button"",
                     ""id"": ""8c63498d-7fd7-4eba-a309-ceffa0b96df0"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Skip"",
+                    ""type"": ""Button"",
+                    ""id"": ""d4f2adb0-aa18-4765-b3a1-2da53cb9c2f4"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -669,6 +707,17 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
                     ""action"": ""MoveMode"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ae5e4d29-1e75-4c10-ab88-0e564138cc12"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""GamePad"",
+                    ""action"": ""Skip"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -701,15 +750,18 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
         m_InGame_WireShot = m_InGame.FindAction("WireShot", throwIfNotFound: true);
         m_InGame_Rotate_Look = m_InGame.FindAction("Rotate_Look", throwIfNotFound: true);
         m_InGame_SpecialAttack = m_InGame.FindAction("SpecialAttack", throwIfNotFound: true);
+        m_InGame_MouseRotation = m_InGame.FindAction("MouseRotation", throwIfNotFound: true);
         // CMD
         m_CMD = asset.FindActionMap("CMD", throwIfNotFound: true);
         m_CMD_Console = m_CMD.FindAction("Console", throwIfNotFound: true);
+        m_CMD_Skip = m_CMD.FindAction("Skip", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Move = m_UI.FindAction("Move", throwIfNotFound: true);
         m_UI_Select = m_UI.FindAction("Select", throwIfNotFound: true);
         m_UI_Esc = m_UI.FindAction("Esc", throwIfNotFound: true);
         m_UI_MoveMode = m_UI.FindAction("MoveMode", throwIfNotFound: true);
+        m_UI_Skip = m_UI.FindAction("Skip", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -776,6 +828,7 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
     private readonly InputAction m_InGame_WireShot;
     private readonly InputAction m_InGame_Rotate_Look;
     private readonly InputAction m_InGame_SpecialAttack;
+    private readonly InputAction m_InGame_MouseRotation;
     public struct InGameActions
     {
         private @PlayerAction m_Wrapper;
@@ -787,6 +840,7 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
         public InputAction @WireShot => m_Wrapper.m_InGame_WireShot;
         public InputAction @Rotate_Look => m_Wrapper.m_InGame_Rotate_Look;
         public InputAction @SpecialAttack => m_Wrapper.m_InGame_SpecialAttack;
+        public InputAction @MouseRotation => m_Wrapper.m_InGame_MouseRotation;
         public InputActionMap Get() { return m_Wrapper.m_InGame; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -817,6 +871,9 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
                 @SpecialAttack.started -= m_Wrapper.m_InGameActionsCallbackInterface.OnSpecialAttack;
                 @SpecialAttack.performed -= m_Wrapper.m_InGameActionsCallbackInterface.OnSpecialAttack;
                 @SpecialAttack.canceled -= m_Wrapper.m_InGameActionsCallbackInterface.OnSpecialAttack;
+                @MouseRotation.started -= m_Wrapper.m_InGameActionsCallbackInterface.OnMouseRotation;
+                @MouseRotation.performed -= m_Wrapper.m_InGameActionsCallbackInterface.OnMouseRotation;
+                @MouseRotation.canceled -= m_Wrapper.m_InGameActionsCallbackInterface.OnMouseRotation;
             }
             m_Wrapper.m_InGameActionsCallbackInterface = instance;
             if (instance != null)
@@ -842,6 +899,9 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
                 @SpecialAttack.started += instance.OnSpecialAttack;
                 @SpecialAttack.performed += instance.OnSpecialAttack;
                 @SpecialAttack.canceled += instance.OnSpecialAttack;
+                @MouseRotation.started += instance.OnMouseRotation;
+                @MouseRotation.performed += instance.OnMouseRotation;
+                @MouseRotation.canceled += instance.OnMouseRotation;
             }
         }
     }
@@ -851,11 +911,13 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
     private readonly InputActionMap m_CMD;
     private ICMDActions m_CMDActionsCallbackInterface;
     private readonly InputAction m_CMD_Console;
+    private readonly InputAction m_CMD_Skip;
     public struct CMDActions
     {
         private @PlayerAction m_Wrapper;
         public CMDActions(@PlayerAction wrapper) { m_Wrapper = wrapper; }
         public InputAction @Console => m_Wrapper.m_CMD_Console;
+        public InputAction @Skip => m_Wrapper.m_CMD_Skip;
         public InputActionMap Get() { return m_Wrapper.m_CMD; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -868,6 +930,9 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
                 @Console.started -= m_Wrapper.m_CMDActionsCallbackInterface.OnConsole;
                 @Console.performed -= m_Wrapper.m_CMDActionsCallbackInterface.OnConsole;
                 @Console.canceled -= m_Wrapper.m_CMDActionsCallbackInterface.OnConsole;
+                @Skip.started -= m_Wrapper.m_CMDActionsCallbackInterface.OnSkip;
+                @Skip.performed -= m_Wrapper.m_CMDActionsCallbackInterface.OnSkip;
+                @Skip.canceled -= m_Wrapper.m_CMDActionsCallbackInterface.OnSkip;
             }
             m_Wrapper.m_CMDActionsCallbackInterface = instance;
             if (instance != null)
@@ -875,6 +940,9 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
                 @Console.started += instance.OnConsole;
                 @Console.performed += instance.OnConsole;
                 @Console.canceled += instance.OnConsole;
+                @Skip.started += instance.OnSkip;
+                @Skip.performed += instance.OnSkip;
+                @Skip.canceled += instance.OnSkip;
             }
         }
     }
@@ -887,6 +955,7 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_Select;
     private readonly InputAction m_UI_Esc;
     private readonly InputAction m_UI_MoveMode;
+    private readonly InputAction m_UI_Skip;
     public struct UIActions
     {
         private @PlayerAction m_Wrapper;
@@ -895,6 +964,7 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
         public InputAction @Select => m_Wrapper.m_UI_Select;
         public InputAction @Esc => m_Wrapper.m_UI_Esc;
         public InputAction @MoveMode => m_Wrapper.m_UI_MoveMode;
+        public InputAction @Skip => m_Wrapper.m_UI_Skip;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -916,6 +986,9 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
                 @MoveMode.started -= m_Wrapper.m_UIActionsCallbackInterface.OnMoveMode;
                 @MoveMode.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnMoveMode;
                 @MoveMode.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnMoveMode;
+                @Skip.started -= m_Wrapper.m_UIActionsCallbackInterface.OnSkip;
+                @Skip.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnSkip;
+                @Skip.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnSkip;
             }
             m_Wrapper.m_UIActionsCallbackInterface = instance;
             if (instance != null)
@@ -932,6 +1005,9 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
                 @MoveMode.started += instance.OnMoveMode;
                 @MoveMode.performed += instance.OnMoveMode;
                 @MoveMode.canceled += instance.OnMoveMode;
+                @Skip.started += instance.OnSkip;
+                @Skip.performed += instance.OnSkip;
+                @Skip.canceled += instance.OnSkip;
             }
         }
     }
@@ -954,10 +1030,12 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
         void OnWireShot(InputAction.CallbackContext context);
         void OnRotate_Look(InputAction.CallbackContext context);
         void OnSpecialAttack(InputAction.CallbackContext context);
+        void OnMouseRotation(InputAction.CallbackContext context);
     }
     public interface ICMDActions
     {
         void OnConsole(InputAction.CallbackContext context);
+        void OnSkip(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
@@ -965,5 +1043,6 @@ public partial class @PlayerAction : IInputActionCollection2, IDisposable
         void OnSelect(InputAction.CallbackContext context);
         void OnEsc(InputAction.CallbackContext context);
         void OnMoveMode(InputAction.CallbackContext context);
+        void OnSkip(InputAction.CallbackContext context);
     }
 }

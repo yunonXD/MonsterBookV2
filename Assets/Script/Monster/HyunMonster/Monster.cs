@@ -119,7 +119,7 @@ namespace LDS
             {                
                 FindPlayer();
                 UpdateRotate();
-                curState.OnExcute();                
+                curState.OnExcute();
                 yield return YieldInstructionCache.waitForFixedUpdate;
             }
         }
@@ -164,7 +164,7 @@ namespace LDS
         {
             var dir = transform.position.x < pos.x ? Vector3.right : Vector3.left;
             lookVector = dir;
-            rigid.velocity = lookVector * walkSpeed;
+            rigid.velocity = new Vector3(lookVector.x * walkSpeed, rigid.velocity.y);
         }
 
         public virtual void WalkToPos(Vector3 pos, float speed)

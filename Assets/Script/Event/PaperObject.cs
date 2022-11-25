@@ -5,10 +5,12 @@ using UnityEngine;
 
 public class PaperObject : Event
 {
+    [SerializeField] private bool isPage;
     [SerializeField] private Vector3 startVector;
     [SerializeField] private Vector3 foldVector;
 
-    [SerializeField] private bool canSee;    
+    [SerializeField] private bool canSee;
+    [SerializeField] private bool isFinish;
     [SerializeField] private float speed = 3f;
     [SerializeField] private bool awakeStart;
     [SerializeField] private float awakeDelay;
@@ -54,18 +56,19 @@ public class PaperObject : Event
 
     public override void StartEvent()
     {
-        StartCoroutine(Routine(0));
+        if (isPage) StartCoroutine(PageRoutine(0));
+        else StartCoroutine(Routine(0));
     }
 
     public override void StartEvent(float time)
     {
-        StartCoroutine(Routine(time));        
+        if (isPage) StartCoroutine(PageRoutine(time));
+        else StartCoroutine(Routine(time));        
     }
 
     public void SetRotate(float value)
     {
-        var v = value / 180f;
-        Debug.Log(v);
+        var v = value / 180f;        
         transform.localRotation = Quaternion.Lerp(Quaternion.Euler(startVector), Quaternion.Euler(foldVector), v);
     }
 
@@ -84,7 +87,40 @@ public class PaperObject : Event
         {            
             transform.localRotation = Quaternion.Lerp(transform.localRotation, foldRotation, speed * Time.deltaTime);
             yield return YieldInstructionCache.waitForFixedUpdate;
-        }        
+        }      
+        if (isFinish)
+        {
+            for (int i = 0; i < child.Length; i++)
+            {
+                child[i].SetActive(false);
+            }
+        }
+    }
+
+    private IEnumerator PageRoutine(float time)
+    {
+        yield return YieldInstructionCache.waitForSeconds(time);
+        if (!canSee)
+        {
+            for (int i = 0; i < child.Length; i++)
+            {
+                child[i].SetActive(true);
+            }
+        }
+        transform.localRotation = startRotation;
+        while (Quaternion.Angle(transform.localRotation, foldRotation) > 0.1f)
+        {
+            transform.localRotation = Quaternion.Lerp(startRotation, foldRotation, speed * Time.deltaTime);
+            yield return YieldInstructionCache.waitForFixedUpdate;
+        }
+        if (isFinish)
+        {
+            for (int i = 0; i < child.Length; i++)
+            {
+                child[i].SetActive(false);
+            }
+        }
+        Debug.LogWarning("DSDSD");
     }
 
 }

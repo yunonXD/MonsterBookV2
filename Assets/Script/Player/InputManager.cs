@@ -1,4 +1,5 @@
 using System.Collections;
+using UnityEngine.InputSystem;
 using UnityEngine;
 
 public class InputManager : MonoBehaviour   {
@@ -31,8 +32,14 @@ public class InputManager : MonoBehaviour   {
         //Xbox Right Thumstick   
         m_action.InGame.Rotate_Look.performed += val => m_player.PlayerAimObj = val.ReadValue<Vector2>();
         m_action.InGame.Rotate_Look.performed += val => isLookTarget();
-        m_action.InGame.Rotate_Look.started += val => m_player.SoundShot("Player_Wire_Aim");       
+        m_action.InGame.Rotate_Look.started += val => PlayWireReady();
         m_action.InGame.Rotate_Look.canceled += val => isLookTargetEnd();
+
+        //Mouse Aim
+        m_action.InGame.MouseRotation.performed += val => m_player.PlayerAimMouse = val.ReadValue<Vector2>();
+        m_action.InGame.MouseRotation.performed += val => isLookTarget();
+        m_action.InGame.MouseRotation.started += val => PlayWireReady();
+        m_action.InGame.MouseRotation.canceled += val => isLookTargetEnd();
 
         //Wire Attack (after LockOn target)
         m_action.InGame.WireShot.started += val => SetSkill();
@@ -44,6 +51,7 @@ public class InputManager : MonoBehaviour   {
         
         //~ consol page
         m_action.CMD.Console.started += val => Console();
+        m_action.UI.Skip.started += val => GameManager.SkipCutScene();
 
         //if (GameManager.GetConsoleEnable())
         //{
@@ -74,7 +82,9 @@ public class InputManager : MonoBehaviour   {
     private void isEndWalk()    {m_player.SetWalkVector(0);}
 
     private void isAttack() {
+
         if(m_player.state != PlayerState.JumpState && m_player.isGround){
+
             if (m_yesUcanAttack &&                          //Attack Key avaliable
                 !m_player.Player_Intro&&
                 !m_player.LockLookTartget &&
@@ -94,10 +104,12 @@ public class InputManager : MonoBehaviour   {
     }
 
     private void isSpecialAttack()  {
+
         if(!m_player.LockLookTartget && !m_player.Player_Intro && m_player.isGround &&
         m_player.state != PlayerState.DashState &&
         m_player.state != PlayerState.JumpState &&
         m_player.state != PlayerState.SpecialAttackState &&
+        m_player.state != PlayerState.JumpAttackState &&
         m_player.ui.SP_Cur >= 100 && m_player.isGround &&
         m_player.isSecondEnable)  {
                 // this skill can use only 2 stage. 
@@ -105,42 +117,22 @@ public class InputManager : MonoBehaviour   {
         }
     }
 
-    #region LookatTarget
-    private void isLookTarget() {
-        if (!m_player.LockLookTartget && !m_player.Player_Intro)  {
-            //searching target
-            m_player.isLookTarget = true;
-        }
-        else    m_player.isLookTarget = false;
-    }
-
-    private void isLookTargetEnd()  {
-        //Stop searching target
-        if(m_player.state != PlayerState.WireState && m_player.state != PlayerState.WireThrowState)
-            m_player.PlayerAimObj = Vector2.zero;
-
-        m_player.isLookTarget = false;
-        m_player.ui.SetWireAim(default, false);
-        m_player.Arrow_Lookat.SetActive(false);
-    }
-
-    #endregion
-
     private void SetSkill() {
-        if (m_yesUcanSkill && m_player.isLockDistance && m_player.isLookTarget && !m_player.Player_Intro &&
-            m_player.state != PlayerState.AttackState && m_player.state != PlayerState.DashState &&
-            m_player.state != PlayerState.WireState && m_player.state != PlayerState.WireThrowState &&
-            !m_player.CheckDamage)  {
-                if (m_player.PlayerLookat.transform.rotation.eulerAngles.z > 180) m_player.lookVector.x = 1;
-                else m_player.lookVector.x = -1;
-                m_player.ChangeState(PlayerState.WireThrowState);
-                m_yesUcanSkill = false;
-            }
 
-        StartCoroutine(WirePushDelay(2.0f));
+        if (m_yesUcanSkill && m_player.isLockDistance && m_player.isLookTarget && !m_player.Player_Intro &&
+        m_player.state != PlayerState.AttackState && m_player.state != PlayerState.JumpAttackState &&
+        m_player.state != PlayerState.DashState && m_player.state != PlayerState.WireState &&
+        m_player.state != PlayerState.WireThrowState &&
+        !m_player.CheckDamage)  {
+
+            m_player.ChangeState(PlayerState.WireThrowState);
+            m_yesUcanSkill = false;
+        }
+        StartCoroutine(WirePushDelay(2.0f));         
     }
 
     private void isJump()   {
+
         if (m_yesUcanJump &&
             m_player.isGround &&
             !m_player.Player_Intro &&
@@ -157,6 +149,7 @@ public class InputManager : MonoBehaviour   {
     }
 
     private void isDash()   {
+
         if(m_yesUcanDash &&
             !m_player.Player_Intro &&
             !m_player.LockLookTartget &&
@@ -172,6 +165,37 @@ public class InputManager : MonoBehaviour   {
         StartCoroutine(DashDelay(m_player.dashDelayTime));
     }
     
+    #region LookatTarget
+    
+    private void isLookTarget() {
+
+        if (!m_player.LockLookTartget && !m_player.Player_Intro)  {
+            //searching target
+            m_player.isLookTarget = true;
+}
+        else    m_player.isLookTarget = false;
+    }
+
+    private void PlayWireReady()    {
+
+        if(m_player.Player_Intro)   return;
+        m_player.SoundShot("Player_Wire_Aim");    
+    }
+
+    private void isLookTargetEnd()  {
+        //Stop searching target
+        if(m_player.state != PlayerState.WireState && m_player.state != PlayerState.WireThrowState){    
+            m_player.PlayerAimMouse = Vector2.zero;
+            m_player.PlayerAimObj = Vector2.zero;
+        }
+            
+        m_player.isLookTarget = false;
+        m_player.ui.SetWireAim(default, false);
+        m_player.Arrow_Lookat.SetActive(false);
+    }
+
+    #endregion
+
     #region IEnumerator
     private IEnumerator InputAttackRoutine()    {        
         m_player.prevInput = true;

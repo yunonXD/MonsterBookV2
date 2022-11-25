@@ -144,12 +144,12 @@ Material:
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _HasNormal: 0
-    - _HighlightThreshold: 0.715
-    - _HightlightSmoothness: 0.025
+    - _HighlightThreshold: 0.757
+    - _HightlightSmoothness: 0.143
     - _LightColorInten: 0
     - _Metallic: 0
-    - _MidtoneSmoothness: 0.137
-    - _MidtoneThreshold: 0.339
+    - _MidtoneSmoothness: 0.192
+    - _MidtoneThreshold: 0.431
     - _NoiseInten: 0.48
     - _OcclusionStrength: 1
     - _Parallax: 0.005
@@ -179,6 +179,6 @@ Material:
     - _HighlightColor: {r: 5.340315, g: 5.340315, b: 5.340315, a: 0}
     - _MidtoneColor: {r: 2, g: 2, b: 2, a: 0}
     - _ReflectColor: {r: 0.8537736, g: 1, b: 0.9853774, a: 0}
-    - _ShadowColor: {r: 0.78056735, g: 0.68462974, b: 0.8018868, a: 0}
+    - _ShadowColor: {r: 0.6759707, g: 0.5696867, b: 0.6981132, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []

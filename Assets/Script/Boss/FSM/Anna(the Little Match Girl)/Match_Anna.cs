@@ -92,7 +92,7 @@ public class Match_Anna : MonoBehaviour
 
             if (timer < 0.5f)
             {
-                transform.LookAt(Target_Player.transform.position);
+                transform.LookAt(new Vector3(Target_Player.transform.position.x, Target_Player.transform.position.y, Target_Player.transform.position.z-4));
                 dir = (Target_Player.transform.position + new Vector3(0,2,0)) - transform.position;
                 dir *= Target_Anna.GetComponent<Anna>().MatchesSpeed_1;
             }

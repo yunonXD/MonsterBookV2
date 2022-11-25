@@ -71,7 +71,6 @@ public enum ConsoleType
 
 public class GameManager : MonoBehaviour
 {
-
     public static GameManager Instance;
 
     [Header("[Prefab]")]
@@ -93,7 +92,9 @@ public class GameManager : MonoBehaviour
     [Header("[Video]")]
     [SerializeField] private VideoPlayer vidoePlayer;
     [SerializeField] private GameObject videoImage;
-    [SerializeField] private VideoClip[] clip;    
+    [SerializeField] private VideoClip[] clip;
+    [SerializeField]
+    private ScenarioData scenarioData;
 
     //private Dictionary<string, string> commandList = new Dictionary<string, string>();    
     private DualKeyDictionary<string, string, CommandData> commandList = new DualKeyDictionary<string, string, CommandData>();    
@@ -161,14 +162,15 @@ public class GameManager : MonoBehaviour
                 SoundManager.PlayBackGroundSound("Lobby_BGM");
                 break;
             case 1:
+                MoveSavePoint();
                 PlayCutScene(0);
                 break;
-            case 2:
-                //player.ChangePatrol();
+            case 2:                
                 GameObject.Find("BossSceneDirector").GetComponent<BossSceneDirector>().StartStage(1);
                 FadeEffect(false, 5);
                 break;
             case 3:
+                MoveSavePoint();
                 player.isSecondEnable = true;
                 SoundManager.PlayBackGroundSound("2Stage_Nomal_BGM");
                 FadeEffect(false, 4);
@@ -184,7 +186,19 @@ public class GameManager : MonoBehaviour
 
     public static void SetInGameInput(bool value)
     {
+        Debug.Log(value);
         Instance.player.input.SetInGameInput(value);
+    }
+
+    public static void SetInGameInput(bool value, float time)
+    {
+        Instance.StartCoroutine(Instance.InGameInputRoutine(value, time));
+    }
+
+    private IEnumerator InGameInputRoutine(bool value, float time)
+    {
+        yield return YieldInstructionCache.waitForSeconds(time);
+        player.input.SetInGameInput(value);
     }
 
     #region Console Function
@@ -386,17 +400,58 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
-    public static void PlayCutScene(int i)
+    private int stage;
+    private Vector3 savePoint;
+
+    public static void SetSavePoint(Vector3 pos)
     {
+        Instance.stage = SceneManager.GetActiveScene().buildIndex;
+        Instance.savePoint = pos;
+    }
+
+    public void MoveSavePoint()
+    {
+        if (SceneManager.GetActiveScene().buildIndex == stage)
+        {
+            player.transform.position = savePoint;
+        }
+    }
+
+    public static void PlayCutScene(int i, float delay = 0)
+    {        
+        Instance.StartCoroutine(Instance.CutSceneRoutine(i, delay));
+    }
+
+    public static void SkipCutScene()
+    {
+        Instance.cutSceneTime = 100;
+    }
+
+    float cutSceneTime = 0f;
+
+    private IEnumerator CutSceneRoutine(int i, float delay)
+    {
+        yield return YieldInstructionCache.waitForSeconds(delay);
+        SetInGameInput(false);
         Instance.blackImage.color = new Color32(0, 0, 0, 255);
         VideoImage(true, 0);
         Instance.vidoePlayer.clip = Instance.clip[i];
         Instance.vidoePlayer.Play();
-        float videoTime = ((float)Instance.clip[i].length) + 2.5f;
-        if (i == 0) SoundManager.PlayBackGroundSound("1Stage_Nomal_BGM", videoTime);
-        else SoundManager.PlayBackGroundSound("1Stage_Nomal_BGM", videoTime);
-        VideoImage(false, videoTime);
-        FadeEffect(false, 4, videoTime);
+        cutSceneTime = 0f;
+        float videoTime = ((float)Instance.clip[i].length) + 2.5f;        
+        while (cutSceneTime < videoTime)
+        {
+            cutSceneTime += Time.deltaTime;
+            yield return YieldInstructionCache.waitForFixedUpdate;
+        }
+        if (i == 0) SoundManager.PlayBackGroundSound("1Stage_Nomal_BGM");
+        else SoundManager.PlayBackGroundSound("2Stage_Nomal_BGM");
+        VideoImage(false, 0);
+        FadeEffect(false, 4);
+        SetInGameInput(true, 0.2f);
+        if (i == 1) SceneManager.LoadScene(0);
+        yield return YieldInstructionCache.waitForSeconds(0.4f);
+        TalkSimulator.Instance.StartScenario(scenarioData);
     }
 
     public static void VideoImage(bool value, float delay)

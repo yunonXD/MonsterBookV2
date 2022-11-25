@@ -60,7 +60,9 @@ public class Anna : MonoBehaviour , IEntity
     public GameObject[] HaloSpawnPoint;
     public bool ProtectedMoveAble = false;
     private bool BlizzardOneTime;
+    private bool GrannyOneTime;
     public int BlizzardTriggerHP;
+    public int GrannyTriggerHP;
 
     //Phase2
     [Header("Phase2")]
@@ -73,6 +75,8 @@ public class Anna : MonoBehaviour , IEntity
     public int Matches_Attack04_Damage;
     public int Matches_Attack05_Damage;
     public int Matches_Attack06_Damage;
+    public int LastMatchClear;
+    public bool Anna_Frozen_Die;
 
 
     
@@ -113,10 +117,12 @@ public class Anna : MonoBehaviour , IEntity
     protected void Start()
     {
         BlizzardOneTime = false;
+        GrannyOneTime = false;
         state = new StateMachine<Anna>();
         GroundLanding = false;
         Anna_CurrentHP = AnnaHP_Phase1;
-   
+        LastMatchClear = 0;
+        finishAttackAble = false;
         state.Initial_Setting(this, Anna_Wait_State.Instance);
 
 
@@ -126,7 +132,10 @@ public class Anna : MonoBehaviour , IEntity
     protected void FixedUpdate()
     {
 
+        if(Anna_Frozen_Die == true)
+        {
 
+        }
 
         state.Update();
 
@@ -138,33 +147,7 @@ public class Anna : MonoBehaviour , IEntity
         }
 
 
-        if (AnnaPhase == 2 && Anna_CurrentHP <= 0)
-        {
-            ChangeState(Anna_Grogy_State.Instance);
 
-        }
-
-
-
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            Debug.Log("이동입력");
-            ChangeState(AnnaMove_State.Instance);
-        }
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            Debug.Log("공격1입력");
-            ChangeState(Anna_Match_Attack.Instance);
-        }
-        if (Input.GetKeyDown(KeyCode.D))
-        {
-            Debug.Log("Phase UP");
-            if (AnnaPhase == 1)
-            {
-                HaloCount = 3;
-                AnnaPhase++;
-            }
-        }
         if (Input.GetKeyDown(KeyCode.Q))
         {
             AnnaStand();
@@ -332,19 +315,28 @@ public class Anna : MonoBehaviour , IEntity
         if (finishAttackAble == true)
         {
             Anna_Ani.SetTrigger("Anna_Death");
+            Anna_Frozen_Die = true;
             Isinvincibility = true;
         }
 
         if(Anna_CurrentHP < BlizzardTriggerHP && AnnaPhase == 1 && BlizzardOneTime == false)
         {
             WorldEvent.GetComponent<Anna_WorldEvent>().BlizzardStart();
+            BlizzardOneTime = true;
         }
 
-        if (Anna_CurrentHP < BlizzardTriggerHP && AnnaPhase == 2 && BlizzardOneTime == false)
+        if (Anna_CurrentHP < GrannyTriggerHP && AnnaPhase == 2 && GrannyOneTime == false)
         {
             WorldEvent.GetComponent<Anna_WorldEvent>().GrannyAble = true;
+            WorldEvent.GetComponent<Anna_WorldEvent>().CreateGranny();
+            GrannyOneTime = true;
         }
 
+        if (AnnaPhase == 2 && Anna_CurrentHP <= 0 && finishAttackAble == false && LastMatchClear != 5)
+        {
+            ChangeState(Anna_LastAttack_State.Instance);
+            WorldEvent.GetComponent<Anna_WorldEvent>().GrannyAble = false;
+        }
 
 
 

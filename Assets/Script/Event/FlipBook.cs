@@ -62,9 +62,8 @@ namespace ladius3565
         }
 
         private IEnumerator Routine(float time)
-        {                        
-            CameraController.StartDirectCamera(CameraController.Instance.transform.position);
-            yield return YieldInstructionCache.waitForSeconds(time);
+        {
+            isPlaying = true;            
             SetView(true);
             while (transform.rotation != Quaternion.Euler(targetEuler))
             {
@@ -89,9 +88,10 @@ namespace ladius3565
                 yield return YieldInstructionCache.waitForFixedUpdate;
             }
 
-            yield return YieldInstructionCache.waitForSeconds(2f);
-            SceneManager.LoadScene(2);
+            isPlaying = false;        
         }
+
+        public bool GetIsPlay() { return isPlaying; }
 
         private IEnumerator StaticRoutine()
         {
@@ -117,18 +117,7 @@ namespace ladius3565
 
                 yield return YieldInstructionCache.waitForFixedUpdate;
             }
-        }
-
-        public void LoadScene(int i)
-        {
-            StartCoroutine(SceneRoutine(i));
-        }
-
-        private IEnumerator SceneRoutine(int i)
-        {
-            yield return YieldInstructionCache.waitForSeconds(3);
-            SceneManager.LoadScene(i);
-        }
+        }        
 
     }
 }

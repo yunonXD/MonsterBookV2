@@ -13,6 +13,7 @@ public class HanselStunMoveState_X : FSM_State<Hansel>
 
     public override void EnterState(Hansel _Hansel)
     {
+        _Hansel.Isinvincibility = true;
         _Hansel.Ani.Play("H_Walk");
         _Hansel.SmashCollider_L.SetActive(false);
         _Hansel.SmashCollider_R.SetActive(false);

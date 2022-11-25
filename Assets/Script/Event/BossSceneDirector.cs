@@ -35,11 +35,11 @@ public class BossSceneDirector : MonoBehaviour
 
     private IEnumerator Stage1StartRoutine()
     {
-        yield return YieldInstructionCache.waitForSeconds(2f);
+        yield return YieldInstructionCache.waitForSeconds(0.2f);
         GameManager.SetInGameInput(false);
         var player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
         player.ChangePatrol();
-
+        yield return YieldInstructionCache.waitForSeconds(2f);
         //while (player.transform.position != new Vector3())
         //{
 
@@ -56,7 +56,8 @@ public class BossSceneDirector : MonoBehaviour
             yield return YieldInstructionCache.waitForFixedUpdate;
         }
         mainCamera.cullingMask = turnOnCameraLayer;
-        GameManager.SetInGameInput(true);
+        yield return YieldInstructionCache.waitForSeconds(1.3f);
+        GameManager.SetInGameInput(true);        
         hansel.Hansel_Start();
     }
 

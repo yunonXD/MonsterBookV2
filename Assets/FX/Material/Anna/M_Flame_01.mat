@@ -115,7 +115,7 @@ Material:
     - _Color_01: {r: 1, g: 0.14508255, b: 0, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
     - _Highlight_Color: {r: 1, g: 0.40792727, b: 0.2028302, a: 0}
-    - _Inner_Color: {r: 1, g: 0.40792722, b: 0.20283014, a: 0}
+    - _Inner_Color: {r: 1, g: 0.45882353, b: 0.15686275, a: 0}
     - _Line_Color: {r: 1, g: 0.6133298, b: 0.37264144, a: 0}
-    - _Outer_Color: {r: 1, g: 0.14508247, b: 0, a: 0}
+    - _Outer_Color: {r: 1, g: 0.2, b: 0.0627451, a: 0}
   m_BuildTextureStacks: []
